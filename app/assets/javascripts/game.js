@@ -8,5 +8,6 @@ game.state.add('intro', introState);
 game.state.add('play', playState);
 game.state.add('city', cityState);
 game.state.add('shop', shopState);
+game.state.add('tutorial', tutorialState);
 game.state.add('defence', defenceState);
 game.state.start('boot');

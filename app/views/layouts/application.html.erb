@@ -11,25 +11,36 @@
   <body>
   	<p class="flash"><%= flash.notice %></p>
     <%= yield %>
-    <h6>
-        <% if logged_in? %>
-          <%= javascript_include_tag "phaser.min.js"%>
-          <%= javascript_include_tag "typewriter.js"%>
-          <%= javascript_include_tag "boot.js"%>
-          <%= javascript_include_tag "preload.js"%>
-          <%= javascript_include_tag "menu.js"%>
-          <%= javascript_include_tag "credits.js"%>
-          <%= javascript_include_tag "intro.js"%>
-          <%= javascript_include_tag "city.js"%>
-          <%= javascript_include_tag "main.js"%>
-          <%= javascript_include_tag "shop.js"%>
-          <%= javascript_include_tag "defence.js"%>
-          <%= javascript_include_tag "game.js"%>
-          <%= "Logged in as #{current_user.username}" %>
-          <%= link_to "(logout)", logout_path %>
-        <% else %>
-          <%= link_to "(login)", login_path %>
-        <% end %>
-      </h6>
+    <h5 class="loginInfo">
+      <% if logged_in? %>
+        <%= javascript_include_tag "phaser.min.js"%>
+        <%= javascript_include_tag "typewriter.js"%>
+        <%= javascript_include_tag "game.js"%>
+        <%= javascript_include_tag "boot.js"%>
+        <%= javascript_include_tag "preload.js"%>
+        <%= javascript_include_tag "menu.js"%>
+        <%= javascript_include_tag "credits.js"%>
+        <%= javascript_include_tag "intro.js"%>
+        <%= javascript_include_tag "city.js"%>
+        <%= javascript_include_tag "main.js"%>
+        <%= javascript_include_tag "shop.js"%>
+        <%= javascript_include_tag "defence.js"%>
+        <%= javascript_include_tag "tutorial.js"%>
+        <%= "Logged in as #{current_user.username}" %>
+        <%= link_to "(logout)", logout_path %>
+      <% else %>
+        <%= link_to "(login)", login_path %>
+      <% end %>
+    </h5>
+    <div class="contactUs">
+      <p>contact|us</p>
+    </div>
+    <div class="socialMediaButtons">
+      <div class="twitter-hover social-slide"></div>
+      <div class="facebook-hover social-slide"></div>
+      <div class="email-hover social-slide"></div>
+      <div class="studio-hover social-slide"></div>
+    </div>
+     
   </body>
 </html>

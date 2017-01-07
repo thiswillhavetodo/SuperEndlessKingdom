@@ -198,11 +198,24 @@ var defenceState = {
             defender.gender = "female";
         }
         defender.health = defenceStrength-2;
+        defender.maxHealth = defenceStrength-2;
         defender.fighting = false;
         defender.timer = game.time.now;
         //  enable physics on the defender
         game.physics.arcade.enable(defender);
         defender.body.collideWorldBounds = true;
+        
+        defender.healthBarBack = defender.addChild(game.add.graphics(0, 0));
+        defender.healthBarBack.lineStyle(3, 0xba3500, 1);
+        defender.healthBarBack.moveTo(0, 0);
+        defender.healthBarBack.lineTo(20, 0);
+        defender.healthBar = defender.addChild(game.add.graphics(0, 0));
+        defender.healthBar.lineStyle(3, 0xffd900, 1);
+        defender.healthBar.moveTo(0, 0);
+        defender.healthBar.lineTo(20*(defender.health/defender.maxHealth), 0);
+        
+        defender.healthBarBack.visible = false;
+        defender.healthBar.visible = false;
     
         //  Our two animations, walking left and right.
         defender.animations.add('defenderLeft', [9, 10, 11], 15, true);
@@ -214,6 +227,11 @@ var defenceState = {
         defenders.forEach(function(defender) {
             defender.body.velocity.x = 0;
             defender.body.velocity.y = 0;
+            
+            defender.healthBar.clear();
+            defender.healthBar.lineStyle(3, 0xffd900, 1);
+            defender.healthBar.moveTo(0, 0);
+            defender.healthBar.lineTo(20*(defender.health/defender.maxHealth), 0);
             
             if ((Math.abs(player.x - defender.x)) + (Math.abs(player.y - defender.y)) > 300 && (defender.fighting==false)) {
                 game.physics.arcade.moveToObject(defender, player, 115);
@@ -232,11 +250,24 @@ var defenceState = {
     attackerCreate: function(x, y) {
         var attacker = attackers.create(x, y, 'attacker');
         attacker.health = attackStrength-3;
+        attacker.maxHealth = attackStrength-3;
         attacker.timer = game.time.now;
         attacker.fighting = false;
         //  enable physics on the attacker
         game.physics.arcade.enable(attacker);
         attacker.body.collideWorldBounds = true;
+        
+        attacker.healthBarBack = attacker.addChild(game.add.graphics(0, 0));
+        attacker.healthBarBack.lineStyle(3, 0xba3500, 1);
+        attacker.healthBarBack.moveTo(0, 0);
+        attacker.healthBarBack.lineTo(20, 0);
+        attacker.healthBar = attacker.addChild(game.add.graphics(0, 0));
+        attacker.healthBar.lineStyle(3, 0xffd900, 1);
+        attacker.healthBar.moveTo(0, 0);
+        attacker.healthBar.lineTo(20*(attacker.health/attacker.maxHealth), 0);
+        
+        attacker.healthBarBack.visible = false;
+        attacker.healthBar.visible = false;
     
         //  Our two animations, walking left and right.
         attacker.animations.add('attackerLeft', [9, 10, 11], 15, true);
@@ -248,6 +279,12 @@ var defenceState = {
         attackers.forEach(function(attacker) {
             attacker.body.velocity.x = 0;
             attacker.body.velocity.y = 0;
+            
+            attacker.healthBar.clear();
+            attacker.healthBar.lineStyle(3, 0xffd900, 1);
+            attacker.healthBar.moveTo(0, 0);
+            attacker.healthBar.lineTo(20*(attacker.health/attacker.maxHealth), 0);
+            
             if (attacker.fighting == false) {
                 game.physics.arcade.moveToObject(attacker, player, 110);
             }
@@ -302,6 +339,8 @@ var defenceState = {
         }
         else {
             attacker.health -= shotPower;
+            attacker.healthBarBack.visible = true;
+            attacker.healthBar.visible = true;
         }
     },
     smallExplosion: function(x, y) {
@@ -407,6 +446,7 @@ var defenceState = {
             healthText.text = "Health: 0/" + maxHealth;
             resultText.text = 'Time to go home!';
             endLevelButton = game.add.button(340, 250, 'blankButton', this.defenceComplete, this);
+            game.add.bitmapText(370, 275, 'font', 'Return to my City', 16);
         }
     },
     checkLevelUp: function() {
@@ -468,6 +508,8 @@ var defenceState = {
     },
     defenceDoorOpen: function() {
         door.animations.play('openDoor');
+        var doorOpenSFX = game.add.audio('creakylightwoodendoor1');
+        doorOpenSFX.play();
         player.kill();
         var self = this;
         game.time.events.add(Phaser.Timer.SECOND * 2, function () {   self.defenceComplete();  });
@@ -503,6 +545,8 @@ var defenceState = {
             else {
                 defender.health -= (attackStrength-7);
                 defender.timer = game.time.now + 1000;
+                defender.healthBarBack.visible = true;
+                defender.healthBar.visible = true;
             }
         }
         if (attacker.timer<game.time.now) {
@@ -524,6 +568,8 @@ var defenceState = {
             else {
                 attacker.health --;
                 attacker.timer = game.time.now + 1000;
+                attacker.healthBarBack.visible = true;
+                attacker.healthBar.visible = true;
             }
         }
     },
@@ -532,11 +578,11 @@ var defenceState = {
             case "first":
                 tutorialSprite = game.add.sprite(350, 469, 'assistant');
                 tutorialSpeechBubble.x = 150;
-                tutorialText.text = "  Your Majesty!";
+                tutorialText.text = " Your Majesty!";
                 tutorialText2.text = "   Our defenders are ";
                 tutorialText3.text = "outnumbered, but with you";
-                tutorialText4.text = "    to rally them we may ";
-                tutorialText5.text = "      yet prevail. ";
+                tutorialText4.text = "     to rally them we may ";
+                tutorialText5.text = "         yet prevail. ";
                 tutorialText6.text = "";
                 break;
             case "second":
@@ -548,16 +594,6 @@ var defenceState = {
                 tutorialText4.text = "    of our neighbours";
                 tutorialText5.text = "     to move here for";
                 tutorialText6.text = "  their protection.";
-                break;
-            case "third":
-                tutorialSprite = game.add.sprite(350, 469, 'assistant');
-                tutorialSpeechBubble.x = 150;
-                tutorialText.text = "     Use the ";
-                tutorialText2.text = "     W A S D keys to ";
-                tutorialText3.text = "     move and the arrow ";
-                tutorialText4.text = "           keys to fire.";
-                tutorialText5.text = "";
-                tutorialText6.text = "";
                 break;
             case "": 
                 tutorialText.text = "";
@@ -578,10 +614,6 @@ var defenceState = {
                 this.tutorialShow();
                 break;
             case "second":
-                tutorialDefence = "third";
-                this.tutorialShow();
-                break;
-            case "third":
                 tutorialDefence = "";
                 tutorialSprite.kill();
                 tutorialSpeechBubble.kill();

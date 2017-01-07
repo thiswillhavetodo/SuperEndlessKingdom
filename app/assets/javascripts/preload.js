@@ -24,6 +24,10 @@ var preloadState = {
         game.load.audio('teleport', '/assets/teleport.ogg');
         game.load.audio('levelUpSound', '/assets/Accept.ogg');
         game.load.audio('titleTheme', '/assets/titleTheme.ogg');
+        game.load.audio('bubbles', '/assets/bubbles.ogg');
+        game.load.audio('creakylightwoodendoor1', '/assets/creakylightwoodendoor1.ogg');
+        game.load.audio('shotSFX', '/assets/shotSFX.ogg');
+        game.load.audio('swampCreatureDeath', '/assets/swampCreatureDeath.ogg');
         game.load.image('rock', '/assets/boulder.png');
         game.load.image('tree', '/assets/Tree.png');
         game.load.image('treeShadow', '/assets/treeShadow.png');
@@ -95,7 +99,7 @@ var preloadState = {
         game.load.image('forestBackground', '/assets/forestBackground.png');
         game.load.image('largeTree', '/assets/largeTree.png');
         game.load.image('scrollBox', '/assets/ui_square.png');
-        //game.load.image('ui_213x220', '/assets/ui_213x220.png');
+        game.load.image('ui_213x220', '/assets/ui_213x220.png');
         game.load.image('ui_213x150', '/assets/ui_213x150.png');
         game.load.image('ui_213x255', '/assets/ui_213x255.png');
         game.load.image('scrollStrip', '/assets/dialog_box.png');
@@ -103,7 +107,12 @@ var preloadState = {
         game.load.image('dbox_thinShort', '/assets/dbox_thinShort.png');
         game.load.image('waterShot', '/assets/waterShot.png');
         game.load.image('rubble', '/assets/rubble.png');
+        game.load.image('trainerSprite', '/assets/trainerSprite.png');
         game.load.image('introCutscene', '/assets/introCutscene.png');
+        game.load.image('tutorialBackground', '/assets/tutorialBackground.png');
+        game.load.spritesheet('tutorialBarriers32x32', '/assets/tutorialBarriers32x32.png', 32, 32);
+        game.load.spritesheet('tutorialDecorations36x32', '/assets/tutorialDecorations36x32.png', 36, 32);
+        game.load.spritesheet('tutorialObstacles32x44', '/assets/tutorialObstacles32x44.png', 32, 44);
         game.load.image('cutsceneBorder', '/assets/cutsceneBorder.png');
         game.load.spritesheet('swordZombie', '/assets/swordZombie.png', 31, 42);
         game.load.spritesheet('forestScenery', '/assets/forestScenery.png', 27, 24);
@@ -141,6 +150,7 @@ var preloadState = {
         game.load.bitmapFont('font', '/assets/font.png', '/assets/font.fnt');
     },
     create: function() {
-        game.state.start('menu');
+        game.state.start('tutorial');
+        //game.state.start('menu');
     }
 };

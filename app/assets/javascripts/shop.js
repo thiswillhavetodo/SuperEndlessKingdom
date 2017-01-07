@@ -588,7 +588,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Taxes can't be increased.";
+        shopMessageText.text = "              Taxes can't be increased.";
       }
     },
     taxMinus: function() {
@@ -599,7 +599,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Taxes can't be decreased.";
+        shopMessageText.text = "              Taxes can't be decreased.";
       }
     },
     housingPlus: function() {
@@ -609,7 +609,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     housingMinus: function() {
@@ -619,7 +619,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     commercialPlus: function() {
@@ -629,7 +629,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     commercialMinus: function() {
@@ -639,7 +639,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     industrialPlus: function() {
@@ -649,7 +649,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     industrialMinus: function() {
@@ -659,7 +659,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     educationPlus: function() {
@@ -669,7 +669,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     educationMinus: function() {
@@ -679,7 +679,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     healthPlus: function() {
@@ -689,7 +689,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     healthMinus: function() {
@@ -699,7 +699,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     justicePlus: function() {
@@ -709,7 +709,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     justiceMinus: function() {
@@ -719,7 +719,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     defencePlus: function() {
@@ -729,7 +729,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     defenceMinus: function() {
@@ -739,7 +739,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     utilitiesPlus: function() {
@@ -749,7 +749,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     utilitiesMinus: function() {
@@ -759,7 +759,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     weaponsmithPlus: function() {
@@ -769,7 +769,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     weaponsmithMinus: function() {
@@ -779,7 +779,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     armourerPlus: function() {
@@ -789,7 +789,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     armourerMinus: function() {
@@ -799,7 +799,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     enchanterPlus: function() {
@@ -809,7 +809,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     enchanterMinus: function() {
@@ -819,7 +819,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     trainerPlus: function() {
@@ -829,7 +829,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be increased.";
+        shopMessageText.text = "              funding can't be increased.";
       }
     },
     trainerMinus: function() {
@@ -839,7 +839,7 @@ var shopState = {
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "      Funding can't be decreased.";
+        shopMessageText.text = "              funding can't be decreased.";
       }
     },
     weaponsmithImprove: function() {

@@ -19,7 +19,7 @@ var weaponsmithAdTimerHolder;
 var armourerAdTimerHolder;
 var enchanterAdTimerHolder;
 var trainerAdTimerHolder;
-
+/*global game*/
 var menuState = {
     create: function() {
         game.add.sprite(0, 0, 'menuBackground');

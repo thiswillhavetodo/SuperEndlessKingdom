@@ -1,3 +1,5 @@
+<% if logged_in? %>
+<% else %>
 <div id="login_form">
   		<div id="login_heading">		
 			<h1>Enter Login Details</h1>
@@ -20,3 +22,4 @@
 
 		<!--<%= link_to 'Not Registered? Sign Up Now', new_user_path %>-->
 </div>
+<% end %>

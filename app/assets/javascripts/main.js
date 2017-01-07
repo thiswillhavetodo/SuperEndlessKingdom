@@ -82,8 +82,8 @@ var xp = 0;
 var nextLevelXp = 10;
 var health = 3;
 var maxHealth = 3;
-var mana = 50;
-var maxMana = 50;
+var mana = 60;
+var maxMana = 60;
 var starTotal = 6;
 var baddieTotal = 7;
 var baddieCount = 7;
@@ -93,7 +93,7 @@ var flameCount = 0;
 var evilwizardCount = 0;
 var zombieBirdCount = 0;
 var swampCreatureCount = 0;
-var shotPower = 1.3;
+var shotPower = 1.25;
 var knockback = 1;
 var runSpeed = 190;
 var runSpeedEndLevelAdjust = 0;
@@ -927,19 +927,23 @@ var playState = {
             swordZombie.collide = true;
             if (swordZombie.x>=platforms.x && swordZombie.y>=platforms.y) {
                 swordZombie.body.velocity.y -= 100;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function () { swordZombie.body.velocity.y += 100; swordZombie.collide = true; });
+                swordZombie.body.velocity.x += 20;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y += 100; swordZombie.body.velocity.x -= 20; swordZombie.collide = true; });
             }
             else if (swordZombie.x>=platforms.x && swordZombie.y<platforms.y) {
                 swordZombie.body.velocity.x -= 100;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function () { swordZombie.body.velocity.x += 100; swordZombie.collide = true; });
+                swordZombie.body.velocity.y += 20;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x += 100; swordZombie.body.velocity.y -= 20; swordZombie.collide = true; });
             }
             else if (swordZombie.x<platforms.x && swordZombie.y>=platforms.y) {
-                swordZombie.body.velocity.x += 100;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function () { swordZombie.body.velocity.x -= 100; swordZombie.collide = true; });
+                swordZombie.body.velocity.y += 100;
+                swordZombie.body.velocity.x -= 20;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y -= 100; swordZombie.body.velocity.x += 20; swordZombie.collide = true; });
             }
             else if (swordZombie.x<platforms.x && swordZombie.y<platforms.y) {
-                swordZombie.body.velocity.y += 100;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function () { swordZombie.body.velocity.y -= 100; swordZombie.collide = true; });
+                swordZombie.body.velocity.x += 100;
+                swordZombie.body.velocity.y -= 20;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x -= 100; swordZombie.body.velocity.y += 20; swordZombie.collide = true; });
             }
         }
         else {
@@ -1313,10 +1317,13 @@ var playState = {
                 game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.animations.play('beam');
+                var beamSFX = game.add.audio('shotSFX');
+                beamSFX.play();
                 evilwizard.shotTimer = game.time.now + 8;
                 game.time.events.add(Phaser.Timer.SECOND * 5, function() { 
                                                                 iceBeams.forEach(function(iceBeam) { 
                                                                     iceBeam.destroy(); 
+                                                                    beamSFX.stop();
                                                                 } 
                                                               );});
             }
@@ -1400,8 +1407,8 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x+25, player.y+15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                //var flameShot = game.add.audio('flameShot');
-                //flameShot.play();
+                var waterShotSFX = game.add.audio('bubble');
+                waterShotSFX.play();
                 swampCreature.shotTimer1 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer2 && swampCreature.isAlive) {
@@ -1411,8 +1418,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x+15, player.y+25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                //var flameShot = game.add.audio('flameShot');
-                //flameShot.play();
+                waterShotSFX.play();
                 swampCreature.shotTimer2 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer3 && swampCreature.isAlive) {
@@ -1422,8 +1428,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x+5, player.y-15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                //var flameShot = game.add.audio('flameShot');
-                //flameShot.play();
+                waterShotSFX.play();
                 swampCreature.shotTimer3 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer4 && swampCreature.isAlive) {
@@ -1433,8 +1438,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x-15, player.y-25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                //var flameShot = game.add.audio('flameShot');
-                //flameShot.play();
+                waterShotSFX.play();
                 swampCreature.shotTimer4 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer5 && swampCreature.isAlive) {
@@ -1444,8 +1448,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x-25, player.y+15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                //var flameShot = game.add.audio('flameShot');
-                //flameShot.play();
+                waterShotSFX.play();
                 swampCreature.shotTimer5 = game.time.now + 10000;
             }
         });
@@ -1629,21 +1632,33 @@ var playState = {
             coinText.kill();
             if (chance<=1.06) {
                var wand = game.add.sprite(coin.x, coin.y, 'wand');
+               var wandText = game.add.bitmapText(wand.x+6, wand.y+12, 'font', '', 12);
+               wandText.text = "Weaponsmith +";
+               wandText.tint = 000000;
                weaponsmithDropReward += weaponsmithDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
             }
             else if (chance<=1.12) {
                var armour = game.add.sprite(coin.x, coin.y, 'armour');
+               var armourText = game.add.bitmapText(armour.x+6, armour.y+12, 'font', '', 12);
+               armourText.text = "Armourer +";
+               armourText.tint = 000000;
                armourerDropReward += armourerDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
             }
             else if (chance<=1.18) {
                var ring = game.add.sprite(coin.x, coin.y, 'ring');
+               var ringText = game.add.bitmapText(ring.x+6, ring.y+12, 'font', '', 12);
+               ringText.text = "Enchanter +";
+               ringText.tint = 000000;
                enchanterDropReward += enchanterDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
             }
             else if (chance<=1.24) {
                var buff = game.add.sprite(coin.x, coin.y, 'buff');
+               var buffText = game.add.bitmapText(buff.x+6, buff.y+12, 'font', '', 12);
+               buffText.text = "Trainer +";
+               buffText.tint = 000000;
                trainerDropReward += trainerDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
             }
@@ -2257,7 +2272,8 @@ var playState = {
             var death = game.add.sprite(swampCreature.x, swampCreature.y, 'deathSheet');
             death.frame = 13;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
-            //this.maleDeathSFX();
+            var swampCreatureDeathSFX = game.add.audio('swampCreatureDeath');
+            swampCreatureDeathSFX.play();
             swampCreature.isAlive = false;
             xp += 14;
             xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
@@ -2347,6 +2363,8 @@ var playState = {
     },
     doorOpen: function() {
         door.animations.play('openDoor');
+        var doorOpenSFX = game.add.audio('creakylightwoodendoor1');
+        doorOpenSFX.play();
         manaRegenEndLevelAdjust = 0;
         runSpeedEndLevelAdjust = 0;
         player.kill();

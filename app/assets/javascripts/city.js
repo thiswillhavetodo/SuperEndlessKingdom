@@ -110,6 +110,17 @@ var manaRefillUnlockShown = false;
 var questHappinessModifier = 0;
 var questsUndertaken = 0;
 
+var marriageOptionsPromptButton;
+var marriageOptionsPromptText;
+var marriageOptionsBackground;
+var marriageOptionsText1;
+var marriageOptionsText2;
+var marriageOptionsText3;
+var marriageOptionsDisplayButton;
+var marriageOptionsDisplayText;
+var marriageOptionsHideButton;
+var marriageOptionsHideText;
+
 var cityState = {
     create: function() {
         game.add.sprite(0, 0, 'stonepaving');
@@ -215,46 +226,44 @@ var cityState = {
         this.warriorWomanAdvice();
     },
     update: function() {
-        if (marriageOptions==false) {
-            this.timeCheck();
-            if (coins<=0 && year>debtWarnYear+1) {
-                assistant = "debt";
-            }
-            this.assistantShow();
-            townWoman1.body.velocity.x = -40;
-            townWoman1.animations.play('left');
-            if (townWoman1.x < -50) {
-                townWoman1.x = 900;
-            }
-            townWoman2.body.velocity.y = -50;
-            townWoman2.animations.play('up');
-            if (townWoman2.y < -50) {
-                townWoman2.y = 700;
-            }
-            townMan1.body.velocity.x = 50;
-            townMan1.animations.play('right');
-            if (townMan1.x > 850) {
-                townMan1.x = -50;
-            }
-            townMan2.body.velocity.y = 50;
-            townMan2.animations.play('down');
-            if (townMan2.y > 700) {
-                townMan2.y = -50;
-            }
-            warriorWoman1.body.velocity.x = 55;
-            warriorWoman1.animations.play('right');
-            if (warriorWoman1.x > 850) {
-                warriorWoman1.x = -50;
-            }
-            warriorMan1.body.velocity.x = 55;
-            warriorMan1.animations.play('right');
-            if (warriorMan1.x > 850) {
-                warriorMan1.x = -50;
-            }
-            if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>95 && marriageOptions==false) {
-                this.marriageOptions();
-                marriageOptions = true;
-            }
+        this.timeCheck();
+        if (coins<=0 && year>debtWarnYear+1) {
+            assistant = "debt";
+        }
+        this.assistantShow();
+        townWoman1.body.velocity.x = -40;
+        townWoman1.animations.play('left');
+        if (townWoman1.x < -50) {
+            townWoman1.x = 900;
+        }
+        townWoman2.body.velocity.y = -50;
+        townWoman2.animations.play('up');
+        if (townWoman2.y < -50) {
+            townWoman2.y = 700;
+        }
+        townMan1.body.velocity.x = 50;
+        townMan1.animations.play('right');
+        if (townMan1.x > 850) {
+            townMan1.x = -50;
+        }
+        townMan2.body.velocity.y = 50;
+        townMan2.animations.play('down');
+        if (townMan2.y > 700) {
+            townMan2.y = -50;
+        }
+        warriorWoman1.body.velocity.x = 55;
+        warriorWoman1.animations.play('right');
+        if (warriorWoman1.x > 850) {
+            warriorWoman1.x = -50;
+        }
+        warriorMan1.body.velocity.x = 55;
+        warriorMan1.animations.play('right');
+        if (warriorMan1.x > 850) {
+            warriorMan1.x = -50;
+        }
+        if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>95 && marriageOptions==false) {
+            this.marriageOptionsPrompter();
+            marriageOptions = true;
         }
     },
     timeCheck: function() {
@@ -607,6 +616,16 @@ var cityState = {
                 assistantText5.text = "  must undertake a quest";
                 assistantText6.text = " to raise funds.";
                 break;
+            case "marriage":
+                assistantSprite = game.add.sprite(350, 469, 'assistant');
+                assistantSpeechBubble.x = 150;
+                assistantText.text = " Your Majesty!";
+                assistantText2.text = " Your people are happy.";
+                assistantText3.text = " Your borders are secure.";
+                assistantText4.text = " Your neighbours are lining";
+                assistantText5.text = " up to offer alliances on";
+                assistantText6.text = " generous terms.";
+                break;
         }
         
     },
@@ -642,6 +661,18 @@ var cityState = {
                 break;
             case "debt":
                 debtWarnYear = year+3;
+                assistant = "";
+                assistantSprite.kill();
+                assistantSpeechBubble.kill();
+                assistantText.text = "";
+                assistantText2.text = "";
+                assistantText3.text = "";
+                assistantText4.text = "";
+                assistantText5.text = "";
+                assistantText6.text = "";
+                this.create();
+                break;
+            case "marriage":
                 assistant = "";
                 assistantSprite.kill();
                 assistantSpeechBubble.kill();
@@ -834,7 +865,33 @@ var cityState = {
         marriageOptions = false;
         this.create();
     },
+    marriageOptionsPrompter: function() {
+        assistant = "marriage";
+        marriageOptionsPromptButton = game.add.button(10, 50, 'blankButton', this.marriageOptionsChoose, this);
+        marriageOptionsPromptText = game.add.bitmapText(20, 75, 'font', 'View Alliance Offers', 16);
+    },
+    marriageOptionsChoose: function() {
+        marriageOptionsBackground = game.add.sprite(96, 150, 'scrollStrip');
+        marriageOptionsText1 = game.add.bitmapText(205, 160, 'font', 'Choose an Alliance?', 24);
+        marriageOptionsText2 = game.add.bitmapText(110, 190, 'font', 'Your city, gold and stage progress will be reset,', 18);
+        marriageOptionsText3 = game.add.bitmapText(110, 190, 'font', '    but you will be rewarded very generously.', 18);
+        marriageOptionsDisplayButton = game.add.button(190, 250, 'blankButton', this.marriageOptions, this);
+        marriageOptionsDisplayText = game.add.bitmapText(220, 275, 'font', 'Yes', 16);
+        marriageOptionsHideButton = game.add.button(410, 250, 'blankButton', this.marriageOptionsHide, this);
+        marriageOptionsHideText = game.add.bitmapText(440, 275, 'font', 'No, not yet', 16);
+    },
+    marriageOptionsHide: function() {
+        marriageOptionsBackground.kill();
+        marriageOptionsText1.text = '';
+        marriageOptionsText2.text = '';
+        marriageOptionsText3.text = '';
+        marriageOptionsDisplayButton.kill();
+        marriageOptionsDisplayText.text = '';
+        marriageOptionsHideButton.kill();
+        marriageOptionsHideText.text = '';
+    },
     marriageOptions: function() {
+        this.marriageOptionsHide();
         var names = ["Elsbeth", "Anastasia", "Matthe", "Susan", "Bob", "Esmerelda", "Leia", "Victoria", "Alexandra", "Emmeline", "Christabel", "Buttercup", "Cassandra", "Correen"];
         var places = ["Dunnovia", "Somethingia", "Madeupistan", "Nextdoorbutone", "Farfaraway", "The Silly Isles", "Belgium"];
         
