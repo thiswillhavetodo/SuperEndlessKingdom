@@ -566,7 +566,12 @@ var cityState = {
         attackerCount = attackStrength;
         defenceStrength = Math.round(defence/4);
         defenderCount = Math.round(defence/4);
-        game.state.start('defence');
+        if (tutorialDefence=="first") {
+            game.state.start('tutorial');
+        }
+        else {
+            game.state.start('defence');
+        }
     },
     collectSFX: function() {
         var itemCollect = game.add.audio('collect');
