@@ -2,12 +2,14 @@
 var preloadState = {
     preload: function() {
     
-        game.preloadBar = game.add.sprite(game.world.centerX, game.world.centerY + 128, 'preloadBar');
-        game.preloadBar.anchor.setTo(0.5);
+        game.preloadBar = game.add.sprite(game.world.centerX-64, game.world.centerY + 128, 'preloadBar');
+        game.preloadBar.anchor.setTo(0);
      
         game.load.setPreloadSprite(game.preloadBar);
         game.load.audio('pew', '/assets/laserfire01.ogg');
         game.load.audio('collect', '/assets/itemCollect.ogg');
+        game.load.audio('reduce', '/assets/reduceFunds.ogg');
+        game.load.audio('slotMachine', '/assets/slotMachine.ogg');
         game.load.audio('shortExplode', '/assets/shorter-explosion.ogg');
         game.load.audio('flameShot', '/assets/flameShot.ogg');
         game.load.audio('sizzle', '/assets/sizzle.ogg');
@@ -28,6 +30,13 @@ var preloadState = {
         game.load.audio('creakylightwoodendoor1', '/assets/creakylightwoodendoor1.ogg');
         game.load.audio('shotSFX', '/assets/shotSFX.ogg');
         game.load.audio('swampCreatureDeath', '/assets/swampCreatureDeath.ogg');
+        game.load.audio('defence', '/assets/Tower-Defense.ogg');
+        game.load.audio('forestMusic', '/assets/Fantasy-Forest-Battle.ogg');
+        game.load.audio('ruinsMusic', '/assets/Ominous_Goings-On.ogg');
+        game.load.audio('wastelandMusic', '/assets/The-Castle-Beyond-the-Forest.ogg');
+        game.load.audio('introCreditsMusic', '/assets/Fantasy_Game_Background.ogg');
+        game.load.audio('tutorialMusic', '/assets/Left-Behind.ogg');
+        game.load.audio('cityMusic', '/assets/Our_Mountain_v003.ogg');
         game.load.image('rock', '/assets/boulder.png');
         game.load.image('tree', '/assets/Tree.png');
         game.load.image('treeShadow', '/assets/treeShadow.png');
@@ -56,6 +65,7 @@ var preloadState = {
         game.load.image('enchanter', '/assets/enchanter.png');
         game.load.image('trainer', '/assets/trainer.png');
         game.load.image('castle', '/assets/castle.png');
+        game.load.image('deptHighlight', '/assets/deptHighlight.png');
         game.load.image('shopBackground', '/assets/shopBackground.png');
         game.load.spritesheet('animateddoor', '/assets/animateddoor.png', 63.5, 72);
         game.load.spritesheet('zombieBird', '/assets/zombieBird.png', 32, 25);
@@ -78,6 +88,7 @@ var preloadState = {
         game.load.image('questButton', '/assets/QUEST-NOW.png');
         game.load.image('defendButton', '/assets/DEFEND-THE-CITY.png');
         game.load.image('border', '/assets/border.png');
+        game.load.image('smileyFace', '/assets/smileyFace.png');
         game.load.image('wand', '/assets/W_Mace007.png');
         game.load.image('armour', '/assets/A_Armour02.png');
         game.load.image('ring', '/assets/Ac_Ring04.png');
@@ -109,11 +120,16 @@ var preloadState = {
         game.load.image('rubble', '/assets/rubble.png');
         game.load.image('trainerSprite', '/assets/trainerSprite.png');
         game.load.image('introCutscene', '/assets/introCutscene.png');
+        game.load.image('marriageCutscene', '/assets/marriageCutscene.png');
+        game.load.image('cutsceneBorder', '/assets/cutsceneBorder.png');
         game.load.image('tutorialBackground', '/assets/tutorialBackground.png');
+        game.load.image('hudBarBlue', '/assets/hudBarBlue.png');
+        game.load.image('hudBarGreen', '/assets/hudBarGreen.png');
+        game.load.image('hudBarRed', '/assets/hudBarRed.png');
+        game.load.image('hudDisplay', '/assets/hudDisplay.png');
         game.load.spritesheet('tutorialBarriers32x32', '/assets/tutorialBarriers32x32.png', 32, 32);
         game.load.spritesheet('tutorialDecorations36x32', '/assets/tutorialDecorations36x32.png', 36, 32);
         game.load.spritesheet('tutorialObstacles32x44', '/assets/tutorialObstacles32x44.png', 32, 44);
-        game.load.image('cutsceneBorder', '/assets/cutsceneBorder.png');
         game.load.spritesheet('swordZombie', '/assets/swordZombie.png', 31, 42);
         game.load.spritesheet('forestScenery', '/assets/forestScenery.png', 27, 24);
         game.load.spritesheet('wandAnimation', '/assets/wandAnimation.png', 68, 68);
@@ -126,6 +142,7 @@ var preloadState = {
         game.load.spritesheet('skillAnimation', '/assets/skillAnimation.png', 68, 68);
         game.load.spritesheet('enduranceAnimation', '/assets/enduranceAnimation.png', 68, 68);
         game.load.spritesheet('dude', '/assets/king.png', 31.3, 36);
+        game.load.spritesheet('playerTeleport', '/assets/playerTeleport.png', 38, 38);
         game.load.spritesheet('attacker', '/assets/attacker.png', 32, 36);
         game.load.spritesheet('baddie', '/assets/zombie.png', 24, 42);
         game.load.spritesheet('zombieRising', '/assets/zombieRising.png', 24, 41);
@@ -135,6 +152,7 @@ var preloadState = {
         game.load.spritesheet('skeleton', '/assets/skeleton.png', 31, 48);  
         game.load.spritesheet('townWoman', '/assets/townfolk1_f.png', 32, 36); 
         game.load.spritesheet('townMan', '/assets/townfolk1_m.png', 32, 36); 
+        game.load.spritesheet('children', '/assets/children.png', 33, 36); 
         game.load.spritesheet('warriorWoman', '/assets/warrior_f.png', 32, 36); 
         game.load.spritesheet('warriorMan', '/assets/warrior_m.png', 31.5, 36); 
         game.load.spritesheet('sword', '/assets/sword.png', 24, 24); 
@@ -148,9 +166,9 @@ var preloadState = {
         game.load.spritesheet('beamIcon', '/assets/beamIcon.png', 68, 34); 
         game.load.spritesheet('evilRoot', '/assets/evilRoot.png', 22, 30); 
         game.load.bitmapFont('font', '/assets/font.png', '/assets/font.fnt');
+        game.load.bitmapFont('fontWhite', '/assets/fontWhite.png', '/assets/fontWhite.fnt');
     },
     create: function() {
-        game.state.start('tutorial');
-        //game.state.start('menu');
+        game.state.start('menu');
     }
 };

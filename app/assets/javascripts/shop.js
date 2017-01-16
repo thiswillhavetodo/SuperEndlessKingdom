@@ -250,16 +250,59 @@ var bonusType;
 var beamUnlockShown = false;
 var manaRefillUnlockShown = false;
 
+var weaponsmithSkillLevelText;
+var wandPowerText;
+var wandShotSpeedText;
+var wandAttackSpeedText;
+var shieldKnockbackText;
+var shieldHealthText;
+var shieldInvulnerableText;
+var armourerSkillLevelText;
+var armourHealthBonusText;
+var armourManaRegenBonus;
+var armourInvulnerableText;
+var crownHealthText;
+var crownManaRegenText;
+var crownManaText;
+var bootsRunSpeedText;
+var bootManaRegenText;
+var bootsInvulnerableText;
+var enchanterSkillLevelText;
+var ringPowerText;
+var ringManaText;
+var ringKnockbackText;
+var amuletRunSpeedText;
+var amuletShotSpeedText;
+var amuletAttackSpeedText;
+var trainerSkillLevelText;
+var skillPowerText;
+var skillManaText;
+var skillKnockbackText;
+var staminaRunSpeedText;
+var staminaShotSpeedText;
+var staminaAttackSpeedText;
+
+var increaseSFX;
+var reduceSFX;
+var slotMachineSFX;
+
 var shopState = {
     create: function() {
         advert = false;
         console.log("advertCreate = " + advert);
         game.world.removeAll();
+        increaseSFX = game.add.audio('collect');
+        reduceSFX = game.add.audio('reduce');
+        slotMachineSFX = game.add.audio('slotMachine');
         game.add.sprite(0, 0, 'shopBackground');
         close = game.add.button(607, 565,'blankButton', this.shopClose, this);
         closeText = game.add.bitmapText(657, 595, 'font', 'Return to Town', 18);
-        shopPopText = game.add.bitmapText(70, 10, 'font', 'Population: ' + population, 26);
-        shopCoinsText = game.add.bitmapText(550, 10, 'font', 'Coins: ' + coins, 26);
+        popDisplay = game.add.sprite(130, 6, 'townWoman');
+        popDisplay.frame = 7;
+        shopPopText = game.add.bitmapText(170, 10, 'font', population, 26);
+        coinDisplay = game.add.sprite(510, 8, 'coin');
+        coinDisplay.frame = 0;
+        shopCoinsText = game.add.bitmapText(550, 10, 'font', coins, 26);
         shopMessageBackground = game.add.sprite(-1000, 357, 'dialog_box_thin');
         shopMessageText = game.add.bitmapText(200, 375, 'font',  '', 18);
         game.add.button(0, 250, 'leftArrow', this.shopLeft, this);
@@ -278,17 +321,17 @@ var shopState = {
         shopText5.tint = 000000;
         shopText6.tint = 000000;
         efffectivenessScoreBackground = game.add.sprite(500, 60, 'dbox_thinShort');
-        efffectivenessScoreText = game.add.bitmapText(530, 77, 'font', '', 14);
+        efffectivenessScoreText = game.add.bitmapText(515, 75, 'font', '', 17);
         this.dropRewardDiminishingReturns();
         switch(shop) {
             case "castle":
                 taxHolder = game.add.sprite(305, 250, 'blankButton');
-                taxLevelText = game.add.bitmapText(365, 280, 'font', "Tax Level: " + tax, 20);
+                taxLevelText = game.add.bitmapText(360, 278, 'font', "Tax Level: " + tax, 20);
                 taxPlusButton = game.add.button(530, 250, 'plusButton', this.taxPlus, this);
                 taxMinusButton = game.add.button(225, 250, 'minusButton', this.taxMinus, this);
                 priorityService = false;
-                efffectivenessScoreText.text = "Approval Rating: " + Math.round((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12);
-                if (happiness>(tax*1.45)+20) {
+                efffectivenessScoreText.text = "     Approval Rating: " + Math.round((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12);
+                if (happiness>(tax*1.65)+10) {
                     shopText.text = " Your Majesty!";
                     shopText2.text = "  I believe the people";
                     shopText3.text = "      would be willing to";
@@ -300,17 +343,17 @@ var shopState = {
                     shopText.text = " Your Majesty!";
                     shopText2.text = "Your people are troubled.";
                     shopText3.text = "    I'm sure they would";
-                    shopText4.text = "welcome a cut in taxes if";
+                    shopText4.text = " welcome a cut in taxes if";
                     shopText5.text = "    you feel the treasury";
-                    shopText6.text = "   can afford it.";
+                    shopText6.text = "    can afford it.";
                 }
                 else {
                     shopText.text = " Your Majesty!";
                     shopText2.text = "  The general feeling";
                     shopText3.text = "   among your people is";
-                    shopText4.text = "     that the level of ";
-                    shopText5.text = "    taxation is about "; 
-                    shopText6.text = "    right.";
+                    shopText4.text = "       that the level of ";
+                    shopText5.text = "       taxation is just "; 
+                    shopText6.text = "    about right.";
                 }
                 game.add.sprite(150, 340, 'scrollBox');
                 game.add.bitmapText(180, 350, 'font', "Last Year", 18);
@@ -340,7 +383,7 @@ var shopState = {
                 break;
             case "housing":
                 housingHolder = game.add.sprite(305, 250, 'blankButton');
-                housingLevelText = game.add.bitmapText(325, 280, 'font', "New Homes Funding: " + housingFunding, 16);
+                housingLevelText = game.add.bitmapText(325, 280, 'font', "  Homestead Fund: " + housingFunding, 16);
                 housingPlusButton = game.add.button(530, 250, 'plusButton', this.housingPlus, this);
                 housingMinusButton = game.add.button(225, 250, 'minusButton', this.housingMinus, this);
                 if (housingFunding<100) {
@@ -349,12 +392,18 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (housingFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(housing);
                 break;
             case "commercial":
                 commercialHolder = game.add.sprite(305, 250, 'blankButton');
-                commercialLevelText = game.add.bitmapText(325, 280, 'font', "Commercial Funding: " + commercialFunding, 16);
+                commercialLevelText = game.add.bitmapText(325, 280, 'font', "  City Market Fund: " + commercialFunding, 16);
                 commercialPlusButton = game.add.button(530, 250, 'plusButton', this.commercialPlus, this);
                 commercialMinusButton = game.add.button(225, 250, 'minusButton', this.commercialMinus, this);
                 if (commercialFunding<100) {
@@ -368,7 +417,7 @@ var shopState = {
                 break;
             case "industrial":
                 industrialHolder = game.add.sprite(305, 250, 'blankButton');
-                industrialLevelText = game.add.bitmapText(325, 280, 'font', "New Farmland Funding: " + industrialFunding, 16);
+                industrialLevelText = game.add.bitmapText(325, 280, 'font', "   Farmland Fund: " + industrialFunding, 16);
                 industrialPlusButton = game.add.button(530, 250, 'plusButton', this.industrialPlus, this);
                 industrialMinusButton = game.add.button(225, 250, 'minusButton', this.industrialMinus, this);
                 if (industrialFunding<100) {
@@ -382,7 +431,7 @@ var shopState = {
                 break;
             case "education":
                 educationHolder = game.add.sprite(305, 250, 'blankButton');
-                educationLevelText = game.add.bitmapText(325, 280, 'font', "School Funding: " + educationFunding, 16);
+                educationLevelText = game.add.bitmapText(325, 280, 'font', "    School Fund: " + educationFunding, 16);
                 educationPlusButton = game.add.button(530, 250, 'plusButton', this.educationPlus, this);
                 educationMinusButton = game.add.button(225, 250, 'minusButton', this.educationMinus, this);
                 if (educationFunding<100) {
@@ -396,7 +445,7 @@ var shopState = {
                 break;
             case "health":
                 healthHolder = game.add.sprite(305, 250, 'blankButton');
-                healthLevelText = game.add.bitmapText(325, 280, 'font', "Health Funding: " + healthFunding, 16);
+                healthLevelText = game.add.bitmapText(325, 280, 'font', "   Hospital Fund: " + healthFunding, 16);
                 healthPlusButton = game.add.button(530, 250, 'plusButton', this.healthPlus, this);
                 healthMinusButton = game.add.button(225, 250, 'minusButton', this.healthMinus, this);
                 if (healthFunding<100) {
@@ -410,7 +459,7 @@ var shopState = {
                 break;
             case "justice":
                 justiceHolder = game.add.sprite(305, 250, 'blankButton');
-                justiceLevelText = game.add.bitmapText(325, 280, 'font', "Police Funding: " + justiceFunding, 16);
+                justiceLevelText = game.add.bitmapText(325, 280, 'font', "    Police Fund: " + justiceFunding, 16);
                 justicePlusButton = game.add.button(530, 250, 'plusButton', this.justicePlus, this);
                 justiceMinusButton = game.add.button(225, 250, 'minusButton', this.justiceMinus, this);
                 if (justiceFunding<100) {
@@ -419,12 +468,18 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (justiceFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(justice);
                 break; 
             case "defence":
                 defenceHolder = game.add.sprite(305, 250, 'blankButton');
-                defenceLevelText = game.add.bitmapText(325, 280, 'font', "Defence Funding: " + defenceFunding, 16);
+                defenceLevelText = game.add.bitmapText(325, 280, 'font', "  Defence Fund: " + defenceFunding, 16);
                 defencePlusButton = game.add.button(530, 250, 'plusButton', this.defencePlus, this);
                 defenceMinusButton = game.add.button(225, 250, 'minusButton', this.defenceMinus, this);
                 if (defenceFunding<100) {
@@ -438,7 +493,7 @@ var shopState = {
                 break; 
             case "utilities":
                 utilitiesHolder = game.add.sprite(305, 250, 'blankButton');
-                utilitiesLevelText = game.add.bitmapText(325, 280, 'font', "Utilities Funding: " + utilitiesFunding, 16);
+                utilitiesLevelText = game.add.bitmapText(325, 280, 'font', "   Sewers Fund: " + utilitiesFunding, 16);
                 utilitiesPlusButton = game.add.button(530, 250, 'plusButton', this.utilitiesPlus, this);
                 utilitiesMinusButton = game.add.button(225, 250, 'minusButton', this.utilitiesMinus, this);
                 if (utilitiesFunding<100) {
@@ -447,22 +502,28 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (utilitiesFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(utilities);
                 break; 
             case "weaponsmith":
                 weaponsmithHolder = game.add.sprite(129, 175, 'blankButton');
-                weaponsmithLevelText = game.add.bitmapText(149, 205, 'font', "Weaponsmith Funding: " + weaponsmithFunding, 16);
+                weaponsmithLevelText = game.add.bitmapText(149, 205, 'font', " Weaponsmith Fund: " + weaponsmithFunding, 16);
                 weaponsmithPlusButton = game.add.button(354, 175, 'plusButton', this.weaponsmithPlus, this);
                 weaponsmithMinusButton = game.add.button(49, 175, 'minusButton', this.weaponsmithMinus, this);
                 game.add.sprite(310, 410, 'ui_213x150');
-                game.add.bitmapText(317, 425, 'font', "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10), 14);
-                game.add.bitmapText(317, 450, 'font', "Wand Power Bonus: " + wandShotPower, 14);
-                game.add.bitmapText(317, 465, 'font', "Wand Shot Speed Bonus: " + wandShotSpeed, 14);
-                game.add.bitmapText(317, 480, 'font', "Wand Attack Speed Bonus: " + wandBulletSpacing, 14);
-                game.add.bitmapText(317, 500, 'font', "Shield Knockback Bonus: " + shieldKnockback, 14);
-                game.add.bitmapText(317, 515, 'font', "Shield Health Bonus: " + shieldMaxHealth, 14);
-                game.add.bitmapText(317, 530, 'font', "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing, 14);
+                weaponsmithSkillLevelText = game.add.bitmapText(317, 425, 'font', "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10), 14);
+                wandPowerText = game.add.bitmapText(317, 450, 'font', "Wand Power Bonus: " + wandShotPower, 14);
+                wandShotSpeedText = game.add.bitmapText(317, 465, 'font', "Wand Shot Speed Bonus: " + wandShotSpeed, 14);
+                wandAttackSpeedText = game.add.bitmapText(317, 480, 'font', "Wand Attack Speed Bonus: " + wandBulletSpacing, 14);
+                shieldKnockbackText = game.add.bitmapText(317, 500, 'font', "Shield Knockback Bonus: " + shieldKnockback, 14);
+                shieldHealthText = game.add.bitmapText(317, 515, 'font', "Shield Health Bonus: " + shieldMaxHealth, 14);
+                shieldInvulnerableText = game.add.bitmapText(317, 530, 'font', "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 weaponsmithUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + weaponsmithUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.weaponsmithUpgrade, this);
@@ -472,9 +533,15 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (weaponsmithFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 this.weaponsmithImprove();
-                efffectivenessScoreText.text = "Artisan Effectiveness: " + Math.round(weaponsmith);
+                efffectivenessScoreText.text = "  Artisan Effectiveness: " + Math.round(weaponsmith);
                 if (population>111 && weaponsmithTimer>game.time.now && weaponsmithAdTimer<game.time.now) {
                     advert = true;
                     console.log("advert = " + advert);
@@ -484,20 +551,20 @@ var shopState = {
                 break; 
             case "armourer":
                 armourerHolder = game.add.sprite(129, 175, 'blankButton');
-                armourerLevelText = game.add.bitmapText(145, 205, 'font', "Armourer Funding: " + armourerFunding, 16);
+                armourerLevelText = game.add.bitmapText(145, 205, 'font', "   Armourer Fund: " + armourerFunding, 16);
                 armourerPlusButton = game.add.button(354, 175, 'plusButton', this.armourerPlus, this);
                 armourerMinusButton = game.add.button(49, 175, 'minusButton', this.armourerMinus, this);
                 game.add.sprite(310, 410, 'ui_213x220');
-                game.add.bitmapText(317, 425, 'font', "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10), 14);
-                game.add.bitmapText(317, 450, 'font', "Armour Health Bonus: " + armourMaxHealth, 14);
-                game.add.bitmapText(317, 465, 'font', "Armour Mana Regen Bonus: " + armourManaRegenInterval, 14);
-                game.add.bitmapText(317, 480, 'font', "Armour Invulnerable Bonus: " + armourInvulnerableSpacing, 14);
-                game.add.bitmapText(317, 500, 'font', "Crown Health Bonus: " + hatMaxHealth, 14);
-                game.add.bitmapText(317, 515, 'font', "Crown Mana Regen Bonus: " + hatManaRegenInterval, 14);
-                game.add.bitmapText(317, 530, 'font', "Crown Mana Bonus: " + hatMaxMana, 14);
-                game.add.bitmapText(317, 550, 'font', "Boots Run Speed Bonus: " + bootRunSpeed, 14);
-                game.add.bitmapText(317, 565, 'font', "Boots Mana Regen Bonus: " + bootManaRegenInterval, 14);
-                game.add.bitmapText(317, 580, 'font', "Boots Invulnerable Bonus: " + bootInvulnerableSpacing, 14);
+                armourerSkillLevelText = game.add.bitmapText(317, 425, 'font', "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10), 14);
+                armourHealthBonusText = game.add.bitmapText(317, 450, 'font', "Armour Health Bonus: " + armourMaxHealth, 14);
+                armourManaRegenBonus = game.add.bitmapText(317, 465, 'font', "Armour Mana Regen Bonus: " + armourManaRegenInterval, 14);
+                armourInvulnerableText = game.add.bitmapText(317, 480, 'font', "Armour Invulnerable Bonus: " + armourInvulnerableSpacing, 14);
+                crownHealthText = game.add.bitmapText(317, 500, 'font', "Crown Health Bonus: " + hatMaxHealth, 14);
+                crownManaRegenText = game.add.bitmapText(317, 515, 'font', "Crown Mana Regen Bonus: " + hatManaRegenInterval, 14);
+                crownManaText = game.add.bitmapText(317, 530, 'font', "Crown Mana Bonus: " + hatMaxMana, 14);
+                bootsRunSpeedText = game.add.bitmapText(317, 550, 'font', "Boots Run Speed Bonus: " + bootRunSpeed, 14);
+                bootManaRegenText = game.add.bitmapText(317, 565, 'font', "Boots Mana Regen Bonus: " + bootManaRegenInterval, 14);
+                bootsInvulnerableText = game.add.bitmapText(317, 580, 'font', "Boots Invulnerable Bonus: " + bootInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 armourerUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + armourerUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.armourerUpgrade, this);
@@ -507,26 +574,32 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (armourerFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 this.armourerImprove();
-                efffectivenessScoreText.text = "Artisan Effectiveness: " + Math.round(armourer);
+                efffectivenessScoreText.text = "  Artisan Effectiveness: " + Math.round(armourer);
                 if (population>127 && armourerTimer>game.time.now && armourerAdTimer<game.time.now) {
                     advert = true;
                 }
                 break; 
             case "enchanter":
                 enchanterHolder = game.add.sprite(129, 175, 'blankButton');
-                enchanterLevelText = game.add.bitmapText(149, 205, 'font', "Enchanter Funding: " + enchanterFunding, 16);
+                enchanterLevelText = game.add.bitmapText(149, 205, 'font', "   Enchanter Fund: " + enchanterFunding, 16);
                 enchanterPlusButton = game.add.button(354, 175, 'plusButton', this.enchanterPlus, this);
                 enchanterMinusButton = game.add.button(49, 175, 'minusButton', this.enchanterMinus, this);
                 game.add.sprite(310, 410, 'ui_213x150');
-                game.add.bitmapText(317, 425, 'font', "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10), 14);
-                game.add.bitmapText(317, 450, 'font', "Ring Power Bonus: " + ringShotPower, 14);
-                game.add.bitmapText(317, 465, 'font', "Ring Mana Bonus: " + ringMaxMana, 14);
-                game.add.bitmapText(317, 480, 'font', "Ring Knockback Bonus: " + ringKnockback, 14);
-                game.add.bitmapText(317, 500, 'font', "Amulet Run Speed Bonus: " + amuletRunSpeed, 14);
-                game.add.bitmapText(317, 515, 'font', "Amulet Shot Speed Bonus: " + amuletShotSpeed, 14);
-                game.add.bitmapText(317, 530, 'font', "Amulet Attack Speed Bonus: " + amuletBulletSpacing, 14);
+                enchanterSkillLevelText = game.add.bitmapText(317, 425, 'font', "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10), 14);
+                ringPowerText = game.add.bitmapText(317, 450, 'font', "Ring Power Bonus: " + ringShotPower, 14);
+                ringManaText = game.add.bitmapText(317, 465, 'font', "Ring Mana Bonus: " + ringMaxMana, 14);
+                ringKnockbackText = game.add.bitmapText(317, 480, 'font', "Ring Knockback Bonus: " + ringKnockback, 14);
+                amuletRunSpeedText = game.add.bitmapText(317, 500, 'font', "Amulet Run Speed Bonus: " + amuletRunSpeed, 14);
+                amuletShotSpeedText = game.add.bitmapText(317, 515, 'font', "Amulet Shot Speed Bonus: " + amuletShotSpeed, 14);
+                amuletAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Amulet Attack Speed Bonus: " + amuletBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 enchanterUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + enchanterUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.enchanterUpgrade, this);
@@ -536,26 +609,32 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (enchanterFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 this.enchanterImprove();
-                efffectivenessScoreText.text = "Artisan Effectiveness: " + Math.round(enchanter);
+                efffectivenessScoreText.text = "  Artisan Effectiveness: " + Math.round(enchanter);
                 if (population>153 && enchanterTimer>game.time.now && enchanterAdTimer<game.time.now) {
                     advert = true;
                 }
                 break; 
             case "trainer":
                 trainerHolder = game.add.sprite(129, 175, 'blankButton');
-                trainerLevelText = game.add.bitmapText(149, 205, 'font', "Trainer Funding: " + trainerFunding, 16);
+                trainerLevelText = game.add.bitmapText(149, 205, 'font', "   Trainer Fund: " + trainerFunding, 16);
                 trainerPlusButton = game.add.button(354, 175, 'plusButton', this.trainerPlus, this);
                 trainerMinusButton = game.add.button(49, 175, 'minusButton', this.trainerMinus, this);
                 game.add.sprite(310, 410, 'ui_213x150');
-                game.add.bitmapText(317, 425, 'font', "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10), 14);
-                game.add.bitmapText(317, 450, 'font', "Skill Power Bonus: " + skillShotPower, 14);
-                game.add.bitmapText(317, 465, 'font', "Skill Mana Bonus: " + skillMaxMana, 14);
-                game.add.bitmapText(317, 480, 'font', "Skill Knockback Bonus: " + skillKnockback, 14);
-                game.add.bitmapText(317, 500, 'font', "Stamina Run Speed Bonus: " + enduranceRunSpeed, 14);
-                game.add.bitmapText(317, 515, 'font', "Stamina Shot Speed Bonus: " + enduranceShotSpeed, 14);
-                game.add.bitmapText(317, 530, 'font', "Stamina Attack Speed Bonus: " + enduranceBulletSpacing, 14);
+                trainerSkillLevelText = game.add.bitmapText(317, 425, 'font', "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10), 14);
+                skillPowerText = game.add.bitmapText(317, 450, 'font', "Skill Power Bonus: " + skillShotPower, 14);
+                skillManaText = game.add.bitmapText(317, 465, 'font', "Skill Mana Bonus: " + skillMaxMana, 14);
+                skillKnockbackText = game.add.bitmapText(317, 480, 'font', "Skill Knockback Bonus: " + skillKnockback, 14);
+                staminaRunSpeedText = game.add.bitmapText(317, 500, 'font', "Stamina Run Speed Bonus: " + enduranceRunSpeed, 14);
+                staminaShotSpeedText = game.add.bitmapText(317, 515, 'font', "Stamina Shot Speed Bonus: " + enduranceShotSpeed, 14);
+                staminaAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Stamina Attack Speed Bonus: " + enduranceBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 trainerUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + trainerUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.trainerUpgrade, this);
@@ -565,9 +644,15 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (trainerFunding>=averageFunding+1) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = false;
                 this.trainerImprove();
-                efffectivenessScoreText.text = "Artisan Effectiveness: " + Math.round(trainer);
+                efffectivenessScoreText.text = "  Artisan Effectiveness: " + Math.round(trainer);
                 if (population>205 && trainerTimer>game.time.now && trainerAdTimer<game.time.now) {
                     advert = true;
                 }
@@ -585,10 +670,12 @@ var shopState = {
         tax += 1;
         taxLevelText.text = "Tax Level: " + tax;
         this.nextYearEstimate();
+        increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              Taxes can't be increased.";
+        shopMessageText.text = "              Taxes can't be increased further.";
       }
     },
     taxMinus: function() {
@@ -596,255 +683,305 @@ var shopState = {
         tax -= 1;
         taxLevelText.text = "Tax Level: " + tax;
         this.nextYearEstimate();
+        reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              Taxes can't be decreased.";
+        shopMessageText.text = "              Taxes can't be decreased further.";
       }
     },
     housingPlus: function() {
       if (housingFunding<100 && happiness>housingFunding) {
         housingFunding += 1;
-        housingLevelText.text = "New Homes Funding: " + housingFunding;
+        housingLevelText.text = "  Homestead Fund: " + housingFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     housingMinus: function() {
       if (housingFunding>=10) {
         housingFunding -= 1;
-        housingLevelText.text = "New Homes Funding: " + housingFunding;
+        housingLevelText.text = "  Homestead Fund: " + housingFunding;
+        reduceSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     commercialPlus: function() {
       if (commercialFunding<100 && happiness>commercialFunding) {
         commercialFunding += 1;
-        commercialLevelText.text = "Commercial Funding: " + commercialFunding;
+        commercialLevelText.text = "  City Market Fund: " + commercialFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     commercialMinus: function() {
       if (commercialFunding>=10) {
         commercialFunding -= 1;
-        commercialLevelText.text = "Commercial Funding: " + commercialFunding;
+        commercialLevelText.text = "  City Market Fund: " + commercialFunding;
+        reduceSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     industrialPlus: function() {
       if (industrialFunding<100 && happiness>industrialFunding) {
         industrialFunding += 1;
-        industrialLevelText.text = "New Farmland Funding: " + industrialFunding;
+        industrialLevelText.text = "   Farmland Fund: " + industrialFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     industrialMinus: function() {
       if (industrialFunding>=10) {
         industrialFunding -= 1;
-        industrialLevelText.text = "New Farmland Funding: " + industrialFunding;
+        industrialLevelText.text = "   Farmland Fund: " + industrialFunding;
+        reduceSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     educationPlus: function() {
       if (educationFunding<100 && happiness>educationFunding) {
         educationFunding += 1;
-        educationLevelText.text = "School Funding: " + educationFunding;
+        educationLevelText.text = "    School Fund: " + educationFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     educationMinus: function() {
       if (educationFunding>=10) {
         educationFunding -= 1;
-        educationLevelText.text = "School Funding: " + educationFunding;
+        educationLevelText.text = "    School Fund: " + educationFunding;
+        reduceSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     healthPlus: function() {
       if (healthFunding<100 && happiness>healthFunding) {
         healthFunding += 1;
-        healthLevelText.text = "Health Funding: " + healthFunding;
+        healthLevelText.text = "   Hospital Fund: " + healthFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     healthMinus: function() {
       if (healthFunding>=10) {
         healthFunding -= 1;
-        healthLevelText.text = "Health Funding: " + healthFunding;
+        reduceSFX.play();
+        healthLevelText.text = "   Hospital Fund: " + healthFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     justicePlus: function() {
       if (justiceFunding<100 && happiness>justiceFunding) {
         justiceFunding += 1;
-        justiceLevelText.text = "Police Funding: " + justiceFunding;
+        justiceLevelText.text = "    Police Fund: " + justiceFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     justiceMinus: function() {
       if (justiceFunding>=10) {
         justiceFunding -= 1;
-        justiceLevelText.text = "Police Funding: " + justiceFunding;
+        reduceSFX.play();
+        justiceLevelText.text = "    Police Fund: " + justiceFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     defencePlus: function() {
       if (defenceFunding<100 && happiness>defenceFunding) {
         defenceFunding += 1;
-        defenceLevelText.text = "Defence Funding: " + defenceFunding;
+        defenceLevelText.text = "  Defence Fund: " + defenceFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     defenceMinus: function() {
       if (defenceFunding>=10) {
         defenceFunding -= 1;
-        defenceLevelText.text = "Defence Funding: " + defenceFunding;
+        reduceSFX.play();
+        defenceLevelText.text = "  Defence Fund: " + defenceFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     utilitiesPlus: function() {
       if (utilitiesFunding<100 && happiness>utilitiesFunding) {
         utilitiesFunding += 1;
-        utilitiesLevelText.text = "Utilities Funding: " + utilitiesFunding;
+        utilitiesLevelText.text = "   Sewers Fund: " + utilitiesFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     utilitiesMinus: function() {
       if (utilitiesFunding>=10) {
         utilitiesFunding -= 1;
-        utilitiesLevelText.text = "Utilities Funding: " + utilitiesFunding;
+        reduceSFX.play();
+        utilitiesLevelText.text = "   Sewers Fund: " + utilitiesFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     weaponsmithPlus: function() {
       if (weaponsmithFunding<100 && happiness>weaponsmithFunding) {
         weaponsmithFunding += 1;
-        weaponsmithLevelText.text = "Weaponsmith Funding: " + weaponsmithFunding;
+        weaponsmithLevelText.text = " Weaponsmith Fund: " + weaponsmithFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     weaponsmithMinus: function() {
       if (weaponsmithFunding>=10) {
         weaponsmithFunding -= 1;
-        weaponsmithLevelText.text = "Weaponsmith Funding: " + weaponsmithFunding;
+        reduceSFX.play();
+        weaponsmithLevelText.text = " Weaponsmith Fund: " + weaponsmithFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     armourerPlus: function() {
       if (armourerFunding<100 && happiness>armourerFunding) {
         armourerFunding += 1;
-        armourerLevelText.text = "Armourer Funding: " + armourerFunding;
+        armourerLevelText.text = "   Armourer Fund: " + armourerFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     armourerMinus: function() {
       if (armourerFunding>=10) {
         armourerFunding -= 1;
-        armourerLevelText.text = "Armourer Funding: " + armourerFunding;
+        armourerLevelText.text = "   Armourer Fund: " + armourerFunding;
+        reduceSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     enchanterPlus: function() {
       if (enchanterFunding<100 && happiness>enchanterFunding) {
         enchanterFunding += 1;
-        enchanterLevelText.text = "Enchanter Funding: " + enchanterFunding;
+        enchanterLevelText.text = "   Enchanter Fund: " + enchanterFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     enchanterMinus: function() {
       if (enchanterFunding>=10) {
         enchanterFunding -= 1;
-        enchanterLevelText.text = "Enchanter Funding: " + enchanterFunding;
+        reduceSFX.play();
+        enchanterLevelText.text = "   Enchanter Fund: " + enchanterFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     trainerPlus: function() {
       if (trainerFunding<100 && happiness>trainerFunding) {
         trainerFunding += 1;
-        trainerLevelText.text = "Trainer Funding: " + trainerFunding;
+        trainerLevelText.text = "   Trainer Fund: " + trainerFunding;
+        increaseSFX.play();
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be increased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be increased further.";
       }
     },
     trainerMinus: function() {
       if (trainerFunding>=10) {
         trainerFunding -= 1;
-        trainerLevelText.text = "Trainer Funding: " + trainerFunding;
+        reduceSFX.play();
+        trainerLevelText.text = "   Trainer Fund: " + trainerFunding;
       }
       else {
           shopMessageBackground.x = 196;
-        shopMessageText.text = "              funding can't be decreased.";
+          reduceSFX.play();
+        shopMessageText.text = "              Funding can't be decreased further.";
       }
     },
     weaponsmithImprove: function() {
        if (game.time.now > weaponsmithTimer && population >= 110) {
-         baseChance = Math.round(((popScore*0.25) + (weaponsmith*0.3) + (weaponsmithDropReward*0.45))/2);
+         baseChance = Math.round(((popScore*0.22) + (weaponsmith*0.3) + (weaponsmithDropReward*0.48))/2);
          console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          wandImage = game.add.sprite(108, 258, 'wandAnimation');
@@ -867,14 +1004,19 @@ var shopState = {
        }
        else {
            shopMessageBackground.x = 196;
-         shopMessageText.text = "The Weaponsmith offers upgrades every 30 minutes.";  
+         shopMessageText.text = " The Weaponsmith offers upgrades every 30 minutes.";  
        }
     },
     wandPerk: function() {
         if (game.time.now > wandTimer) {
+            wandTimer = game.time.now + 1800000;
+            if (shieldTimer>game.time.now && wandTimer>game.time.now) {
+                weaponsmithTimer = game.time.now + 1800000;
+            }
             var wandPerkChance = Math.random()*5;
             console.log(wandPerkChance);
             wandImage.animations.play('spin');
+            slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (wandPerkChance<=1.66) {
@@ -887,9 +1029,12 @@ var shopState = {
                         wandImage.frame = 0;
                         wandPerkText.text = "Upgrade:";
                         wandPerkText2.text = "Wand Power +" + wandShotPower;
+                        wandPowerText.text = "Wand Power Bonus: " + wandShotPower;
+                        increaseSFX.play();
                     }
                     else {
                         wandPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         wandImage.animations.stop();
                         wandImage.frame = 0;
                     }
@@ -903,10 +1048,13 @@ var shopState = {
                         wandImage.frame = 2;
                         wandPerkText.text = "Upgrade:";
                         wandPerkText2.text = "Projectile Speed +" + wandShotSpeed;
+                        wandShotSpeedText.text = "Wand Shot Speed Bonus: " + wandShotSpeed;
                         self.bonusCheck();
+                        increaseSFX.play();
                     }
                     else {
                         wandPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         wandImage.animations.stop();
                         wandImage.frame = 2;
                     }
@@ -920,25 +1068,29 @@ var shopState = {
                         wandImage.frame = 4;
                         wandPerkText.text = "Upgrade:"; 
                         wandPerkText2.text = "Wand Attack Speed +" + wandBulletSpacing; 
+                        wandAttackSpeedText.text = "Wand Attack Speed Bonus: " + wandBulletSpacing;
+                        increaseSFX.play();
                     }
                     else {
                         wandPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         wandImage.animations.stop();
                         wandImage.frame = 4;
                     }
-                }
-                wandTimer = game.time.now + 1800000;
-                if (shieldTimer>game.time.now && wandTimer>game.time.now) {
-                    weaponsmithTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     shieldPerk: function() {
         if (game.time.now > shieldTimer) {
+            shieldTimer = game.time.now + 1800000;
+            if (shieldTimer>game.time.now && wandTimer>game.time.now) {
+                weaponsmithTimer = game.time.now + 1800000;
+            }
             var shieldPerkChance = Math.random()*5;
             console.log(shieldPerkChance);
             shieldImage.animations.play('spin');
+            slotMachineSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (shieldPerkChance<=1.66) {
                     shieldKnockbackUpgrade = Math.round(baseChance + shieldPerkChance);
@@ -950,9 +1102,12 @@ var shopState = {
                         shieldImage.frame = 0;
                         shieldPerkText.text = "Upgrade:";
                         shieldPerkText2.text = "Shield Knockback +" + shieldKnockback;
+                        shieldKnockbackText.text = "Shield Knockback Bonus: " + shieldKnockback;
+                        increaseSFX.play();
                     }
                     else {
                         shieldPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         shieldImage.animations.stop();
                         shieldImage.frame = 0;
                     }
@@ -966,9 +1121,12 @@ var shopState = {
                         shieldImage.frame = 2;
                         shieldPerkText.text = "Upgrade:";
                         shieldPerkText2.text = "Max Health +" + shieldMaxHealth;
+                        shieldHealthText.text = "Shield Health Bonus: " + shieldMaxHealth;
+                        increaseSFX.play();
                     }
                     else {
                         shieldPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         shieldImage.animations.stop();
                         shieldImage.frame = 2;
                     }
@@ -982,16 +1140,15 @@ var shopState = {
                         shieldImage.frame = 4;
                         shieldPerkText.text = "Upgrade:"; 
                         shieldPerkText2.text = "Invincible Period +" + shieldInvulnerableSpacing; 
+                        shieldInvulnerableText.text = "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing;
+                        increaseSFX.play();
                     }
                     else {
                         shieldPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         shieldImage.animations.stop();
                         shieldImage.frame = 4;
                     }
-                }
-                shieldTimer = game.time.now + 1800000;
-                if (shieldTimer>game.time.now && wandTimer>game.time.now) {
-                    weaponsmithTimer = game.time.now + 1800000;
                 }
             });
         }
@@ -999,62 +1156,78 @@ var shopState = {
     weaponsmithUpgrade: function() {
         if (coins>=weaponsmithUpgradeCost) {
             coins -= weaponsmithUpgradeCost;
-            weaponsmithUpgradeCost = Math.round(weaponsmithUpgradeCost*1.2);
+            var multiplier = 1.1 + (weaponsmithUpgradeCost/10000);
+            weaponsmithUpgradeCost = Math.round(weaponsmithUpgradeCost*multiplier);
             weaponsmithDropReward += weaponsmithDRBoost;
             this.dropRewardDiminishingReturns();
             weaponsmithUpgradeText.text = "Buy Skill Material: " + weaponsmithUpgradeCost;
-            shopCoinsText.text = 'Coins: ' + coins;
+            shopCoinsText.text = coins;
+            weaponsmithSkillLevelText.text = "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10);
+            increaseSFX.play();
         }
         else {
             shopMessageBackground.x = 196;
             shopMessageText.text = "      Not enough coins.";
+            reduceSFX.play();
         }
     },
     armourerUpgrade: function() {
         if (coins>=armourerUpgradeCost) {
             coins -= armourerUpgradeCost;
-            armourerUpgradeCost = Math.round(armourerUpgradeCost*1.2);
+            var multiplier = 1.1 + (armourerUpgradeCost/10000);
+            armourerUpgradeCost = Math.round(armourerUpgradeCost*multiplier);
             armourerDropReward += armourerDRBoost;
             this.dropRewardDiminishingReturns();
             armourerUpgradeText.text = "Buy Skill Material: " + armourerUpgradeCost;
-            shopCoinsText.text = 'Coins: ' + coins;
+            shopCoinsText.text = coins;
+            armourerSkillLevelText.text = "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10);
+            increaseSFX.play();
         }
         else {
             shopMessageBackground.x = 196;
             shopMessageText.text = "      Not enough coins.";
+            reduceSFX.play();
         }
     },
     enchanterUpgrade: function() {
         if (coins>=enchanterUpgradeCost) {
             coins -= enchanterUpgradeCost;
-            enchanterUpgradeCost = Math.round(enchanterUpgradeCost*1.2);
+            var multiplier = 1.1 + (enchanterUpgradeCost/10000);
+            enchanterUpgradeCost = Math.round(enchanterUpgradeCost*multiplier);
             enchanterDropReward += enchanterDRBoost;
             this.dropRewardDiminishingReturns();
             enchanterUpgradeText.text = "Buy Skill Material: " + enchanterUpgradeCost;
-            shopCoinsText.text = 'Coins: ' + coins;
+            shopCoinsText.text = coins;
+            enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
+            increaseSFX.play();
         }
         else {
             shopMessageBackground.x = 196;
             shopMessageText.text = "      Not enough coins.";
+            reduceSFX.play();
         }
     },
     trainerUpgrade: function() {
         if (coins>=trainerUpgradeCost) {
             coins -= trainerUpgradeCost;
-            trainerUpgradeCost = Math.round(trainerUpgradeCost*1.2);
+            var multiplier = 1.1 + (trainerUpgradeCost/10000);
+            trainerUpgradeCost = Math.round(trainerUpgradeCost*multiplier);
             trainerDropReward += trainerDRBoost;
             this.dropRewardDiminishingReturns();
             trainerUpgradeText.text = "Buy Skill Material: " + trainerUpgradeCost;
-            shopCoinsText.text = 'Coins: ' + coins;
+            shopCoinsText.text = coins;
+            trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
+            increaseSFX.play();
         }
         else {
             shopMessageBackground.x = 196;
             shopMessageText.text = "      Not enough coins.";
+            reduceSFX.play();
         }
     },
     armourerImprove: function() {
        if (game.time.now > armourerTimer && population >= 125) {
-         baseChance = Math.round(((popScore*0.25) + (armourer*0.3) + (armourerDropReward*0.45))/2);
+         baseChance = Math.round(((popScore*0.22) + (armourer*0.3) + (armourerDropReward*0.48))/2);
          console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          armourImage = game.add.sprite(108, 258, 'armourAnimation');
@@ -1084,14 +1257,19 @@ var shopState = {
        }
        else {
            shopMessageBackground.x = 196;
-         shopMessageText.text = "The Armourer offers upgrades every 30 minutes.";  
+         shopMessageText.text = "   The Armourer offers upgrades every 30 minutes.";  
        }
     },
     armourPerk: function() {
         if (game.time.now > armourTimer) {
+            armourTimer = game.time.now + 1800000;
+            if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
+                armourerTimer = game.time.now + 1800000;
+            }
             var armourPerkChance = Math.random()*5;
             console.log(armourPerkChance);
             armourImage.animations.play('spin');
+            slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (armourPerkChance<=1.66) {
@@ -1104,9 +1282,12 @@ var shopState = {
                         armourImage.frame = 0;
                         armourPerkText.text = "Upgrade:";
                         armourPerkText2.text = "Max Health +" + armourMaxHealth;
+                        armourHealthBonusText.text = "Armour Health Bonus: " + armourMaxHealth;
+                        increaseSFX.play();
                     }
                     else {
                         armourPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         armourImage.animations.stop();
                         armourImage.frame = 0;
                     }
@@ -1120,10 +1301,13 @@ var shopState = {
                         armourImage.frame = 2;
                         armourPerkText.text = "Upgrade:";
                         armourPerkText2.text = "Mana Regeneration +" + armourManaRegenInterval;
+                        armourManaRegenBonus.text = "Armour Mana Regen Bonus: " + armourManaRegenInterval;
+                        increaseSFX.play();
                         self.bonusCheck();
                     }
                     else {
                         armourPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         armourImage.animations.stop();
                         armourImage.frame = 2;
                     }
@@ -1137,25 +1321,29 @@ var shopState = {
                         armourImage.frame = 4;
                         armourPerkText.text = "Upgrade:"; 
                         armourPerkText2.text = "Invincible Period +" + armourInvulnerableSpacing; 
+                        armourInvulnerableText.text = "Armour Invulnerable Bonus: " + armourInvulnerableSpacing;
+                        increaseSFX.play();
                     }
                     else {
                         armourPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         armourImage.animations.stop();
                         armourImage.frame = 4;
                     }
-                }
-                armourTimer = game.time.now + 1800000;
-                if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
-                    armourerTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     hatPerk: function() {
         if (game.time.now > hatTimer) {
+            hatTimer = game.time.now + 1800000;
+            if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
+                armourerTimer = game.time.now + 1800000;
+            }
             var hatPerkChance = Math.random()*5;
             console.log(hatPerkChance);
             hatImage.animations.play('spin');
+            slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (hatPerkChance<=1.66) {
@@ -1168,9 +1356,12 @@ var shopState = {
                         hatImage.frame = 0;
                         hatPerkText.text = "Upgrade:";
                         hatPerkText2.text = "Max Health +" + hatMaxHealth;
+                        crownHealthText.text = "Crown Health Bonus: " + hatMaxHealth;
+                        increaseSFX.play();
                     }
                     else {
                         hatPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         hatImage.animations.stop();
                         hatImage.frame = 0;
                     }
@@ -1184,10 +1375,13 @@ var shopState = {
                         hatImage.frame = 2;
                         hatPerkText.text = "Upgrade:";
                         hatPerkText2.text = "Mana Regeneration +" + hatManaRegenInterval;
+                        crownManaRegenText.text = "Crown Mana Regen Bonus: " + hatManaRegenInterval;
+                        increaseSFX.play();
                         self.bonusCheck();
                     }
                     else {
                         hatPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         hatImage.animations.stop();
                         hatImage.frame = 2;
                     }
@@ -1201,25 +1395,29 @@ var shopState = {
                         hatImage.frame = 4;
                         hatPerkText.text = "Upgrade:"; 
                         hatPerkText2.text = "Max Mana +" + hatMaxMana; 
+                        crownManaText.text = "Crown Mana Bonus: " + hatMaxMana;
+                        increaseSFX.play();
                     }
                     else {
                         hatPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         hatImage.animations.stop();
                         hatImage.frame = 4;
                     }
-                }
-                hatTimer = game.time.now + 1800000;
-                if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
-                    armourerTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     bootPerk: function() {
         if (game.time.now > bootTimer) {
+            bootTimer = game.time.now + 1800000;
+            if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
+                armourerTimer = game.time.now + 1800000;
+            }
             var bootPerkChance = Math.random()*5;
             console.log(bootPerkChance);
             bootImage.animations.play('spin');
+            slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (bootPerkChance<=1.66) {
@@ -1232,9 +1430,12 @@ var shopState = {
                         bootImage.frame = 0;
                         bootPerkText.text = "Upgrade:";
                         bootPerkText2.text = "Run Speed +" + bootRunSpeed;
+                        bootsRunSpeedText.text = "Boots Run Speed Bonus: " + bootRunSpeed;
+                        increaseSFX.play();
                     }
                     else {
                         bootPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         bootImage.animations.stop();
                         bootImage.frame = 0;
                     }
@@ -1248,10 +1449,13 @@ var shopState = {
                         bootImage.frame = 2;
                         bootPerkText.text = "Upgrade:";
                         bootPerkText2.text = "Mana Regeneration +" + bootManaRegenInterval;
+                        bootManaRegenText.text = "Boots Mana Regen Bonus: " + bootManaRegenInterval;
+                        increaseSFX.play();
                         self.bonusCheck();
                     }
                     else {
                         bootPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         bootImage.animations.stop();
                         bootImage.frame = 2;
                     }
@@ -1265,23 +1469,22 @@ var shopState = {
                         bootImage.frame = 4;
                         bootPerkText.text = "Upgrade:"; 
                         bootPerkText2.text = "Invincible Period +" + bootInvulnerableSpacing; 
+                        bootsInvulnerableText.text = "Boots Invulnerable Bonus: " + bootInvulnerableSpacing;
+                        increaseSFX.play();
                     }
                     else {
                         bootPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         bootImage.animations.stop();
                         bootImage.frame = 4;
                     }
-                }
-                bootTimer = game.time.now + 1800000;
-                if (bootTimer>game.time.now && hatTimer>game.time.now && armourTimer>game.time.now) {
-                    armourerTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     enchanterImprove: function() {
        if (game.time.now > enchanterTimer && population >= 150) {
-         baseChance = Math.round(((popScore*0.25) + (enchanter*0.3) + (enchanterDropReward*0.45))/2);
+         baseChance = Math.round(((popScore*0.22) + (enchanter*0.3) + (enchanterDropReward*0.48))/2);
          console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          ringImage = game.add.sprite(108, 258, 'ringAnimation');
@@ -1304,14 +1507,19 @@ var shopState = {
        }
        else {
            shopMessageBackground.x = 196;
-         shopMessageText.text = "The Enchanter offers upgrades every 30 minutes.";  
+         shopMessageText.text = "  The Enchanter offers upgrades every 30 minutes.";  
        }
     },
     ringPerk: function() {
         if (game.time.now > ringTimer) {
+            ringTimer = game.time.now + 1800000;
+            if (amuletTimer>game.time.now && ringTimer>game.time.now) {
+                enchanterTimer = game.time.now + 1800000;
+            }
             var ringPerkChance = Math.random()*5;
             console.log(ringPerkChance);
             ringImage.animations.play('spin');
+            slotMachineSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (ringPerkChance<=1.66) {
                     ringShotPowerUpgrade = Math.round(baseChance + ringPerkChance);
@@ -1323,9 +1531,12 @@ var shopState = {
                         ringImage.frame = 0;
                         ringPerkText.text = "Upgrade:";
                         ringPerkText2.text = "Ring Power +" + ringShotPower;
+                        ringPowerText.text = "Ring Power Bonus: " + ringShotPower;
+                        increaseSFX.play();
                     }
                     else {
                         ringPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         ringImage.animations.stop();
                         ringImage.frame = 0;
                     }
@@ -1339,9 +1550,12 @@ var shopState = {
                         ringImage.frame = 2;
                         ringPerkText.text = "Upgrade:";
                         ringPerkText2.text = "Max Mana +" + ringMaxMana;
+                        ringManaText.text = "Ring Mana Bonus: " + ringMaxMana;
+                        increaseSFX.play();
                     }
                     else {
                         ringPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         ringImage.animations.stop();
                         ringImage.frame = 2;
                     }
@@ -1355,87 +1569,96 @@ var shopState = {
                         ringImage.frame = 4;
                         ringPerkText.text = "Upgrade:"; 
                         ringPerkText2.text = "Knockback +" + ringKnockback; 
+                        ringKnockbackText.text = "Ring Knockback Bonus: " + ringKnockback;
+                        increaseSFX.play();
                     }
                     else {
                         ringPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         ringImage.animations.stop();
                         ringImage.frame = 4;
                     }
-                }
-                ringTimer = game.time.now + 1800000;
-                if (amuletTimer>game.time.now && ringTimer>game.time.now) {
-                    enchanterTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     amuletPerk: function() {
         if (game.time.now > amuletTimer) {
-            var amuletPerkChance = Math.random()*5;
-            console.log(amuletPerkChance);
-            amuletImage.animations.play('spin');
-            var self = this;
-            game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
-                if (amuletPerkChance<=1.66) {
-                    amuletRunSpeedUpgrade = Math.round(baseChance + amuletPerkChance);
-                    console.log(amuletRunSpeedUpgrade);
-                    if (amuletRunSpeedUpgrade>amuletRunSpeed) {
-                        runSpeed += 0.1*(amuletRunSpeedUpgrade - amuletRunSpeed);
-                        amuletRunSpeed = amuletRunSpeedUpgrade;
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 0;
-                        amuletPerkText.text = "Upgrade:";
-                        amuletPerkText2.text = "Run Speed +" + amuletRunSpeed;
-                    }
-                    else {
-                        amuletPerkText.text = "No upgrade this time";
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 0;
-                    }
-                }
-                else if (amuletPerkChance>=3.34) {
-                    amuletShotSpeedUpgrade = Math.round(baseChance + amuletPerkChance);
-                    if (amuletShotSpeedUpgrade>amuletShotSpeed) {
-                        shotSpeed += (amuletShotSpeedUpgrade - amuletShotSpeed)/2;
-                        amuletShotSpeed = amuletShotSpeedUpgrade;
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 2;
-                        amuletPerkText.text = "Upgrade:";
-                        amuletPerkText2.text = "Shot Speed +" + amuletShotSpeed;
-                        self.bonusCheck();
-                    }
-                    else {
-                        amuletPerkText.text = "No upgrade this time";
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 2;
-                    }
-                }
-                else {
-                    amuletBulletSpacingUpgrade = Math.round(baseChance + amuletPerkChance);
-                    if (amuletBulletSpacingUpgrade>amuletBulletSpacing) {
-                        bulletSpacing -= (amuletBulletSpacingUpgrade - amuletBulletSpacing)/2;
-                        amuletBulletSpacing = amuletBulletSpacingUpgrade;
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 4;
-                        amuletPerkText.text = "Upgrade:"; 
-                        amuletPerkText2.text = "Attack Speed +" + amuletBulletSpacing; 
-                    }
-                    else {
-                        amuletPerkText.text = "No upgrade this time";
-                        amuletImage.animations.stop();
-                        amuletImage.frame = 4;
-                    }
-                }
-                amuletTimer = game.time.now + 1800000;
-                if (amuletTimer>game.time.now && ringTimer>game.time.now) {
-                    enchanterTimer = game.time.now + 1800000;
-                }
+          amuletTimer = game.time.now + 1800000;
+          if (amuletTimer>game.time.now && ringTimer>game.time.now) {
+              enchanterTimer = game.time.now + 1800000;
+          }
+          var amuletPerkChance = Math.random()*5;
+          console.log(amuletPerkChance);
+          amuletImage.animations.play('spin');
+          slotMachineSFX.play();
+          var self = this;
+          game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
+              if (amuletPerkChance<=1.66) {
+                  amuletRunSpeedUpgrade = Math.round(baseChance + amuletPerkChance);
+                  console.log(amuletRunSpeedUpgrade);
+                  if (amuletRunSpeedUpgrade>amuletRunSpeed) {
+                      runSpeed += 0.1*(amuletRunSpeedUpgrade - amuletRunSpeed);
+                      amuletRunSpeed = amuletRunSpeedUpgrade;
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 0;
+                      amuletPerkText.text = "Upgrade:";
+                      amuletPerkText2.text = "Run Speed +" + amuletRunSpeed;
+                      amuletRunSpeedText.text = "Amulet Run Speed Bonus: " + amuletRunSpeed;
+                      increaseSFX.play();
+                  }
+                  else {
+                      amuletPerkText.text = "No upgrade this time";
+                      reduceSFX.play();
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 0;
+                  }
+              }
+              else if (amuletPerkChance>=3.34) {
+                  amuletShotSpeedUpgrade = Math.round(baseChance + amuletPerkChance);
+                  if (amuletShotSpeedUpgrade>amuletShotSpeed) {
+                      shotSpeed += (amuletShotSpeedUpgrade - amuletShotSpeed)/2;
+                      amuletShotSpeed = amuletShotSpeedUpgrade;
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 2;
+                      amuletPerkText.text = "Upgrade:";
+                      amuletPerkText2.text = "Shot Speed +" + amuletShotSpeed;
+                      amuletShotSpeedText.text = "Amulet Shot Speed Bonus: " + amuletShotSpeed;
+                      increaseSFX.play();
+                      self.bonusCheck();
+                  }
+                  else {
+                      amuletPerkText.text = "No upgrade this time";
+                      reduceSFX.play();
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 2;
+                  }
+              }
+              else {
+                  amuletBulletSpacingUpgrade = Math.round(baseChance + amuletPerkChance);
+                  if (amuletBulletSpacingUpgrade>amuletBulletSpacing) {
+                      bulletSpacing -= (amuletBulletSpacingUpgrade - amuletBulletSpacing)/2;
+                      amuletBulletSpacing = amuletBulletSpacingUpgrade;
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 4;
+                      amuletPerkText.text = "Upgrade:"; 
+                      amuletPerkText2.text = "Attack Speed +" + amuletBulletSpacing;
+                      amuletAttackSpeedText.text = "Amulet Attack Speed Bonus: " + amuletBulletSpacing;
+                      increaseSFX.play();
+                  }
+                  else {
+                      amuletPerkText.text = "No upgrade this time";
+                      reduceSFX.play();
+                      amuletImage.animations.stop();
+                      amuletImage.frame = 4;
+                  }
+              }
             });
         }
     },
     trainerImprove: function() {
        if (game.time.now > trainerTimer && population >= 200) {
-         baseChance = Math.round(((popScore*0.25) + (trainer*0.3) + (trainerDropReward*0.45))/2);
+         baseChance = Math.round(((popScore*0.22) + (trainer*0.3) + (trainerDropReward*0.48))/2);
          console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          skillImage = game.add.sprite(108, 258, 'skillAnimation');
@@ -1458,14 +1681,19 @@ var shopState = {
        }
        else {
          shopMessageBackground.x = 196;
-         shopMessageText.text = "The Trainer offers upgrades every 30 minutes.";  
+         shopMessageText.text = "   The Trainer offers upgrades every 30 minutes.";  
        }
     },
     skillPerk: function() {
         if (game.time.now > skillTimer) {
+            skillTimer = game.time.now + 1800000;
+            if (enduranceTimer>game.time.now && skillTimer>game.time.now) {
+                trainerTimer = game.time.now + 1800000;
+            }
             var skillPerkChance = Math.random()*5;
             console.log(skillPerkChance);
             skillImage.animations.play('spin');
+            slotMachineSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (skillPerkChance<=1.66) {
                     skillShotPowerUpgrade = Math.round(baseChance + skillPerkChance);
@@ -1477,9 +1705,12 @@ var shopState = {
                         skillImage.frame = 0;
                         skillPerkText.text = "Upgrade:";
                         skillPerkText2.text = "Skill Power +" + skillShotPower;
+                        skillPowerText.text = "Skill Power Bonus: " + skillShotPower;
+                        increaseSFX.play();
                     }
                     else {
                         skillPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         skillImage.animations.stop();
                         skillImage.frame = 0;
                     }
@@ -1493,9 +1724,12 @@ var shopState = {
                         skillImage.frame = 2;
                         skillPerkText.text = "Upgrade:";
                         skillPerkText2.text = "Max Mana +" + skillMaxMana;
+                        skillManaText.text = "Skill Mana Bonus: " + skillMaxMana;
+                        increaseSFX.play();
                     }
                     else {
                         skillPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         skillImage.animations.stop();
                         skillImage.frame = 2;
                     }
@@ -1509,25 +1743,29 @@ var shopState = {
                         skillImage.frame = 4;
                         skillPerkText.text = "Upgrade:"; 
                         skillPerkText2.text = "Knockback +" + skillKnockback; 
+                        skillKnockbackText.text = "Skill Knockback Bonus: " + skillKnockback;
+                        increaseSFX.play();
                     }
                     else {
                         skillPerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         skillImage.animations.stop();
                         skillImage.frame = 4;
                     }
-                }
-                skillTimer = game.time.now + 1800000;
-                if (enduranceTimer>game.time.now && skillTimer>game.time.now) {
-                    trainerTimer = game.time.now + 1800000;
                 }
             });
         }
     },
     endurancePerk: function() {
         if (game.time.now > enduranceTimer) {
+            enduranceTimer = game.time.now + 1800000;
+            if (enduranceTimer>game.time.now && skillTimer>game.time.now) {
+                trainerTimer = game.time.now + 1800000;
+            }
             var endurancePerkChance = Math.random()*5;
             console.log(endurancePerkChance);
             enduranceImage.animations.play('spin');
+            slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (endurancePerkChance<=1.66) {
@@ -1540,9 +1778,12 @@ var shopState = {
                         enduranceImage.frame = 0;
                         endurancePerkText.text = "Upgrade:";
                         endurancePerkText2.text = "Run Speed +" + enduranceRunSpeed;
+                        staminaRunSpeedText.text = "Stamina Run Speed Bonus: " + enduranceRunSpeed;
+                        increaseSFX.play();
                     }
                     else {
                         endurancePerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 0;
                     }
@@ -1556,10 +1797,13 @@ var shopState = {
                         enduranceImage.frame = 2;
                         endurancePerkText.text = "Upgrade:";
                         endurancePerkText2.text = "Shot Speed +" + enduranceShotSpeed;
+                        staminaShotSpeedText.text = "Stamina Shot Speed Bonus: " + enduranceShotSpeed;
+                        increaseSFX.play();
                         self.bonusCheck();
                     }
                     else {
                         endurancePerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 2;
                     }
@@ -1573,16 +1817,15 @@ var shopState = {
                         enduranceImage.frame = 4;
                         endurancePerkText.text = "Upgrade:"; 
                         endurancePerkText2.text = "Attack Speed +" + enduranceBulletSpacing; 
+                        staminaAttackSpeedText.text = "Stamina Attack Speed Bonus: " + enduranceBulletSpacing;
+                        increaseSFX.play();
                     }
                     else {
                         endurancePerkText.text = "No upgrade this time";
+                        reduceSFX.play();
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 4;
                     }
-                }
-                enduranceTimer = game.time.now + 1800000;
-                if (enduranceTimer>game.time.now && skillTimer>game.time.now) {
-                    trainerTimer = game.time.now + 1800000;
                 }
             });
         }
@@ -1708,13 +1951,13 @@ var shopState = {
         if (shop=="castle") {
             
         }
-        else if (maxFunding) {
+        else if (maxFunding || wellfunded) {
             shopText.text = " Your Majesty!";
-            shopText2.text = " Our funding levels";
-            shopText3.text = "    are most satisfactory.";
-            shopText4.text = "   We will endeavour to ";
-            shopText5.text = "   justify your faith" ; 
-            shopText6.text = "     in us.";
+            shopText2.text = "   Our funding levels";
+            shopText3.text = "     are most satisfactory.";
+            shopText4.text = "    We will endeavour to ";
+            shopText5.text = "      justify your faith" ; 
+            shopText6.text = "         in us.";
         }
         else if (priorityService) {
             shopText.text = " Your Majesty!";
@@ -1836,8 +2079,8 @@ var shopState = {
       nextEconomyMod += ((nextUtilities-33)/9000);
       nextEconomyMod -= ((tax-30)/3000);
       nextIncome = income;
-      nextIncome = (nextPopulation*nextEconomyMod*(1.17*tax))+105;
-      nextExpenditure = totalFunding*(5 + (year+1)/32) + (nextPopulation*(totalFunding/20));
+      nextIncome = nextPopulation*nextEconomyMod*(1.17*tax);
+      nextExpenditure = totalFunding*(4.45 + (year+1)/22) + (nextPopulation*(totalFunding/20));
       nextNetIncome = netIncome;
       nextNetIncome = nextIncome - nextExpenditure;
       nextCoins = coins;
@@ -1850,76 +2093,76 @@ var shopState = {
       nextBalanceStatText.text = "Balance: " + nextCoins;
     },
     dropRewardDiminishingReturns: function() {
-        if (weaponsmithDropReward<10) {
+        if (weaponsmithDropReward<=10) {
             weaponsmithDRBoost = 1;
         }
-        else if (weaponsmithDropReward<25) {
+        else if (weaponsmithDropReward<=25) {
             weaponsmithDRBoost = 0.75;
         }
-        else if (weaponsmithDropReward<50) {
+        else if (weaponsmithDropReward<=50) {
             weaponsmithDRBoost = 0.5;
         }
-        else if (weaponsmithDropReward<100) {
+        else if (weaponsmithDropReward<=100) {
             weaponsmithDRBoost = 0.33;
         }
-        else if (weaponsmithDropReward<1000) {
+        else if (weaponsmithDropReward<=1000) {
             weaponsmithDRBoost = 0.25;
         }
         else {
             weaponsmithDRBoost = 0.2;
         }
         
-        if (armourerDropReward<10) {
+        if (armourerDropReward<=10) {
             armourerDRBoost = 1;
         }
-        else if (armourerDropReward<25) {
+        else if (armourerDropReward<=25) {
             armourerDRBoost = 0.75;
         }
-        else if (armourerDropReward<50) {
+        else if (armourerDropReward<=50) {
             armourerDRBoost = 0.5;
         }
-        else if (armourerDropReward<100) {
+        else if (armourerDropReward<=100) {
             armourerDRBoost = 0.33;
         }
-        else if (armourerDropReward<1000) {
+        else if (armourerDropReward<=1000) {
             armourerDRBoost = 0.25;
         }
         else {
             armourerDRBoost = 0.2;
         }
         
-        if (enchanterDropReward<10) {
+        if (enchanterDropReward<=10) {
             enchanterDRBoost = 1;
         }
-        else if (enchanterDropReward<25) {
+        else if (enchanterDropReward<=25) {
             enchanterDRBoost = 0.75;
         }
-        else if (enchanterDropReward<50) {
+        else if (enchanterDropReward<=50) {
             enchanterDRBoost = 0.5;
         }
-        else if (enchanterDropReward<100) {
+        else if (enchanterDropReward<=100) {
             enchanterDRBoost = 0.33;
         }
-        else if (enchanterDropReward<1000) {
+        else if (enchanterDropReward<=1000) {
             enchanterDRBoost = 0.25;
         }
         else {
             enchanterDRBoost = 0.2;
         }
         
-        if (trainerDropReward<10) {
+        if (trainerDropReward<=10) {
             trainerDRBoost = 1;
         }
-        else if (trainerDropReward<25) {
+        else if (trainerDropReward<=25) {
             trainerDRBoost = 0.75;
         }
-        else if (trainerDropReward<50) {
+        else if (trainerDropReward<=50) {
             trainerDRBoost = 0.5;
         }
-        else if (trainerDropReward<100) {
+        else if (trainerDropReward<=100) {
             trainerDRBoost = 0.33;
         }
-        else if (trainerDropReward<1000) {
+        else if (trainerDropReward<=1000) {
             trainerDRBoost = 0.25;
         }
         else {
@@ -1928,37 +2171,41 @@ var shopState = {
     },
     weaponsmithAd: function() {
         weaponsmithDropReward += (5*weaponsmithDRBoost);
-        weaponsmithTimer = game.time.now;
-        wandTimer = game.time.now;
-        shieldTimer = game.time.now;
+        weaponsmithSkillLevelText.text = "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10);
+        weaponsmithTimer = game.time.now - 10;
+        wandTimer = game.time.now - 10;
+        shieldTimer = game.time.now - 10;
         weaponsmithAdTimer = game.time.now + 3600000;
         advert = false;
         this.create();
     },
     armourerAd: function() {
         armourerDropReward += (5*armourerDRBoost);
-        armourerTimer = game.time.now;
-        armourTimer = game.time.now;
-        hatTimer = game.time.now;
-        bootTimer = game.time.now;
+        armourerSkillLevelText.text = "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10);
+        armourerTimer = game.time.now - 10;
+        armourTimer = game.time.now - 10;
+        hatTimer = game.time.now - 10;
+        bootTimer = game.time.now - 10;
         armourerAdTimer = game.time.now + 3600000;
         advert = false;
         this.create();
     },
     enchanterAd: function() {
         enchanterDropReward += (5*enchanterDRBoost);
-        enchanterTimer = game.time.now;
-        ringTimer = game.time.now;
-        amuletTimer = game.time.now;
+        enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
+        enchanterTimer = game.time.now - 10;
+        ringTimer = game.time.now - 10;
+        amuletTimer = game.time.now - 10;
         enchanterAdTimer = game.time.now + 3600000;
         advert = false;
         this.create();
     },
     trainerAd: function() {
         trainerDropReward += (5*trainerDRBoost);
-        trainerTimer = game.time.now;
-        skillTimer = game.time.now;
-        enduranceTimer = game.time.now;
+        trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
+        trainerTimer = game.time.now - 10;
+        skillTimer = game.time.now - 10;
+        enduranceTimer = game.time.now - 10;
         trainerAdTimer = game.time.now + 3600000;
         advert = false;
         this.create();
@@ -1992,8 +2239,8 @@ var shopState = {
                 var bonusUnlockText2 = game.add.bitmapText(170, 494, 'font', '  Your artisans have ', 15);
                 var bonusUnlockText3 = game.add.bitmapText(158, 509, 'font', 'worked together to unlock ', 15);
                 var bonusUnlockText4 = game.add.bitmapText(158, 524, 'font', 'the power of beam magic. ', 15);
-                var bonusUnlockText5 = game.add.bitmapText(170, 539, 'font', 'Press SPACE to use while', 15);
-                var bonusUnlockText6 = game.add.bitmapText(190, 554, 'font', '   questing!', 15);
+                var bonusUnlockText5 = game.add.bitmapText(170, 539, 'font', '  Press SPACE to use ', 15);
+                var bonusUnlockText6 = game.add.bitmapText(190, 554, 'font', ' while questing!', 15);
                 beamUnlockShown = true;
                 beamWeapon = true;
                 break;

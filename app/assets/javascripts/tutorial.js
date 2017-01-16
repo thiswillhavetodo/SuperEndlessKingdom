@@ -8,6 +8,7 @@ var torchArray = [1, 3, 9, 13, 17, 19];
 var barriers;
 var targets;
 var lights;
+var soundTriggers;
 
 var tutorialPractice = "first";
 var tutorialPracticeSprite;
@@ -28,14 +29,25 @@ var trainerText5 = "";
 var trainerText6 = "";
 var nextPractice = "right";
 
+var tutorialMusic;
+var tutorialMusicPlaying;
+var successSFX;
+
 var tutorialState = {
     create: function() {
         game.add.sprite(0, 0, 'tutorialBackground');
         game.physics.startSystem(Phaser.Physics.ARCADE);
         
+        if (tutorialMusicPlaying!=true) {
+            tutorialMusic = game.add.audio('tutorialMusic');
+            tutorialMusic.allowMultiple = false;
+            tutorialMusic.play();
+            tutorialMusicPlaying = true;
+        }
+       
         // The player and its settings
         player = game.add.sprite(224, 126, 'dude');
-        
+        successSFX = game.add.audio('collect');
         //  We need to enable physics on the player
         game.physics.arcade.enable(player);
         player.body.setSize(26, 30, 3, 3);
@@ -55,6 +67,8 @@ var tutorialState = {
         barriers.enableBody = true;
         targets = game.add.group();
         targets.enableBody = true;
+        soundTriggers = game.add.group();
+        soundTriggers.enableBody = true;
         lights = game.add.group();
         
         for (var i=0; i<wallEdgeArray.length; i++) {
@@ -111,6 +125,15 @@ var tutorialState = {
         var steps = barriers.create(192, 116, 'tutorialObstacles32x44');
         steps.frame = 0;
         steps.body.immovable = true;
+        
+        var soundTrigger = soundTriggers.create(320, 128, 'tutorialBarriers32x32');
+        soundTrigger.visible = false;
+        soundTrigger = soundTriggers.create(320, 32, 'tutorialBarriers32x32');
+        soundTrigger.visible = false;
+        soundTrigger = soundTriggers.create(160, 32, 'tutorialBarriers32x32');
+        soundTrigger.visible = false;
+        soundTrigger = soundTriggers.create(160, 192, 'tutorialBarriers32x32');
+        soundTrigger.visible = false;
         
         var suitOfArmour = targets.create(64, 352, 'tutorialObstacles32x44');
         suitOfArmour.frame = 1;
@@ -202,41 +225,44 @@ var tutorialState = {
         player.body.velocity.y= 0;
         
         game.physics.arcade.collide(player, barriers);
+        game.physics.arcade.overlap(player, soundTriggers, this.triggerSound, null, this);
         game.physics.arcade.collide(bullets, targets, this.targetKill, null, this);
         game.physics.arcade.collide(bullets, barriers, this.bulletKill, null, this);
         game.physics.arcade.collide(player, door, this.endTutorial, null, this);
         
-        if (aKey.isDown)        {
-            //  Move to the left
-            player.body.velocity.x = -runSpeed;
-            player.animations.play('left');
-            facing = 'left';
-        }
-        else if (dKey.isDown)      {
-            //  Move to the right
-            player.body.velocity.x = runSpeed;
-            player.animations.play('right');
-            facing = 'right';
-        }
-        else if (wKey.isDown)       {
-            //  Move up
-            player.body.velocity.y = -runSpeed;
-            player.animations.play('up');
-            facing = 'up';
-        }
-        else if (sKey.isDown)        {
-            //  Move down
-            player.body.velocity.y = runSpeed;
-            player.animations.play('down');
-            facing = 'down';
-        }
-        else        {
-            //  Stand still
-            player.animations.stop();
-        }
-        
-        if ((cursors.right.isDown || cursors.left.isDown || cursors.up.isDown || cursors.down.isDown) && game.time.now>bulletTimer && player.isAlive && mana>=5) {
-            this.fire();
+        if (tutorialPractice!="first") {
+            if (aKey.isDown)        {
+                //  Move to the left
+                player.body.velocity.x = -runSpeed;
+                player.animations.play('left');
+                facing = 'left';
+            }
+            else if (dKey.isDown)      {
+                //  Move to the right
+                player.body.velocity.x = runSpeed;
+                player.animations.play('right');
+                facing = 'right';
+            }
+            else if (wKey.isDown)       {
+                //  Move up
+                player.body.velocity.y = -runSpeed;
+                player.animations.play('up');
+                facing = 'up';
+            }
+            else if (sKey.isDown)        {
+                //  Move down
+                player.body.velocity.y = runSpeed;
+                player.animations.play('down');
+                facing = 'down';
+            }
+            else        {
+                //  Stand still
+                player.animations.stop();
+            }
+            
+            if ((cursors.right.isDown || cursors.left.isDown || cursors.up.isDown || cursors.down.isDown) && game.time.now>bulletTimer && player.isAlive && mana>=5) {
+                this.fire();
+            }
         }
         this.torchUpdate();
         this.tutorialShow();
@@ -315,6 +341,8 @@ var tutorialState = {
         }
     },
     endTutorial: function() {
+        tutorialMusicPlaying = false;
+        tutorialMusic.stop();
         door.animations.play('openDoor');
         var doorOpenSFX = game.add.audio('creakylightwoodendoor1');
         doorOpenSFX.play();
@@ -488,6 +516,10 @@ var tutorialState = {
         else if (nextPractice=="down" && player.y>=192) {
             nextPractice = "shoot";
         }
+    },
+    triggerSound: function(player, soundTrigger) {
+        soundTrigger.kill();
+        successSFX.play();
     },
     trainerUpdate: function() {
         if (nextPractice=="right" && tutorialPractice=="") {

@@ -21,6 +21,7 @@ var manaRegenHolder = 500;
 var manaRegenEndLevelAdjust = 0;
 var manaRegenInterval = manaRegenHolder;
 var manaRefillAvailable = false;
+var first = true;
 
 var timerBeam;
 var timerBeamEvent;
@@ -54,12 +55,22 @@ var qKey;
 var stars;
 var door;
 var doorway;
+var doorAvailable = false;
 var levelUpImage;
 var coins = 1500;
 var stage = 1;
 var bestStage = 0;
 var reward = 0;
+
+var hudDisplay;
+var hpBar;
+var manaBar;
+var xpBar;
+var hpCrop;
+var manaCrop;
+var xpCrop;
 var stageText;
+var coinDisplay;
 var coinsText;
 var healthText;
 var resultBackground;
@@ -79,7 +90,9 @@ var bottleSprite;
 var bottleText;
 var nextLevelButton;
 var xp = 0;
+var xpDisplay = 0;
 var nextLevelXp = 10;
+var nextLevelXpDisplay = 10;
 var health = 3;
 var maxHealth = 3;
 var mana = 60;
@@ -108,6 +121,7 @@ var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1
              118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130];
 var sceneryCount = 0;
 var backgroundScene = "";
+var gameMusic;
 /* global game */
 /* global Phaser */
 var playState = {
@@ -119,15 +133,63 @@ var playState = {
         if (Math.random()>0.66 || stage == 65) { 
             game.add.sprite(0, 0, 'field');
             backgroundScene = "wasteland";
+            gameMusic = game.add.audio('wastelandMusic');
+            gameMusic.play();
         }
         else if(Math.random()<0.34) {
             game.add.sprite(0, 0, 'stonepavingOvergrown');
             backgroundScene = "ruins";
+            gameMusic = game.add.audio('ruinsMusic');
+            gameMusic.play();
         }
         else {
             game.add.sprite(0, 0, 'forestBackground');
             backgroundScene = "forest";
+            gameMusic = game.add.audio('forestMusic');
+            gameMusic.play();
         }
+        
+        //  Set up gui and display text
+        if (coins>=1000000) {
+            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
+        }
+        else {
+            coinsText = game.add.bitmapText(395, 10, 'font', coins, 30);
+        }
+        hudDisplay = game.add.sprite(0, 0, 'hudDisplay');
+        hudDisplay.scale.setTo(1.1, 1.1);
+        hpBar = game.add.sprite(92, 7, 'hudBarRed');
+        hpBar.scale.setTo(1.1, 1.1);
+        hpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        hpBar.crop(hpCrop);
+        healthText = game.add.bitmapText(93, 7, 'fontWhite', 'HP: ' + health + "/" + maxHealth, 15);
+        manaBar = game.add.sprite(92, 28, 'hudBarBlue');
+        manaBar.scale.setTo(1.1, 1.1);
+        manaCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        manaBar.crop(manaCrop);
+        manaText = game.add.bitmapText(93, 28, 'fontWhite', 'MP: ' + mana + "/" + maxMana, 15); 
+        xpBar = game.add.sprite(92, 50, 'hudBarGreen');
+        xpBar.scale.setTo(1.1, 1.1);
+        xpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        xpBar.crop(xpCrop);
+        xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
+        this.xpDisplayConvert();
+        if (playerLevel>=10) {
+           playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
+        }
+        else {
+           playerLevelText = game.add.bitmapText(26, 23, 'font', playerLevel, 30); 
+        }
+        
+        stageText = game.add.bitmapText(600, 10, 'font', 'Stage: ' + stage, 30); 
+        coinsText.alpha = 0.7;
+        xpText.alpha = 0.7;
+        healthText.alpha = 0.7;
+        manaText.alpha = 0.7;
+        playerLevelText.alpha = 0.7;
+        stageText.alpha = 0.7;
+        coinDisplay = game.add.sprite(360, 8, 'coin');
+        coinDisplay.frame = 0;
         
         // The player and its settings
         player = game.add.sprite(16, game.world.height - 50, 'dude');
@@ -226,6 +288,9 @@ var playState = {
               }
               var baddieX = (remainder-1)*64;
               var baddieY = Math.floor((array[i]-1)/13)*64;
+              if (baddieY<0 || baddieY.isNaN) {
+                  baddieY = 0;
+              }
               if (Math.random()>(0.6) && (baddieTotal>10) && ((baddieTotal-baddieCreated)*0.1365)>9&& evilwizardCount<1) {
                 this.evilwizardCreate(baddieX, baddieY);
                 console.log(i + ": evil wizard, " + baddieX + ", " + baddieY);
@@ -379,7 +444,7 @@ var playState = {
                 }
                 else if (backgroundScene=="ruins") {
                     var statue = platforms.create(blockX, blockY, 'statue');
-                    statue.body.setSize(30, 18, 1, 45);
+                    statue.body.setSize(30, 24, 1, 45);
                     statue.body.immovable = true;
                     statue.frame = Math.floor(Math.random()*4.99);
                 }
@@ -483,7 +548,8 @@ var playState = {
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         qKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
         
-        //  Set up text
+        /*
+        //  Set up gui and display text
         if (coins>=1000000) {
             coinsText = game.add.bitmapText(10, 600, 'font', 'Coins: ' + (Math.round(coins/1000))/1000 + "M", 30);
         }
@@ -495,6 +561,12 @@ var playState = {
         playerLevelText = game.add.bitmapText(625, 600, 'font', 'Your Level: ' + playerLevel, 30);
         stageText = game.add.bitmapText(335, 600, 'font', 'Stage: ' + stage, 30);    
         manaText = game.add.bitmapText(330, 10, 'font', 'Mana: ' + mana, 30); 
+        coinsText.alpha = 0.7;
+        xpText.alpha = 0.7;
+        healthText.alpha = 0.7;
+        playerLevelText.alpha = 0.7;
+        stageText.alpha = 0.7;
+        manaText.alpha = 0.7; */
         if (beamUnlockShown==true) {
             beamSprite = game.add.sprite(223, 597, 'beamIcon');
             beamSprite.frame = 1;
@@ -503,7 +575,7 @@ var playState = {
         if (manaRefillUnlockShown==true) {
             bottleSprite = game.add.sprite(535, 597, 'bottle');
             bottleSprite.frame = 1;
-            bottleText = game.add.bitmapText(538, 607, 'font', ' Q', 24);
+            bottleText = game.add.bitmapText(536, 605, 'font', ' Q', 24);
         }
         resultBackground = game.add.sprite(-1000, 150, 'scrollStrip');
         levelRecordBackground = game.add.sprite(-1000, 370, 'scrollStrip');
@@ -513,12 +585,6 @@ var playState = {
         levelRecord = game.add.bitmapText(325, 380, 'font', '', 24);
         levelRecord2 = game.add.bitmapText(310, 410, 'font', '', 18);
         levelRecord3 = game.add.bitmapText(220, 435, 'font', '', 18);
-        coinsText.alpha = 0.7;
-        xpText.alpha = 0.7;
-        healthText.alpha = 0.7;
-        playerLevelText.alpha = 0.7;
-        stageText.alpha = 0.7;
-        manaText.alpha = 0.7;
     },
     
     update: function() {
@@ -544,26 +610,27 @@ var playState = {
         game.physics.arcade.collide(zombieBirds, zombieBirds); 
         //  Check to see if player overlaps with a chest    
         game.physics.arcade.overlap(player, stars, this.collectStar, null, this);
+        game.physics.arcade.overlap(door, stars, this.collectStar, null, this);
         if (baddieCount<=0) {
-            game.physics.arcade.collide(player, door, this.doorOpen, null, this);
-        }
+            game.physics.arcade.collide(player, door, this.doorOpen, null, this);        }
+        
         if (game.time.now>invulnerableTimer){
             player.alpha = 1;
-            game.physics.arcade.collide(player, baddies, this.badTouch, null, this);
-            game.physics.arcade.collide(player, swordZombies, this.badTouch, null, this);
-            game.physics.arcade.collide(player, bossZombies, this.badTouchTwo, null, this);
-            game.physics.arcade.collide(player, flames, this.badTouch, null, this);
-            game.physics.arcade.collide(player, flameBullets, this.badTouch, null, this);
-            game.physics.arcade.collide(player, skeletons, this.badTouchTwo, null, this);
-            game.physics.arcade.collide(player, mummies, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, baddies, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, swordZombies, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, bossZombies, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, flames, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, flameBullets, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, skeletons, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, mummies, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, iceBeams, this.badTouch, null, this);
             game.physics.arcade.overlap(player, iceBeams, this.freeze, null, this);
             game.physics.arcade.overlap(player, waterShots, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, zombieBirds, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, miniZombieBirds, this.badTouchTwo, null, this);
-            game.physics.arcade.collide(player, spiders, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, spiders, this.badTouch, null, this);
             game.physics.arcade.overlap(player, treeBeasts, this.badTouchTwo, null, this);
-            game.physics.arcade.collide(player, evilRoots, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, evilRoots, this.badTouchTwo, null, this);
         }
         else {
             player.alpha = 0.5;
@@ -637,7 +704,7 @@ var playState = {
         if ((cursors.right.isDown || cursors.left.isDown || cursors.up.isDown || cursors.down.isDown) && game.time.now>bulletTimer && player.isAlive && mana>=manaCost) {
             this.fire();
             mana -= manaCost;
-            manaText.text = "Mana: " + mana;
+            manaText.text = "MP: " + mana + "/" + maxMana;
         }
         
         this.baddieUpdate();
@@ -657,6 +724,12 @@ var playState = {
         this.manaRefillTimerUpdate();
         this.swordZombieUpdate();
         //this.coinUpdate();
+        hpCrop.x = (1-(health/maxHealth))*80;
+        hpBar.updateCrop();
+        manaCrop.x = (1-(mana/maxMana))*80;
+        manaBar.updateCrop();
+        xpCrop.x = (1-(xp/nextLevelXp))*80;
+        xpBar.updateCrop();
     },
     baddieCreate: function(x, y, colour) {
         if (colour=="green") {
@@ -926,24 +999,24 @@ var playState = {
         if (swordZombie.collide == false) {
             swordZombie.collide = true;
             if (swordZombie.x>=platforms.x && swordZombie.y>=platforms.y) {
-                swordZombie.body.velocity.y -= 100;
-                swordZombie.body.velocity.x += 20;
-                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y += 100; swordZombie.body.velocity.x -= 20; swordZombie.collide = true; });
+                swordZombie.body.velocity.y -= 180;
+                swordZombie.body.velocity.x += 50;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y += 180; swordZombie.body.velocity.x -= 50; swordZombie.collide = false; });
             }
             else if (swordZombie.x>=platforms.x && swordZombie.y<platforms.y) {
-                swordZombie.body.velocity.x -= 100;
-                swordZombie.body.velocity.y += 20;
-                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x += 100; swordZombie.body.velocity.y -= 20; swordZombie.collide = true; });
+                swordZombie.body.velocity.x -= 180;
+                swordZombie.body.velocity.y += 50;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x += 180; swordZombie.body.velocity.y -= 50; swordZombie.collide = false; });
             }
             else if (swordZombie.x<platforms.x && swordZombie.y>=platforms.y) {
-                swordZombie.body.velocity.y += 100;
-                swordZombie.body.velocity.x -= 20;
-                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y -= 100; swordZombie.body.velocity.x += 20; swordZombie.collide = true; });
+                swordZombie.body.velocity.y += 180;
+                swordZombie.body.velocity.x -= 50;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.y -= 180; swordZombie.body.velocity.x += 50; swordZombie.collide = false; });
             }
             else if (swordZombie.x<platforms.x && swordZombie.y<platforms.y) {
-                swordZombie.body.velocity.x += 100;
-                swordZombie.body.velocity.y -= 20;
-                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x -= 100; swordZombie.body.velocity.y += 20; swordZombie.collide = true; });
+                swordZombie.body.velocity.x += 180;
+                swordZombie.body.velocity.y -= 50;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function () { swordZombie.body.velocity.x -= 180; swordZombie.body.velocity.y += 50; swordZombie.collide = false; });
             }
         }
         else {
@@ -1160,8 +1233,10 @@ var playState = {
             if ((game.time.now > flame.timer) && flame.isAlive) {
                 var flameBullet = flameBullets.create(flame.x, flame.y, 'flame');
                 flameBullet.animations.add('fire', [0], true);
-                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 116);
+                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 130);
                 flameBullet.animations.play('fire');
+                flameBullet.checkWorldBounds = true;
+                flameBullet.outOfBoundsKill = true;
                 flame.timer = game.time.now + flameBulletSpacing;
                 var flameShot = game.add.audio('flameShot');
                 flameShot.play();
@@ -1177,6 +1252,8 @@ var playState = {
         treeBeast.health = 44;
         treeBeast.maxHealth = 44;
         treeBeast.frame = 0;
+        treeBeast.shadow = treeBeast.addChild(game.add.sprite(17, 11, 'treeShadow'));
+        treeBeast.shadow.alpha = 0.35,
         game.physics.arcade.enable(treeBeast);
         treeBeast.body.immovable = true;
         treeBeast.isAlive = true;
@@ -1207,12 +1284,14 @@ var playState = {
     treeBeastUpdate: function() {
         var self = this;
         treeBeasts.forEach(function(treeBeast) {
-            if ((Math.abs(player.x - (treeBeast.x+52))) + (Math.abs(player.y - (treeBeast.y+26))) < 110 || treeBeast.active==true) {
-                treeBeast.active = true;
-                treeBeast.animations.play('reveal');
-                game.time.events.add(Phaser.Timer.SECOND * 1, function () { treeBeast.animations.stop(); treeBeast.animations.play('wiggle'); });
+            if (treeBeast.active==true) {
+                treeBeast.animations.play('wiggle');
             }
-            else if (treeBeast.isAlive && treeBeast.rootTimer<game.time.now){
+            else if ((((Math.abs(player.x - (treeBeast.x+52))) + (Math.abs(player.y - (treeBeast.y+26))) < 110) || treeBeast.health<treeBeast.maxHealth) && treeBeast.active==false) {
+                treeBeast.animations.play('reveal');
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { treeBeast.animations.stop(); treeBeast.active = true; treeBeast.animations.play('wiggle'); });
+            }
+            if (treeBeast.isAlive && treeBeast.rootTimer<game.time.now){
                 var random = (Math.floor(Math.random()*20))-10;
                 var randomX = random + player.x;
                 var randomY = random + player.y;
@@ -1284,6 +1363,7 @@ var playState = {
             
             var x = 0;
             var y = 0;
+            var beamSFX = game.add.audio('shotSFX');
             
             if (player.x < 400) {
                 x = player.x + 100;
@@ -1309,7 +1389,7 @@ var playState = {
                 charge.animations.add('chargeUp', [0, 1, 2, 3, 4, 4], 2, false);
                 charge.animations.play('chargeUp');
                 evilwizard.chargeTimer = game.time.now + 10000;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function() { charge.kill();});
+                game.time.events.add(Phaser.Timer.SECOND * 2, function() { charge.kill(); beamSFX.play();});
             }
             if (game.time.now > evilwizard.shotTimer && evilwizard.isAlive) {
                 var iceBeam = iceBeams.create(evilwizard.x + 16, evilwizard.y + 24, 'iceBeamMini');
@@ -1317,8 +1397,6 @@ var playState = {
                 game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.animations.play('beam');
-                var beamSFX = game.add.audio('shotSFX');
-                beamSFX.play();
                 evilwizard.shotTimer = game.time.now + 8;
                 game.time.events.add(Phaser.Timer.SECOND * 5, function() { 
                                                                 iceBeams.forEach(function(iceBeam) { 
@@ -1354,6 +1432,7 @@ var playState = {
         swampCreature.shotTimer4 = game.time.now + 6500;
         swampCreature.shotTimer5 = game.time.now + 7000;
         swampCreature.isAlive = true;
+        swampCreature.body.immovable = true;
         
         swampCreature.healthBarBack = swampCreature.addChild(game.add.graphics(0, 0));
         swampCreature.healthBarBack.lineStyle(3, 0xba3500, 1);
@@ -1387,6 +1466,7 @@ var playState = {
                 swampCreature.crouchTimer = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.jumpTimer && swampCreature.isAlive) {
+                swampCreature.body.immovable = false;
                 console.log('jump');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
@@ -1395,6 +1475,7 @@ var playState = {
                 swampCreature.jumpTimer = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer1 && swampCreature.isAlive) {
+                swampCreature.body.immovable = true;
                 console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
@@ -1418,6 +1499,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x+15, player.y+25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
+                var waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer2 = game.time.now + 10000;
             }
@@ -1428,6 +1510,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x+5, player.y-15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
+                var waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer3 = game.time.now + 10000;
             }
@@ -1438,6 +1521,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x-15, player.y-25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
+                var waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer4 = game.time.now + 10000;
             }
@@ -1448,6 +1532,7 @@ var playState = {
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
                 game.physics.arcade.moveToXY(waterShot, player.x-25, player.y+15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
+                var waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer5 = game.time.now + 10000;
             }
@@ -1636,7 +1721,7 @@ var playState = {
                wandText.text = "Weaponsmith +";
                wandText.tint = 000000;
                weaponsmithDropReward += weaponsmithDRBoost;
-               game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
+               game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); wandText.text = ""; });
             }
             else if (chance<=1.12) {
                var armour = game.add.sprite(coin.x, coin.y, 'armour');
@@ -1644,7 +1729,7 @@ var playState = {
                armourText.text = "Armourer +";
                armourText.tint = 000000;
                armourerDropReward += armourerDRBoost;
-               game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
+               game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); armourText.text = ""; });
             }
             else if (chance<=1.18) {
                var ring = game.add.sprite(coin.x, coin.y, 'ring');
@@ -1652,7 +1737,7 @@ var playState = {
                ringText.text = "Enchanter +";
                ringText.tint = 000000;
                enchanterDropReward += enchanterDRBoost;
-               game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
+               game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); ringText.text = ""; });
             }
             else if (chance<=1.24) {
                var buff = game.add.sprite(coin.x, coin.y, 'buff');
@@ -1660,18 +1745,18 @@ var playState = {
                buffText.text = "Trainer +";
                buffText.tint = 000000;
                trainerDropReward += trainerDRBoost;
-               game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
+               game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); buffText.text = ""; });
             }
         });
         coins += coinAmount;
         if (coins>=1000000) {
-            coinsText.text = 'Coins: ' + (Math.round(coins/1000))/1000 + "M";
+            coinsText.text = (Math.round(coins/1000))/1000 + "M";
         }
         else {
-            coinsText.text = 'Coins: ' + coins;
+            coinsText.text = coins;
         }
         mana ++;
-        manaText.text = "Mana: " + mana;
+        manaText.text = "MP: " + mana + "/" + maxMana;
         star.kill();
     },
     badTouch: function() {
@@ -1681,7 +1766,7 @@ var playState = {
             health -= damage;
             var grunt = game.add.audio('grunt');
             grunt.play();
-            healthText.text = 'Health: ' + health + '/' + maxHealth;
+            healthText.text = 'HP: ' + health + '/' + maxHealth;
             invulnerableTimer = game.time.now + invulnerableSpacing;
         }
         else {
@@ -1695,7 +1780,7 @@ var playState = {
             health -= damage;
             var grunt = game.add.audio('grunt');
             grunt.play();
-            healthText.text = 'Health: ' + health + '/' + maxHealth;
+            healthText.text = 'HP: ' + health + '/' + maxHealth;
             invulnerableTimer = game.time.now + invulnerableSpacing;
             if (stage==55 && bossZombieKilled==false) {
                 this.badTouch();
@@ -1729,7 +1814,6 @@ var playState = {
     fire: function() {
         var bullet = bullets.create(player.x + 10, player.y + 15, 'bullet');
         bullet.animations.add('spin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], 13, true);
-        
         var emitter = game.add.emitter(game.world.centerX, game.world.centerY, 20);
         emitter.makeParticles('bulletParticles', [0, 1, 2, 3]);
         emitter.gravity.y = 0;
@@ -1743,6 +1827,8 @@ var playState = {
         emitter.lifespan = 500;
         bullet.scale.x = 0.8;
         bullet.scale.y = 0.8;
+        bullet.checkWorldBounds = true;
+        bullet.outOfBoundsKill = true;
         
         if (cursors.left.isDown) {
             game.physics.arcade.moveToXY(bullet, 0, bullet.y, shotSpeed);
@@ -1893,7 +1979,7 @@ var playState = {
                 death.frame = 10;
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount --;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -1962,7 +2048,7 @@ var playState = {
                 death.frame = 10;
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 62;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2007,7 +2093,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.spiderDeathSFX();
             xp += 5;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 3;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2047,7 +2133,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.zombieDeathSFX();
             xp += 6;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 4;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2095,7 +2181,7 @@ var playState = {
             else {
                 xp += 6;
             }
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 5;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2118,7 +2204,7 @@ var playState = {
             flame.isAlive = false;
             this.sizzleSFX();
             xp += 8;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 6;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2163,7 +2249,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.mummyDeathSFX();
             xp += 9;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 7;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2210,7 +2296,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.birdDeathSFX();
             xp += 8;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -=2;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2249,7 +2335,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.birdDeathSFX();
             xp += 6;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 2;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2276,7 +2362,7 @@ var playState = {
             swampCreatureDeathSFX.play();
             swampCreature.isAlive = false;
             xp += 14;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 9;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2299,7 +2385,7 @@ var playState = {
             treeBeast.isAlive = false;
             this.woodSmashSFX();
             xp += 14;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             if (stage==65 && bossTreeBeastKilled==false) {
                 baddieCount -= 5.2;
             }
@@ -2330,7 +2416,7 @@ var playState = {
             this.maleDeathSFX();
             evilwizard.isAlive = false;
             xp += 19;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             baddieCount -= 10;
             this.checkLevelUp();
             this.checkStageComplete();
@@ -2342,15 +2428,16 @@ var playState = {
         }
     },
     checkStageComplete: function() {
-        if (baddieCount <= 0) {
-            if (player.x < 75 && player.y < 120) {
-                doorway = game.add.sprite(750, 40, 'doorway');
-                door = game.add.sprite(750, 40, 'animateddoor');
+        if (baddieCount <= 0 && doorAvailable==false) {
+            if (player.x < 75 && player.y < 145) {
+                doorway = game.add.sprite(750, 70, 'doorway');
+                door = game.add.sprite(750, 70, 'animateddoor');
             }
             else {
-                doorway = game.add.sprite(5, 40, 'doorway');
-                door = game.add.sprite(5, 40, 'animateddoor');
+                doorway = game.add.sprite(5, 70, 'doorway');
+                door = game.add.sprite(5, 70, 'animateddoor');
             }
+            doorAvailable = true;
             manaRegenEndLevelAdjust = 250;
             runSpeedEndLevelAdjust = 100;
             door.animations.add('openDoor', [0, 1, 2, 3], 4, false);
@@ -2368,6 +2455,8 @@ var playState = {
         manaRegenEndLevelAdjust = 0;
         runSpeedEndLevelAdjust = 0;
         player.kill();
+        door.kill();
+        doorAvailable = false;
         var self = this;
         game.time.events.add(Phaser.Timer.SECOND * 2, function () {   self.startNextLevel();  });
     },
@@ -2375,7 +2464,7 @@ var playState = {
         if (game.time.now>manaRegenTimer && mana<maxMana) {
             mana++;
             manaRegenTimer = game.time.now + manaRegenInterval;
-            manaText.text = "Mana: " + mana;
+            manaText.text = "MP: " + mana + "/" + maxMana;
         }
     },
     questComplete: function() {
@@ -2395,16 +2484,17 @@ var playState = {
             maxHealth ++;
             maxMana += 2;
             shotPower += 0.035;
-            health = maxHealth;
+            health++;
             mana = maxMana;
             playerLevel ++;
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
-            manaText.text = "Mana: " + mana;
-            healthText.text = 'Health: ' + health + "/" + maxHealth;
-            playerLevelText.text = 'Your Level: ' + playerLevel;
+            this.xpDisplayConvert();
+            manaText.text = "MP: " + mana + "/" + maxMana;
+            healthText.text = 'HP: ' + health + "/" + maxHealth;
+            playerLevelText.text = playerLevel;
         }
     },
     startNextLevel: function() {
+        gameMusic.stop();
         stage ++;
         starTotal += 0.75;
         baddieTotal ++;
@@ -2435,12 +2525,20 @@ var playState = {
     playerDeath: function() {
         // Removes the player from the screen
         player.kill();
+        gameMusic.stop();
         this.maleDeathSFX();
         var death = game.add.sprite(player.x, player.y, 'deathSheet');
         death.frame = 0;
-        game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+        var teleportSFX = game.add.audio('teleport');
+        game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); 
+                                                                     var playerTeleport = game.add.sprite(death.x+5, death.y+5, 'playerTeleport');
+                                                                     playerTeleport.animations.add('teleport', [0, 1, 2, 3], 8, false);
+                                                                     playerTeleport.animations.play('teleport');
+                                                                     teleportSFX.play();
+                                                                     game.time.events.add(Phaser.Timer.SECOND * 0.5, function () {  playerTeleport.kill(); });
+                                                                     });
         player.isAlive = false;
-        healthText.text = "Health: 0/" + maxHealth;
+        healthText.text = "HP: 0/" + maxHealth;
         if (stage>bestStage) {
             while (stage>bestStage) {
                 bestStage++;
@@ -2454,27 +2552,31 @@ var playState = {
             levelRecord2.text = "New Highest Stage Record!";
             levelRecord3.text = "            You receive " + Math.round(reward*10) + " XP and " + Math.round(reward*20) + " Coins!";
             xp += Math.round(reward*10);
-            xpText.text = 'XP: ' + Math.round(xp) + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             this.checkLevelUp();
             coins += Math.round(reward*20);
             if (coins>=1000000) {
-                coinsText.text = 'Coins: ' + (Math.round(coins/1000))/1000 + "M";
+                coinsText.text = (Math.round(coins/1000))/1000 + "M";
             }
             else {
-                coinsText.text = 'Coins: ' + coins;
+                coinsText.text = coins;
             }
             reward = 0;
         }
         questEndCoins = coins;
         questTotalCoins = questEndCoins - questStartCoins;
         resultBackground.x = 96;
-        resultText.text = 'Your Majesty, it is time to come home!';
-        resultText2.text = 'You found ' + questTotalCoins + ' coins on your quest.'
-        resultText3.text = "  The Merchant Guild will double your coins for a minute of your time."
+        resultText.text = ' Your Majesty, it is time to come home!';
+        resultText2.text = ' You found ' + questTotalCoins + ' coins on your quest.'
+        resultText3.text = "   The Merchant Guild will double your coins for a minute of your time."
         var addStartButton = game.add.button(190, 250, 'blankButton', this.adWatch, this);
         var addStartText = game.add.bitmapText(220, 275, 'font', 'Yes, watch ad', 16);
         var endLevelButton = game.add.button(410, 250, 'blankButton', this.questComplete, this);
         var endLevelText = game.add.bitmapText(440, 275, 'font', 'No, return to my City', 16);
+        if (first==true) {
+            assistant = "welcomeBack";
+            first = false;
+        }
     },
     adWatch: function() {
         coins += questTotalCoins;
@@ -2499,6 +2601,9 @@ var playState = {
     beamTimerUpdate: function() {
         if (timerBeam!=null && timerBeam.running) {
             beamSprite.frame = 0;
+            beamText.fontSize = 19;
+            beamText.x = 234;
+            beamText.y = 607;
             beamText.text = this.formatTime(Math.round((timerBeamEvent.delay - timerBeam.ms) / 1000));
         }
     },
@@ -2507,6 +2612,9 @@ var playState = {
         timerBeam.stop();
         beamWeapon = true;
         beamSprite.frame = 1;
+        beamText.fontSize = 16;
+        beamText.x = 230;
+        beamText.y = 608;
         beamText.text = 'SPACE';
     },
     manaRefillActivate: function() {
@@ -2525,6 +2633,9 @@ var playState = {
     manaRefillTimerUpdate: function() {
         if (timerMana!=null && timerMana.running) {
             bottleSprite.frame = 0;
+            bottleText.x = 532;
+            bottleText.y = 607;
+            bottleText.fontSize = 16;
             bottleText.text = this.formatTime(Math.round((timerManaEvent.delay - timerMana.ms) / 1000));
         }
     },
@@ -2533,6 +2644,9 @@ var playState = {
         timerMana.stop();
         manaRefillAvailable = true;
         bottleSprite.frame = 1;
+        bottleText.x = 536;
+        bottleText.y = 605;
+        bottleText.fontSize = 24;
         bottleText.text = ' Q';
     },
     formatTime: function(s) {
@@ -2547,5 +2661,20 @@ var playState = {
         tree.body.immovable = true;
         tree.Shadow = tree.addChild(game.add.sprite(-18, 11, 'treeShadow'));
         tree.Shadow.alpha = 0.35;
+    },
+    xpDisplayConvert: function() {
+        if (xp>=1000) {
+            xpDisplay = (Math.round(xp/100))/10 + 'k'; 
+        }
+        else {
+            xpDisplay = Math.round(xp);
+        }
+        if (nextLevelXp>=1000) {
+            nextLevelXpDisplay = (Math.round(nextLevelXp/100))/10 + 'k'; 
+        }
+        else {
+            nextLevelXpDisplay = Math.round(nextLevelXp);
+        }
+        xpText.text = "XP: " + xpDisplay + '/' + nextLevelXpDisplay;
     },
 };

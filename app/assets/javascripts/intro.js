@@ -2,8 +2,11 @@ var cutScene;
 var typewriter;
 var lowerTypewriter;
 var skipText;
+var introMusic;
 var introState = {
     create: function() {
+        introMusic = game.add.audio('introCreditsMusic');
+        introMusic.play();
         cutScene = game.add.sprite(0, 0, 'introCutscene');
         game.add.sprite(0, 0, 'cutsceneBorder');
         game.add.button(-5, -5, 'blankButton', this.skip, this);
@@ -41,6 +44,7 @@ var introState = {
         cutScene.y = -Math.floor((cutScene.scale.y - 1)*300);
     },
     skip: function() {
+        introMusic.stop();
         game.state.start('city');
     },
     lowerTypewriterStart: function() {

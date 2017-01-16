@@ -1,15 +1,16 @@
 /* global game */
 /* global Phaser */
 /* global coins */
-/* global wood */
-/* global stone */
+/* global coinDisplay */
 
 var currentTime = 0;
 var year = 0;
 var population = 100;
 var happiness = 44;
+var happinessDisplay;
 var popScore = 0;
 var popText;
+var popDisplay;
 var cityCoinsText;
 var cityHappinessText;
 var cityYearText;
@@ -25,6 +26,9 @@ var education = 25;
 var popHealth = 25;
 var justice = 25;
 var defence = 25;
+var troopNumber = Math.round(defence/4);
+var troopText;
+var troopDisplay;
 var utilities = 25;
 var weaponsmith = 25;
 var armourer = 25;
@@ -63,12 +67,19 @@ var shop;
 var defending = true;
 var defenceChance = 0;
 
+var educationHighlight;
+var healthHighlight;
+
 var townWoman1;
 var townMan1;
 var townWoman2;
 var townMan2;
 var warriorMan1;
 var warriorWoman1;
+var girl;
+var boy;
+var girlActive= false;
+var boyActive= false;
 
 var assistant = "first";
 var assistantSprite;
@@ -121,8 +132,14 @@ var marriageOptionsDisplayText;
 var marriageOptionsHideButton;
 var marriageOptionsHideText;
 
+var cityMusic;
+var cityMusicPlaying = false;
+
 var cityState = {
     create: function() {
+        /*if (cityMusic!=null) {
+            cityMusic.stop();
+        }*/
         game.add.sprite(0, 0, 'stonepaving');
         game.add.sprite(16, 80, 'shopBorder');
         game.add.sprite(176, 80, 'shopBorder');
@@ -137,6 +154,14 @@ var cityState = {
         game.add.sprite(496, 415, 'shopBorder');
         game.add.sprite(656, 415, 'shopBorder');
         
+        console.log(cityMusicPlaying);
+        //if (!cityMusic.isPlaying) {
+        if (cityMusicPlaying!=true) {
+            cityMusic = game.add.audio('cityMusic');
+            cityMusic.allowMultiple = false;
+            cityMusic.play();
+            cityMusicPlaying = true;
+        }
         residentialButton = game.add.button(32, 40, 'HousingDpt', this.resOptions, this);
         game.add.sprite(124, 148, 'barrel');
         commerceButton = game.add.button(192, 40, 'CommerceDpt', this.comOptions, this);
@@ -146,41 +171,78 @@ var cityState = {
         healthButton = game.add.button(672, 40, 'HealthDpt', this.healthOptions, this);
         game.add.sprite(764, 148, 'barrel');
 
-        townWoman1 = game.add.sprite(850, 160, 'townWoman');
+        townWoman1 = game.add.sprite(850*Math.random(), 160, 'townWoman');
         game.physics.arcade.enable(townWoman1);
         townWoman1.animations.add('left', [9, 10, 11], 10, true);
         
-        townWoman2 = game.add.sprite(157, 700, 'townWoman');
+        townWoman2 = game.add.sprite(157, 700*Math.random(), 'townWoman');
         game.physics.arcade.enable(townWoman2);
         townWoman2.animations.add('up', [0, 1, 2], 10, true);
         
-        townMan1 = game.add.sprite(-50, 170, 'townMan');
+        townMan1 = game.add.sprite(850*Math.random(), 170, 'townMan');
         game.physics.arcade.enable(townMan1);
         townMan1.animations.add('right', [3, 4, 5], 10, true);
         
-        townMan2 = game.add.sprite(641, -50, 'townMan');
+        townMan2 = game.add.sprite(641, 700*Math.random(), 'townMan');
         game.physics.arcade.enable(townMan2);
         townMan2.animations.add('down', [6, 7, 8], 10, true);
+        
+        if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>60) {
+            girlActive = true;
+            girl = game.add.sprite(0, 12, "children");
+            girl.scale.x = 0.7;
+            girl.scale.y = 0.7;
+            girl.animations.add('right', [9, 10, 11], 10, true);
+            girl.animations.add('down', [15, 16, 17], 10, true);
+            girl.animations.add('up', [3, 4, 5], 10, true);
+            girl.animations.add('left', [21, 22, 23], 10, true);
+            game.add.tween(girl)
+                .to({ x: 490 }, 3600)
+                .to({ y: 170 }, 1200)
+                .to({ x: 0 }, 3600)
+                .to({ y: 12 }, 1200).loop().start();
+        }
+        else {
+            girlActive = false;
+        }
+        if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>70) {
+            boyActive = true;
+            boy = game.add.sprite(0, 170, "children");
+            boy.scale.x = 0.7;
+            boy.scale.y = 0.7;
+            boy.animations.add('right', [6, 7, 8], 10, true);
+            boy.animations.add('down', [12, 13, 14], 10, true);
+            boy.animations.add('up', [0, 1, 2], 10, true);
+            boy.animations.add('left', [18, 19, 20], 10, true);
+            game.add.tween(boy)
+                .to({ y: 12 }, 1200)
+                .to({ x: 490 }, 3600)
+                .to({ y: 170 }, 1200)
+                .to({ x: 0 }, 3600).loop().start();
+        }
+        else {
+            boyActive = false;
+        }
         
         justiceButton = game.add.button(32, 210, 'JusticeDpt', this.justiceOptions, this);
         game.add.sprite(37, 318, 'barrel');
         castleButton = game.add.button(290, 180, 'castle', this.castleOptions, this);
         armyButton = game.add.button(672, 210, 'DefenceDpt', this.armyOptions, this);
 
-        warriorMan1 = game.add.sprite(-50, 348, 'warriorMan');
+        warriorMan1 = game.add.sprite(800*Math.random()-50, 348, 'warriorMan');
         game.physics.arcade.enable(warriorMan1);
         warriorMan1.animations.add('right', [3, 4, 5], 10, true);
         
-        warriorWoman1 = game.add.sprite(-56, 369, 'warriorWoman');
+        warriorWoman1 = game.add.sprite(warriorMan1.x-6, 369, 'warriorWoman');
         game.physics.arcade.enable(warriorWoman1);
         warriorWoman1.animations.add('right', [3, 4, 5], 10, true);
         warriorWoman1.speechBubble = warriorWoman1.addChild(game.add.sprite(-195, -115, 'speechBubble'));
-        warriorWoman1.speech1 = warriorWoman1.addChild(game.add.bitmapText(-145, -106, 'font', '    Testing...', 15));
-        warriorWoman1.speech2 = warriorWoman1.addChild(game.add.bitmapText(-175, -89, 'font', '           One...', 15));
-        warriorWoman1.speech3 = warriorWoman1.addChild(game.add.bitmapText(-187, -72, 'font', '              Two...', 15));
-        warriorWoman1.speech4 = warriorWoman1.addChild(game.add.bitmapText(-187, -55, 'font', '              Three...', 15));
-        warriorWoman1.speech5 = warriorWoman1.addChild(game.add.bitmapText(-175, -38, 'font', '           Err...', 15));
-        warriorWoman1.speech6 = warriorWoman1.addChild(game.add.bitmapText(-145, -21, 'font', '    Hello?', 15));
+        warriorWoman1.speech1 = warriorWoman1.addChild(game.add.bitmapText(-145, -106, 'fontWhite', '    Testing...', 15));
+        warriorWoman1.speech2 = warriorWoman1.addChild(game.add.bitmapText(-175, -89, 'fontWhite', '           One...', 15));
+        warriorWoman1.speech3 = warriorWoman1.addChild(game.add.bitmapText(-187, -72, 'fontWhite', '              Two...', 15));
+        warriorWoman1.speech4 = warriorWoman1.addChild(game.add.bitmapText(-187, -55, 'fontWhite', '              Three...', 15));
+        warriorWoman1.speech5 = warriorWoman1.addChild(game.add.bitmapText(-175, -38, 'fontWhite', '           Err...', 15));
+        warriorWoman1.speech6 = warriorWoman1.addChild(game.add.bitmapText(-145, -21, 'fontWhite', '    Hello?', 15));
         warriorWoman1.speech1.tint = 000000;
         warriorWoman1.speech2.tint = 000000;
         warriorWoman1.speech3.tint = 000000;
@@ -204,19 +266,30 @@ var cityState = {
         else {
             defendButton = game.add.button(0, 540, 'defendButton', this.defend, this);
         }
-        popText = game.add.bitmapText(10, 10, 'font', 'Population: ' + population, 26);
-        cityCoinsText = game.add.bitmapText(260, 10, 'font', 'Coins: ' + coins, 26);
-        cityHappinessText = game.add.bitmapText(480, 10, 'font', 'Happiness: ' + happiness, 26);
+        if (assistant!="first" && (educationFunding<=40||healthFunding<=40)) {
+            this.highlight();
+        }
+        popDisplay = game.add.sprite(10, 6, 'townWoman');
+        popDisplay.frame = 7;
+        popText = game.add.bitmapText(50, 10, 'font', population, 26);
+        troopDisplay = game.add.sprite(160, 6, 'warriorMan');
+        troopDisplay.frame = 7;
+        troopText = game.add.bitmapText(200, 10, 'font', troopNumber, 26);
+        coinDisplay = game.add.sprite(310, 8, 'coin');
+        coinDisplay.frame = 0;
+        cityCoinsText = game.add.bitmapText(340, 10, 'font', coins, 26);
+        happinessDisplay = game.add.sprite(510, 8, 'smileyFace');
+        cityHappinessText = game.add.bitmapText(550, 10, 'font', happiness, 26);
         cityYearText = game.add.bitmapText(700, 10, 'font', 'Year: ' + year, 26);
         messageText = game.add.bitmapText(250, 370, 'font', '', 26);
         
         assistantSpeechBubble = game.add.button(-200, 469, 'speechBubble', this.assistantChange, this); 
-        assistantText = game.add.bitmapText(200, 477, 'font', '', 15);
-        assistantText2 = game.add.bitmapText(170, 494, 'font', '', 15);
-        assistantText3 = game.add.bitmapText(158, 509, 'font', '', 15);
-        assistantText4 = game.add.bitmapText(158, 524, 'font', '', 15);
-        assistantText5 = game.add.bitmapText(170, 539, 'font', '', 15);
-        assistantText6 = game.add.bitmapText(190, 554, 'font', '', 15);
+        assistantText = game.add.bitmapText(200, 477, 'fontWhite', '', 15);
+        assistantText2 = game.add.bitmapText(170, 494, 'fontWhite', '', 15);
+        assistantText3 = game.add.bitmapText(158, 509, 'fontWhite', '', 15);
+        assistantText4 = game.add.bitmapText(158, 524, 'fontWhite', '', 15);
+        assistantText5 = game.add.bitmapText(170, 539, 'fontWhite', '', 15);
+        assistantText6 = game.add.bitmapText(190, 554, 'fontWhite', '', 15);
         assistantText.tint = 000000;
         assistantText2.tint = 000000;
         assistantText3.tint = 000000;
@@ -224,6 +297,12 @@ var cityState = {
         assistantText5.tint = 000000;
         assistantText6.tint = 000000;
         this.warriorWomanAdvice();
+        this.assistantShow();
+        
+        if (marriageOptions==true) {
+            marriageOptionsPromptButton = game.add.button(10, 50, 'blankButton', this.marriageOptionsChoose, this);
+            marriageOptionsPromptText = game.add.bitmapText(50, 75, 'font', 'View Alliance Offers', 16);
+        }
     },
     update: function() {
         this.timeCheck();
@@ -261,6 +340,35 @@ var cityState = {
         if (warriorMan1.x > 850) {
             warriorMan1.x = -50;
         }
+        if (girlActive==true) {
+            if (girl.y==12 && girl.x<490) {
+                girl.animations.play('right');
+            }
+            else if (girl.y<170 && girl.x==490) {
+                girl.animations.play('down');
+            }
+            else if (girl.y==170 && girl.x>0) {
+                girl.animations.play('left');
+            }
+            else if (girl.y>12 && girl.x==0) {
+                girl.animations.play('up');
+            }
+        }
+        if (boyActive==true) {
+            if (boy.y==12 && boy.x<490) {
+                boy.animations.play('right');
+            }
+            else if (boy.y<170 && boy.x==490) {
+                boy.animations.play('down');
+            }
+            else if (boy.y==170 && boy.x>0) {
+                boy.animations.play('left');
+            }
+            else if (boy.y>12 && boy.x==0) {
+                boy.animations.play('up');
+            }
+        }
+        
         if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>95 && marriageOptions==false) {
             this.marriageOptionsPrompter();
             marriageOptions = true;
@@ -268,7 +376,10 @@ var cityState = {
     },
     timeCheck: function() {
         if (questStartTime<questEndTime) {
-            questYears = Math.round((questEndTime - questStartTime)/150000);
+            questYears = Math.round((questEndTime - questStartTime)/250000);
+            if (questYears>10) {
+                questYears = 10;
+            }
             questStartTime = 0;
             questEndTime = 0;
         }
@@ -314,9 +425,9 @@ var cityState = {
           else {
             population += 9 - year/6;
           }
-          if (population>5000000) {
-             coins += population-5000000;
-             population = 5000000;
+          if (population>999999) {
+             coins += population-999999;
+             population = 999999;
           }
           else if (population>0) {
             population = Math.round(population);
@@ -325,7 +436,7 @@ var cityState = {
             population = 0;
           }
           console.log("Population: " + population);
-          questHappinessModifier = Math.floor(stage/5) + questsUndertaken;
+          questHappinessModifier = Math.floor(stage/20) + questsUndertaken;
           happiness = Math.round(20 + questHappinessModifier + (4*(housing/15 + commercial/100 + industrial/100 + education/100 + popHealth/15 + justice/20 + defence/100 + utilities/80)));
           if (happiness>100) {
               happiness = 100;
@@ -345,7 +456,7 @@ var cityState = {
           economyMod -= ((tax-30)/3000);
           console.log("Productivity Modifier: " + economyMod);
           previousIncome = income;
-          income = (population*economyMod*(1.17*tax))+105;
+          income = population*economyMod*(1.17*tax);
           console.log("Income: " + income);
           averageFunding = Math.round((housingFunding + commercialFunding + industrialFunding + educationFunding + healthFunding
                          + justiceFunding + defenceFunding + utilitiesFunding + weaponsmithFunding + armourerFunding
@@ -354,7 +465,7 @@ var cityState = {
                          + justiceFunding + defenceFunding + utilitiesFunding + weaponsmithFunding + armourerFunding
                           + enchanterFunding + trainerFunding;
           previousExpenditure = expenditure;
-          expenditure = totalFunding*(5 + year/32) + (population*(totalFunding/20));
+          expenditure = totalFunding*(4.45 + year/22) + (population*(totalFunding/20));
           console.log("Expenditure: " + expenditure);
           previousNetIncome = netIncome;
           netIncome = income - expenditure;
@@ -373,14 +484,16 @@ var cityState = {
                 this.create();
             }
         }
-        popText.text = 'Population: ' + population;
+        popText.text = population;
+        troopNumber = Math.round(defence/4);
+        troopText.text = troopNumber;
         if (coins>=1000000) {
-            cityCoinsText.text = 'Coins: ' + (Math.round(coins/1000))/1000 + "M";
+            cityCoinsText.text = (Math.round(coins/1000))/1000 + "M";
         }
         else {
-            cityCoinsText.text = 'Coins: ' + coins;
+            cityCoinsText.text = coins;
         }
-        cityHappinessText.text = 'Happiness: ' + happiness;
+        cityHappinessText.text = happiness;
         cityYearText.text = "Year: " + year;
         this.popScoreCalc();
         this.save();
@@ -524,6 +637,8 @@ var cityState = {
     },
     quest: function() {
         game.world.removeAll();
+        cityMusic.stop();
+        cityMusicPlaying = false;
         stage = Math.floor(stage/5)*5;
         if (stage<1) {
             stage = 1;
@@ -560,6 +675,8 @@ var cityState = {
         game.state.start('play');
     },
     defend: function() {
+        cityMusic.stop();
+        cityMusicPlaying = false;
         game.world.removeAll();
         health = maxHealth;
         mana = maxMana;
@@ -567,9 +684,13 @@ var cityState = {
         defenceStrength = Math.round(defence/4);
         defenderCount = Math.round(defence/4);
         if (tutorialDefence=="first") {
+            cityMusic.stop();
+            cityMusicPlaying = false;
             game.state.start('tutorial');
         }
         else {
+            cityMusic.stop();
+            cityMusicPlaying = false;
             game.state.start('defence');
         }
     },
@@ -611,6 +732,26 @@ var cityState = {
                     assistantText6.text = "";
                 }
                 break;
+            case "tutorialEnd":
+                assistantSprite = game.add.sprite(350, 469, 'assistant');
+                assistantSpeechBubble.x = 150;
+                assistantText.text = " Excellent work,";
+                assistantText2.text = " Your Majesty. However ";
+                assistantText3.text = " we cannot just wait for the";
+                assistantText4.text = " next attack. Your city needs";
+                assistantText5.text = "you to undertake a quest";
+                assistantText6.text = "  to raise funds.";
+                break;
+            case "welcomeBack":
+                assistantSprite = game.add.sprite(350, 469, 'assistant');
+                assistantSpeechBubble.x = 150;
+                assistantText.text = " Marvellous,";
+                assistantText2.text = "Your Majesty. Songs will ";
+                assistantText3.text = "be sung of your deeds down";
+                assistantText4.text = " the ages. Now to share the";
+                assistantText5.text = "  treasure among your ";
+                assistantText6.text = " offices of state.";
+                break;
             case "debt":
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
@@ -650,9 +791,34 @@ var cityState = {
                 assistantText4.text = "";
                 assistantText5.text = "";
                 assistantText6.text = "";
+                this.highlight();
                 this.assistantShow();
                 break;
             case "defend":
+                assistant = "";
+                assistantSprite.kill();
+                assistantSpeechBubble.kill();
+                assistantText.text = "";
+                assistantText2.text = "";
+                assistantText3.text = "";
+                assistantText4.text = "";
+                assistantText5.text = "";
+                assistantText6.text = "";
+                this.create();
+                break;
+            case "tutorialEnd":
+                assistant = "";
+                assistantSprite.kill();
+                assistantSpeechBubble.kill();
+                assistantText.text = "";
+                assistantText2.text = "";
+                assistantText3.text = "";
+                assistantText4.text = "";
+                assistantText5.text = "";
+                assistantText6.text = "";
+                this.create();
+                break;
+            case "welcomeBack":
                 assistant = "";
                 assistantSprite.kill();
                 assistantSpeechBubble.kill();
@@ -691,6 +857,20 @@ var cityState = {
                 break;
         }
     },
+    highlight: function() {
+        if (educationFunding>40 || first==false) {}
+        else {
+        educationHighlight = game.add.sprite(510, 56, 'deptHighlight');
+        educationHighlight.alpha = 0.1;
+        game.add.tween(educationHighlight).to( { alpha: 1 }, 700, Phaser.Easing.Quadratic.In, true, 0, Number.MAX_VALUE, true);
+        }
+        if (healthFunding>40 || first==false) {}
+        else {
+        healthHighlight = game.add.sprite(670, 56, 'deptHighlight'); 
+        healthHighlight.alpha = 0.1; 
+        game.add.tween(healthHighlight).to( { alpha: 1 }, 700, Phaser.Easing.Quadratic.In, true, 0, Number.MAX_VALUE, true);
+        }
+    },
     save: function() {
         var saveObject = {};
         saveObject.time = game.time.now;
@@ -700,6 +880,7 @@ var cityState = {
         saveObject.shotSpeed = shotSpeed;
         saveObject.manaRegenHolder = manaRegenHolder;
         saveObject.bossZombieKilled = bossZombieKilled;
+        saveObject.bossTreeBeastKilled = bossTreeBeastKilled;
         saveObject.coins = coins;
         saveObject.stage = stage;
         saveObject.bestStage = bestStage;
@@ -736,6 +917,8 @@ var cityState = {
         saveObject.defenceChance = defenceChance;
         saveObject.assistant = assistant;
         saveObject.tutorial = tutorial;
+        saveObject.tutorialDefence = tutorialDefence;
+        saveObject.first = first;
         saveObject.housingFunding = housingFunding;
         saveObject.commercialFunding = commercialFunding;
         saveObject.industrialFunding = industrialFunding;
@@ -818,8 +1001,9 @@ var cityState = {
     },
     restart: function() {
         bossZombieKilled = false;
-        coins = 1000 + startingGoldIncrease;
-        stage = 1;
+        bossTreeBeastKilled = false;
+        coins = 1500 + startingGoldIncrease;
+        stage = Math.floor(bestStage/4);
         bestStage = 0;
         year = 0;
         population = 100 + startingPopIncrease;
@@ -868,22 +1052,23 @@ var cityState = {
         enchanterDropReward += artisanIncrease;
         trainerDropReward += artisanIncrease;
         marriageOptions = false;
-        this.create();
+        cityMusic.stop();
+        game.state.start('reset');
     },
     marriageOptionsPrompter: function() {
         assistant = "marriage";
         marriageOptionsPromptButton = game.add.button(10, 50, 'blankButton', this.marriageOptionsChoose, this);
-        marriageOptionsPromptText = game.add.bitmapText(20, 75, 'font', 'View Alliance Offers', 16);
+        marriageOptionsPromptText = game.add.bitmapText(50, 75, 'font', 'View Alliance Offers', 16);
     },
     marriageOptionsChoose: function() {
         marriageOptionsBackground = game.add.sprite(96, 150, 'scrollStrip');
-        marriageOptionsText1 = game.add.bitmapText(205, 160, 'font', 'Choose an Alliance?', 24);
-        marriageOptionsText2 = game.add.bitmapText(110, 190, 'font', 'Your city, gold and stage progress will be reset,', 18);
-        marriageOptionsText3 = game.add.bitmapText(110, 190, 'font', '    but you will be rewarded very generously.', 18);
+        marriageOptionsText1 = game.add.bitmapText(300, 160, 'font', 'Choose an Alliance?', 24);
+        marriageOptionsText2 = game.add.bitmapText(220, 190, 'font', 'Your city, gold and stage progress will be reset,', 18);
+        marriageOptionsText3 = game.add.bitmapText(220, 215, 'font', '    but you will be rewarded very generously.', 18);
         marriageOptionsDisplayButton = game.add.button(190, 250, 'blankButton', this.marriageOptions, this);
-        marriageOptionsDisplayText = game.add.bitmapText(220, 275, 'font', 'Yes', 16);
+        marriageOptionsDisplayText = game.add.bitmapText(280, 280, 'font', 'Yes', 16);
         marriageOptionsHideButton = game.add.button(410, 250, 'blankButton', this.marriageOptionsHide, this);
-        marriageOptionsHideText = game.add.bitmapText(440, 275, 'font', 'No, not yet', 16);
+        marriageOptionsHideText = game.add.bitmapText(480, 280, 'font', 'No, not yet', 16);
     },
     marriageOptionsHide: function() {
         marriageOptionsBackground.kill();
@@ -970,10 +1155,10 @@ var cityState = {
         var princess3 = game.add.sprite(647, 200, 'princesses');
         princess3.frame = Math.floor(Math.random()*23.99);
         xpReduction3 = Math.round(Math.random()*40)+10;
-        startingPopIncrease3 = Math.floor(Math.random()*6)-3;
-        startingGoldIncrease3 = Math.round(Math.random()*150)-50;
+        startingPopIncrease3 = Math.floor(Math.random()*9)-4;
+        startingGoldIncrease3 = Math.round(Math.random()*350)-150;
         artisanIncrease3 = Math.floor(Math.random()*3)-1;
-        deptEffectIncrease3 = Math.round(Math.random()*10)-5;
+        deptEffectIncrease3 = Math.round(Math.random()*14)-6;
         if (startingPopIncrease3<0) {
             startingPopIncrease3 = 0;
         }
@@ -1018,23 +1203,23 @@ var cityState = {
         this.restart();
     },
     warriorWomanAdvice: function() {
-        var advice = Math.floor(Math.random()*7.99);
+        var advice = Math.floor(Math.random()*9.99);
         switch(advice) {
             case 0:
                 warriorWoman1.speech1.text = "   Opening";
                 warriorWoman1.speech2.text = " chests while questing";
-                warriorWoman1.speech3.text = " gives a small mana boost.";
-                warriorWoman1.speech4.text = "        Use it wisely.";
-                warriorWoman1.speech5.text = "";
-                warriorWoman1.speech6.text = "";
+                warriorWoman1.speech3.text = " gives gold and artisan ";
+                warriorWoman1.speech4.text = "  materials but also a";
+                warriorWoman1.speech5.text = "  small mana boost.";
+                warriorWoman1.speech6.text = " Use it wisely.";
                 break;
             case 1:
                 warriorWoman1.speech1.text = "       Mana";
-                warriorWoman1.speech2.text = "     recharges much ";
-                warriorWoman1.speech3.text = "   faster while standing ";
-                warriorWoman1.speech4.text = "          still.";
-                warriorWoman1.speech5.text = "";
-                warriorWoman1.speech6.text = "";
+                warriorWoman1.speech2.text = "   recharges much faster";
+                warriorWoman1.speech3.text = "    while standing still,";
+                warriorWoman1.speech4.text = "    and even faster when";
+                warriorWoman1.speech5.text = "   a stage is cleared of";
+                warriorWoman1.speech6.text = "   enemies.";
                 break;
             case 2:
                 warriorWoman1.speech1.text = "      Your";
@@ -1045,11 +1230,11 @@ var cityState = {
                 warriorWoman1.speech6.text = "";
                 break;
             case 3:
-                warriorWoman1.speech1.text = "   If your";
-                warriorWoman1.speech2.text = " approval rating reaches ";
-                warriorWoman1.speech3.text = "  at least 95, neighbouring";
-                warriorWoman1.speech4.text = "  kingdoms may offer you ";
-                warriorWoman1.speech5.text = "      an alliance.";
+                warriorWoman1.speech1.text = "     If your";
+                warriorWoman1.speech2.text = "  approval rating reaches ";
+                warriorWoman1.speech3.text = "   at least 95, neighbouring";
+                warriorWoman1.speech4.text = "   kingdoms may offer you ";
+                warriorWoman1.speech5.text = "         an alliance.";
                 warriorWoman1.speech6.text = "";
                 break;
             case 4:
@@ -1061,12 +1246,12 @@ var cityState = {
                 warriorWoman1.speech6.text = "";
                 break;
             case 5:
-                warriorWoman1.speech1.text = "    Items";
-                warriorWoman1.speech2.text = "     found in chests";
-                warriorWoman1.speech3.text = "       can boost your";
-                warriorWoman1.speech4.text = "    Artisans' skill level.";
-                warriorWoman1.speech5.text = "";
-                warriorWoman1.speech6.text = "";
+                warriorWoman1.speech1.text = "     Special";
+                warriorWoman1.speech2.text = "    materials found in ";
+                warriorWoman1.speech3.text = "    chests can boost your";
+                warriorWoman1.speech4.text = "   artisans' skill level and";
+                warriorWoman1.speech5.text = "  increase the power of";
+                warriorWoman1.speech6.text = "   their perks.";
                 break;
             case 6:
                 warriorWoman1.speech1.text = "Taxes can fund";
@@ -1083,6 +1268,22 @@ var cityState = {
                 warriorWoman1.speech4.text = "    questing, but at a slower";
                 warriorWoman1.speech5.text = "         rate.";
                 warriorWoman1.speech6.text = "";
+                break;
+            case 8:
+                warriorWoman1.speech1.text = "  Your artisans ";
+                warriorWoman1.speech2.text = "can add potent perks to";
+                warriorWoman1.speech3.text = "weapons and armour as the";
+                warriorWoman1.speech4.text = " city grows. Higher funding";
+                warriorWoman1.speech5.text = "  and better materials";
+                warriorWoman1.speech6.text = "   will help.";
+                break;
+            case 9:
+                warriorWoman1.speech1.text = " Reward chests ";
+                warriorWoman1.speech2.text = "come in different colours.";
+                warriorWoman1.speech3.text = " Red chests give least, blue ";
+                warriorWoman1.speech4.text = "  then green give more. A";
+                warriorWoman1.speech5.text = "  yellow chest contains";
+                warriorWoman1.speech6.text = "   the most.";
                 break;
         }
         

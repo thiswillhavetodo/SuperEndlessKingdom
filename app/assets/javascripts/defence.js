@@ -3,6 +3,7 @@
 /* global coins */
 /* global player */
 /* global bullets */
+/* global defence */
 var attackers;
 var defenders;
 var obstacles;
@@ -12,6 +13,7 @@ var attackStrength = 8;
 var attackerCount = attackStrength;
 var defenceStrength = Math.round(defence/4);
 var defenderCount = Math.round(defence/4);
+var defenceAudio;
 
 var tutorialDefence = "first";
 var tutorialSprite;
@@ -28,6 +30,10 @@ var defenceState = {
         game.world.removeAll();
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.add.sprite(0, 0, 'cityOutskirts');
+        
+        defenceAudio = game.add.audio('defence');
+        defenceAudio.stop();
+        defenceAudio.loopFull(0.5);
         // The player and its settings
         player = game.add.sprite(16, 120, 'dude');
         
@@ -89,19 +95,60 @@ var defenceState = {
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         
         //  Set up text
-        coinsText = game.add.bitmapText(60, 600, 'font', 'Coins: ' + coins, 30);
+        /*coinsText = game.add.bitmapText(60, 600, 'font', 'Coins: ' + coins, 30);
         xpText = game.add.bitmapText(270, 10, 'font', 'XP: ' + xp + '/' + nextLevelXp, 30);
         healthText = game.add.bitmapText(637, 10, 'font', 'Health: ' + health + "/" + maxHealth, 30);
         playerLevelText = game.add.bitmapText(15, 10, 'font', 'Player Level: ' + playerLevel, 30);
         manaText = game.add.bitmapText(465, 10, 'font', 'Mana: ' + mana, 30); 
-        resultText = game.add.bitmapText(220, 350, 'font', '', 52);
-        resultText2 = game.add.bitmapText(270, 450, 'font', '', 24);
-        resultText3 = game.add.bitmapText(190, 500, 'font', '', 24);
         coinsText.alpha = 0.7;
         xpText.alpha = 0.7;
         healthText.alpha = 0.7;
         playerLevelText.alpha = 0.7;
+        manaText.alpha = 0.7;*/
+        
+        //  Set up gui and display text
+        if (coins>=1000000) {
+            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
+        }
+        else {
+            coinsText = game.add.bitmapText(395, 10, 'font', coins, 30);
+        }
+        hudDisplay = game.add.sprite(0, 0, 'hudDisplay');
+        hudDisplay.scale.setTo(1.1, 1.1);
+        hpBar = game.add.sprite(92, 7, 'hudBarRed');
+        hpBar.scale.setTo(1.1, 1.1);
+        hpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        hpBar.crop(hpCrop);
+        healthText = game.add.bitmapText(93, 7, 'fontWhite', 'HP: ' + health + "/" + maxHealth, 15);
+        manaBar = game.add.sprite(92, 28, 'hudBarBlue');
+        manaBar.scale.setTo(1.1, 1.1);
+        manaCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        manaBar.crop(manaCrop);
+        manaText = game.add.bitmapText(93, 28, 'fontWhite', 'MP: ' + mana + "/" + maxMana, 15); 
+        xpBar = game.add.sprite(92, 50, 'hudBarGreen');
+        xpBar.scale.setTo(1.1, 1.1);
+        xpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        xpBar.crop(xpCrop);
+        xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
+        this.xpDisplayConvert();
+        if (playerLevel>=10) {
+           playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
+        }
+        else {
+           playerLevelText = game.add.bitmapText(26, 23, 'font', playerLevel, 30); 
+        }
+        
+        coinsText.alpha = 0.7;
+        xpText.alpha = 0.7;
+        healthText.alpha = 0.7;
         manaText.alpha = 0.7;
+        playerLevelText.alpha = 0.7;
+        coinDisplay = game.add.sprite(360, 8, 'coin');
+        coinDisplay.frame = 0;
+        
+        resultText = game.add.bitmapText(220, 350, 'font', '', 52);
+        resultText2 = game.add.bitmapText(270, 450, 'font', '', 24);
+        resultText3 = game.add.bitmapText(190, 500, 'font', '', 24);
         
         tutorialSpeechBubble = game.add.button(-200, 469, 'speechBubble', this.tutorialChange, this); 
         tutorialText = game.add.bitmapText(200, 477, 'font', '', 15);
@@ -178,7 +225,7 @@ var defenceState = {
         if ((cursors.right.isDown || cursors.left.isDown || cursors.up.isDown || cursors.down.isDown) && game.time.now>bulletTimer && player.isAlive && mana>=5) {
             this.fire();
             mana -= 5;
-            manaText.text = "Mana: " + mana;
+            manaText.text = 'MP: ' + mana + "/" + maxMana;
         }
         this.manaRegen();
         this.defenderUpdate();
@@ -187,6 +234,12 @@ var defenceState = {
         else {
             this.tutorialShow();
         }
+        hpCrop.x = (1-(health/maxHealth))*80;
+        hpBar.updateCrop();
+        manaCrop.x = (1-(mana/maxMana))*80;
+        manaBar.updateCrop();
+        xpCrop.x = (1-(xp/nextLevelXp))*80;
+        xpBar.updateCrop();
     },
     defenderCreate: function(x, y) {
         if (Math.random()<0.5) {
@@ -331,7 +384,7 @@ var defenceState = {
             death.frame = 2;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             xp += 3;
-            xpText.text = 'XP: ' + xp + '/' + nextLevelXp;
+            this.xpDisplayConvert();
             attackerCount --;
             console.log(attackerCount);
             this.checkLevelUp();
@@ -432,7 +485,7 @@ var defenceState = {
             health -= (attackStrength-7);
             var grunt = game.add.audio('grunt');
             grunt.play();
-            healthText.text = 'Health: ' + health + '/' + maxHealth;
+            healthText.text = 'HP: ' + health + "/" + maxHealth;
             invulnerableTimer = game.time.now + invulnerableSpacing;
         }
         else {
@@ -441,9 +494,16 @@ var defenceState = {
             this.maleDeathSFX();
             var death = game.add.sprite(player.x, player.y, 'deathSheet');
             death.frame = 0;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+            var teleportSFX = game.add.audio('teleport');
+            game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); 
+                                                                     var playerTeleport = game.add.sprite(death.x+5, death.y+5, 'playerTeleport');
+                                                                     playerTeleport.animations.add('teleport', [0, 1, 2, 3], 8, false);
+                                                                     playerTeleport.animations.play('teleport');
+                                                                     teleportSFX.play();
+                                                                     game.time.events.add(Phaser.Timer.SECOND * 0.5, function () {  playerTeleport.kill(); });
+                                                                     });
             player.isAlive = false;
-            healthText.text = "Health: 0/" + maxHealth;
+            healthText.text = 'HP: 0/' + maxHealth;
             resultText.text = 'Time to go home!';
             endLevelButton = game.add.button(340, 250, 'blankButton', this.defenceComplete, this);
             game.add.bitmapText(370, 275, 'font', 'Return to my City', 16);
@@ -465,21 +525,21 @@ var defenceState = {
             health = maxHealth;
             mana = maxMana;
             playerLevel ++;
-            xpText.text = 'XP: ' + xp + '/' + nextLevelXp;
-            manaText.text = "Mana: " + mana;
-            healthText.text = 'Health: ' + health + "/" + maxHealth;
-            playerLevelText.text = 'Player Level: ' + playerLevel;
+            this.xpDisplayConvert();
+            manaText.text = 'MP: ' + mana + "/" + maxMana;
+            healthText.text = 'HP: ' + health + "/" + maxHealth;
+            playerLevelText.text = playerLevel;
         }
     },
     checkDefenceComplete: function() {
         if (attackerCount <= 0) {
-            if (player.x < 75 && player.y < 120) {
-                doorway = game.add.sprite(750, 40, 'doorway');
-                door = game.add.sprite(750, 40, 'animateddoor');
+            if (player.x < 75 && player.y < 145) {
+                doorway = game.add.sprite(750, 70, 'doorway');
+                door = game.add.sprite(750, 70, 'animateddoor');
             }
             else {
-                doorway = game.add.sprite(5, 40, 'doorway');
-                door = game.add.sprite(5, 40, 'animateddoor');
+                doorway = game.add.sprite(5, 70, 'doorway');
+                door = game.add.sprite(5, 70, 'animateddoor');
             }
             door.animations.add('openDoor', [0, 1, 2, 3], 4, false);
             game.physics.arcade.enable(door);
@@ -511,6 +571,7 @@ var defenceState = {
         var doorOpenSFX = game.add.audio('creakylightwoodendoor1');
         doorOpenSFX.play();
         player.kill();
+        defenceAudio.stop();
         var self = this;
         game.time.events.add(Phaser.Timer.SECOND * 2, function () {   self.defenceComplete();  });
     },
@@ -518,7 +579,7 @@ var defenceState = {
         if (game.time.now>manaRegenTimer && mana<maxMana) {
             mana++;
             manaRegenTimer = game.time.now + manaRegenInterval;
-            manaText.text = "Mana: " + mana;
+            manaText.text = 'MP: ' + mana + "/" + maxMana;
         }
     },
     npcFight: function(defender, attacker) {
@@ -594,6 +655,7 @@ var defenceState = {
                 tutorialText4.text = "    of our neighbours";
                 tutorialText5.text = "     to move here for";
                 tutorialText6.text = "  their protection.";
+                assistant = "tutorialEnd";
                 break;
             case "": 
                 tutorialText.text = "";
@@ -602,6 +664,7 @@ var defenceState = {
                 tutorialText4.text = "";
                 tutorialText5.text = "";
                 tutorialText6.text = "";
+                defenceAudio.stop();
                 this.create();
                 break;
         }
@@ -620,5 +683,20 @@ var defenceState = {
                 this.tutorialShow();
                 break;
         }
-    }
+    },
+    xpDisplayConvert: function() {
+        if (xp>=1000) {
+            xpDisplay = (Math.round(xp/100))/10 + 'k'; 
+        }
+        else {
+            xpDisplay = Math.round(xp);
+        }
+        if (nextLevelXp>=1000) {
+            nextLevelXpDisplay = (Math.round(nextLevelXp/100))/10 + 'k'; 
+        }
+        else {
+            nextLevelXpDisplay = Math.round(nextLevelXp);
+        }
+        xpText.text = "XP: " + xpDisplay + '/' + nextLevelXpDisplay;
+    },
 };
