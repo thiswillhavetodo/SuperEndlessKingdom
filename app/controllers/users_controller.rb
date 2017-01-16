@@ -2,6 +2,9 @@ class UsersController < ApplicationController
 	include UsersHelper
 
 	before_filter :zero_users_or_admin, only: [:new, :create]
+	
+	layout 'login'
+	layout 'application', :only => :show 
 
 	def zero_users_or_admin
 	  unless User.count == 0 || session[:user_id].to_i == 1
@@ -17,6 +20,7 @@ class UsersController < ApplicationController
 
 	def show
 		@user = User.find(params[:id])
+		
 		unless session[:user_id].to_i == @user.id.to_i
      	 flash[:notice] = "You don't have access to that user!"
      	 redirect_to root_path
