@@ -1,3 +1,7 @@
+/*global game*/
+/*global Phaser*/
+/*global Typewriter*/
+
 var cutScene;
 var typewriter;
 var lowerTypewriter;
