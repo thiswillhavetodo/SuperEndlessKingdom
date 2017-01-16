@@ -1,3 +1,5 @@
+/*global game*/
+/*global Phaser*/
 var bootState = {
     preload: function() {
         //game.load.image('star', 'assets/star.png');

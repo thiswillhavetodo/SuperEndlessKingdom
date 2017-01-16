@@ -1,3 +1,4 @@
+/*global Phaser*/
 var game = new Phaser.Game(832, 640, Phaser.AUTO, '');
 
 game.state.add('boot', bootState);

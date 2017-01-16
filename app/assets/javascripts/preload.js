@@ -1,4 +1,5 @@
 /*global game*/
+/*global Phaser*/
 var preloadState = {
     preload: function() {
     
