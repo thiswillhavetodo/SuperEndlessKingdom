@@ -1,4 +1,5 @@
 /*global game*/
+/*
 var bootState = {
     preload: function() {
         //game.load.image('star', 'assets/star.png');
@@ -7,4 +8,4 @@ var bootState = {
     create: function() {
         game.state.start('preload');
     }
-};
+};*/

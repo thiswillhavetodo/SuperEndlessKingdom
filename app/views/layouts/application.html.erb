@@ -13,7 +13,7 @@
     <%= yield %>
     <h5 class="loginInfo">
       <% if logged_in? %>
-        <%= javascript_include_tag "phaser.min.js"%>
+        <!-- <%= javascript_include_tag "phaser.min.js"%>
         <%= javascript_include_tag "typewriter.js"%>
         <%= javascript_include_tag "game.js"%>
         <%= javascript_include_tag "boot.js"%>
@@ -26,7 +26,7 @@
         <%= javascript_include_tag "shop.js"%>
         <%= javascript_include_tag "defence.js"%>
         <%= javascript_include_tag "tutorial.js"%>
-        <%= javascript_include_tag "reset.js"%>
+        <%= javascript_include_tag "reset.js"%> -->
         <%= "Logged in as #{current_user.username}" %>
         <%= link_to "(logout)", logout_path %>
       <% else %>

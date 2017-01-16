@@ -197,6 +197,7 @@ var enduranceBulletSpacing = 0;
 var enduranceBulletSpacingUpgrade;
 
 var maxFunding = false;
+var wellfunded = false;
 var priorityService = true;
 var shopSpeechBubble;
 var shopText = "";
