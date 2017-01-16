@@ -13,9 +13,11 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
+
+
 //= require phaser.min.js
 //= require typewriter.js
-//= require game.js
+
 //= require boot.js
 //= require preload.js
 //= require menu.js
@@ -27,4 +29,6 @@
 //= require defence.js
 //= require tutorial.js
 //= require reset.js
+//= require game.js
 //= require_tree .
+
