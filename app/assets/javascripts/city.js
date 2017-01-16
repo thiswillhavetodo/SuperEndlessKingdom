@@ -1208,10 +1208,10 @@ var cityState = {
             case 0:
                 warriorWoman1.speech1.text = "   Opening";
                 warriorWoman1.speech2.text = " chests while questing";
-                warriorWoman1.speech3.text = " gives gold and artisan ";
-                warriorWoman1.speech4.text = "  materials but also a";
-                warriorWoman1.speech5.text = "  small mana boost.";
-                warriorWoman1.speech6.text = " Use it wisely.";
+                warriorWoman1.speech3.text = "   gives gold and artisan ";
+                warriorWoman1.speech4.text = " materials but also a small";
+                warriorWoman1.speech5.text = "  mana boost. Use it";
+                warriorWoman1.speech6.text = "    wisely.";
                 break;
             case 1:
                 warriorWoman1.speech1.text = "       Mana";
