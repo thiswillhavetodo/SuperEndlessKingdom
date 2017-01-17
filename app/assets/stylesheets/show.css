@@ -1,0 +1,8 @@
+canvas  { 
+    display: inline !important;
+    position: relative;
+    margin-left: 50%;
+    left: -416px;
+    border: solid 5px black;
+    border-radius: 5px;
+}

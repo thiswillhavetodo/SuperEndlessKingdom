@@ -1,5 +1,7 @@
 class UserSessionsController < ApplicationController
-
+	
+	layout 'login'
+	
 	def new
 
 	end

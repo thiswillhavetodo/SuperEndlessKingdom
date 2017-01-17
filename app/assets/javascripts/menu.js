@@ -19,7 +19,10 @@ var weaponsmithAdTimerHolder;
 var armourerAdTimerHolder;
 var enchanterAdTimerHolder;
 var trainerAdTimerHolder;
+var canvasElement;
+
 /*global game*/
+
 var menuState = {
     create: function() {
         game.add.sprite(0, 0, 'menuBackground');
@@ -35,7 +38,11 @@ var menuState = {
         game.physics.arcade.enable(titlePlayer);
         titlePlayer.animations.add('left', [9, 10, 11], 10, true);
         themeSound = game.add.audio('titleTheme');
-        themeSound.play();
+        var displayCSS = document.getElementById("canvasID").style.left;
+        console.log(displayCSS);
+        if (document.getElementById("canvasID").style.display=='block') {
+            themeSound.play();
+        }
     }, 
     update: function() {
         titlePlayer.body.velocity.x = -100;
