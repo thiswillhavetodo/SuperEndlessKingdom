@@ -128,6 +128,8 @@ var preloadState = {
         game.load.image('hudBarGreen', '/assets/hudBarGreen.png');
         game.load.image('hudBarRed', '/assets/hudBarRed.png');
         game.load.image('hudDisplay', '/assets/hudDisplay.png');
+        game.load.image('advertImage', '/assets/advertImage.png');
+        game.load.image('closeButton', '/assets/closeButton.png');
         game.load.spritesheet('tutorialBarriers32x32', '/assets/tutorialBarriers32x32.png', 32, 32);
         game.load.spritesheet('tutorialDecorations36x32', '/assets/tutorialDecorations36x32.png', 36, 32);
         game.load.spritesheet('tutorialObstacles32x44', '/assets/tutorialObstacles32x44.png', 32, 44);

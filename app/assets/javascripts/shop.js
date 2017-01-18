@@ -2,6 +2,7 @@
 /* global population*/
 /* global coins*/
 /* global year*/
+/* global Phaser*/
 var shop;
 var close;
 var closeText;
@@ -661,6 +662,7 @@ var shopState = {
         }
         this.shopTextSelect();
         this.advertOptions();
+        this.adTimeUpdate();
     },
     shopClose: function() {
         game.world.removeAll();
@@ -1996,28 +1998,28 @@ var shopState = {
             switch(shop) {
                 case "weaponsmith":
                     console.log(shop);
-                    game.add.button(30, 150, 'blankButton', this.weaponsmithAd, this);
+                    game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     game.add.bitmapText(60, 175, 'font', 'Yes, watch ad', 16);
                     game.add.button(270, 150, 'blankButton', this.weaponsmithAdNo, this);
                     game.add.bitmapText(300, 175, 'font', 'No, not now', 16);
                     break;
                 case "armourer":
                     console.log(shop);
-                    var addStartButton = game.add.button(30, 150, 'blankButton', this.armourerAd, this);
+                    var addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     var addStartText = game.add.bitmapText(60, 175, 'font', 'Yes, watch ad', 16);
                     var addRejectButton = game.add.button(270, 150, 'blankButton', this.armourerAdNo, this);
                     var addRejectText = game.add.bitmapText(300, 175, 'font', 'No, not now', 16);
                     break;
                 case "enchanter":
                     console.log(shop);
-                    var addStartButton = game.add.button(30, 150, 'blankButton', this.enchanterAd, this);
+                    var addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     var addStartText = game.add.bitmapText(60, 175, 'font', 'Yes, watch ad', 16);
                     var addRejectButton = game.add.button(270, 150, 'blankButton', this.enchanterAdNo, this);
                     var addRejectText = game.add.bitmapText(300, 175, 'font', 'No, not now', 16);
                     break;
                 case "trainer":
                     console.log(shop);
-                    var addStartButton = game.add.button(30, 150, 'blankButton', this.trainerAd, this);
+                    var addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     var addStartText = game.add.bitmapText(60, 175, 'font', 'Yes, watch ad', 16);
                     var addRejectButton = game.add.button(270, 150, 'blankButton', this.trainerAdNo, this);
                     var addRejectText = game.add.bitmapText(300, 175, 'font', 'No, not now', 16);
@@ -2168,6 +2170,30 @@ var shopState = {
         }
         else {
             trainerDRBoost = 0.2;
+        }
+    },
+    adWatch: function() {
+        advertImage = game.add.sprite(185, 89, 'advertImage');
+        adStopTime = game.time.now + 14000;
+        adTimeText = game.add.bitmapText(622, 92, 'fontWhite', '', 21);
+        adTimeText.tint = 000000;
+        var self = this;
+        if (shop=="weaponsmith") {
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.weaponsmithAd, this) });
+        }
+        else if (shop=="armourer") {
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.armourerAd, this) });
+        }
+        else if (shop=="enchanter") {
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.enchanterAd, this) });
+        }
+        else if (shop=="trainer") {
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.trainerAd, this) });
+        }
+    },
+    adTimeUpdate: function() {
+        if (adTimeText!=null) {
+            adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
         }
     },
     weaponsmithAd: function() {

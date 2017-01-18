@@ -122,6 +122,9 @@ var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1
 var sceneryCount = 0;
 var backgroundScene = "";
 var gameMusic;
+var advertImage;
+var adStopTime;
+var adTimeText;
 /* global game */
 /* global Phaser */
 var playState = {
@@ -723,6 +726,7 @@ var playState = {
         this.beamTimerUpdate();
         this.manaRefillTimerUpdate();
         this.swordZombieUpdate();
+        this.adTimeUpdate();
         //this.coinUpdate();
         hpCrop.x = (1-(health/maxHealth))*80;
         hpBar.updateCrop();
@@ -2579,6 +2583,19 @@ var playState = {
         }
     },
     adWatch: function() {
+        advertImage = game.add.sprite(185, 89, 'advertImage');
+        adStopTime = game.time.now + 14000;
+        adTimeText = game.add.bitmapText(622, 92, 'fontWhite', '', 21);
+        adTimeText.tint = 000000;
+        var self = this;
+        game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.adClose, this) });
+    },
+    adTimeUpdate: function() {
+        if (adTimeText!=null) {
+            adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+        }
+    },
+    adClose: function() {
         coins += questTotalCoins;
         questEndTime = game.time.now;
         game.state.start('city');
