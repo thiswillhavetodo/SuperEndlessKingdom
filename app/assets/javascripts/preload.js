@@ -42,8 +42,6 @@ var preloadState = {
         game.load.image('tree', '/assets/Tree.png');
         game.load.image('treeShadow', '/assets/treeShadow.png');
         game.load.image('field', '/assets/wasteland.png');
-        //game.load.image('wood', '/assets/logpile.png');
-        //game.load.image('stone', '/assets/stone.png');
         game.load.image('gravestone', '/assets/gravestone.png');
         game.load.image('ChestRed', '/assets/ChestRed.png');
         game.load.image('ChestBlue', '/assets/ChestBlue.png');

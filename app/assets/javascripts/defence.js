@@ -14,6 +14,7 @@ var attackerCount = attackStrength;
 var defenceStrength = Math.round(defence/4);
 var defenderCount = Math.round(defence/4);
 var defenceAudio;
+var newCitizens;
 
 var tutorialDefence = "first";
 var tutorialSprite;
@@ -64,11 +65,11 @@ var defenceState = {
         }
         if (coins>=0) {
             for (var i=1; i<=defenceStrength; i++) {
-                if (i<=15) {
+                if (i<=12) {
                     this.defenderCreate(224, i*32);
                 }
                 else {
-                    this.defenderCreate(188, (i-15)*32);
+                    this.defenderCreate(188, (i-12)*32);
                 }
             }
         }
@@ -88,7 +89,7 @@ var defenceState = {
         }
         //  Our controls.
         cursors = game.input.keyboard.createCursorKeys();
-        fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
@@ -146,9 +147,8 @@ var defenceState = {
         coinDisplay = game.add.sprite(360, 8, 'coin');
         coinDisplay.frame = 0;
         
-        resultText = game.add.bitmapText(220, 350, 'font', '', 52);
-        resultText2 = game.add.bitmapText(270, 450, 'font', '', 24);
-        resultText3 = game.add.bitmapText(190, 500, 'font', '', 24);
+        resultBackground = game.add.sprite(-1000, 150, 'scrollStrip');
+        resultText = game.add.bitmapText(140, 185, 'font', '', 32);
         
         tutorialSpeechBubble = game.add.button(-200, 469, 'speechBubble', this.tutorialChange, this); 
         tutorialText = game.add.bitmapText(200, 477, 'font', '', 15);
@@ -227,12 +227,19 @@ var defenceState = {
             mana -= 5;
             manaText.text = 'MP: ' + mana + "/" + maxMana;
         }
+        
         this.manaRegen();
         this.defenderUpdate();
         this.attackerUpdate();
         }
         else {
+            player.body.velocity.x = 0;
+            player.body.velocity.y= 0;
             this.tutorialShow();
+        }
+        if (spaceBar.isDown && tutorialDefence!="" && game.time.now>assistantChangeTimer) {
+            this.tutorialChange();
+            assistantChangeTimer = game.time.now + 1000;
         }
         hpCrop.x = (1-(health/maxHealth))*80;
         hpBar.updateCrop();
@@ -500,13 +507,17 @@ var defenceState = {
                                                                      playerTeleport.animations.add('teleport', [0, 1, 2, 3], 8, false);
                                                                      playerTeleport.animations.play('teleport');
                                                                      teleportSFX.play();
+                                                                     defenceAudio.stop();
                                                                      game.time.events.add(Phaser.Timer.SECOND * 0.5, function () {  playerTeleport.kill(); });
                                                                      });
             player.isAlive = false;
+            population -= defenceStrength;
+            tutorialDefence = "defeat";
             healthText.text = 'HP: 0/' + maxHealth;
-            resultText.text = 'Time to go home!';
-            endLevelButton = game.add.button(340, 250, 'blankButton', this.defenceComplete, this);
-            game.add.bitmapText(370, 275, 'font', 'Return to my City', 16);
+            resultBackground.x = 96;
+            resultText.text = ' Your Majesty, it is time to come home!';
+            endLevelButton = game.add.button(305, 250, 'blankButton', this.defenceComplete, this);
+            game.add.bitmapText(355, 280, 'font', 'Return to my City', 16);
         }
     },
     checkLevelUp: function() {
@@ -532,7 +543,7 @@ var defenceState = {
         }
     },
     checkDefenceComplete: function() {
-        if (attackerCount <= 0) {
+        if (attackerCount <= 0 && player.isAlive) {
             if (player.x < 75 && player.y < 145) {
                 doorway = game.add.sprite(750, 70, 'doorway');
                 door = game.add.sprite(750, 70, 'animateddoor');
@@ -544,24 +555,24 @@ var defenceState = {
             door.animations.add('openDoor', [0, 1, 2, 3], 4, false);
             game.physics.arcade.enable(door);
             door.body.immovable = true;
-        }
-    },
-    defenceComplete: function() {
-        if  (attackerCount<=0 && player.isAlive) {
             if (defenderCount/defenceStrength >= 0.5) {
-                population += attackStrength-(defenceStrength-defenderCount)+2;
+                newCitizens = attackStrength-(defenceStrength-defenderCount)+2;
+                population += newCitizens;
                 attackStrength ++;
+                tutorialDefence = "victory";
             }
             else if (defenderCount/defenceStrength >= 0.25) {
-                population += Math.round(1+(attackStrength/10));
+                newCitizens = Math.round(1+(attackStrength/10));
+                population += newCitizens;
+                tutorialDefence = "victory";
             }
             else if (defenderCount/defenceStrength > 0){
                 population ++;
+                tutorialDefence = "narrowVictory";
             }
         }
-        else {
-            population -= defenceStrength;
-        }
+    },
+    defenceComplete: function() {
         defending = false;
         game.world.removeAll();
         game.state.start('city');
@@ -650,12 +661,42 @@ var defenceState = {
                 tutorialSprite = game.add.sprite(350, 469, 'assistant');
                 tutorialSpeechBubble.x = 150;
                 tutorialText.text = "  A convincing";
-                tutorialText2.text = "    victory may even";
-                tutorialText3.text = "   persuade the citizens";
-                tutorialText4.text = "    of our neighbours";
+                tutorialText2.text = "     victory may even";
+                tutorialText3.text = "    persuade the citizens";
+                tutorialText4.text = "       of our neighbours";
                 tutorialText5.text = "     to move here for";
                 tutorialText6.text = "  their protection.";
                 assistant = "tutorialEnd";
+                break;
+            case "victory":
+                tutorialSprite = game.add.sprite(350, 469, 'assistant');
+                tutorialSpeechBubble.x = 150;
+                tutorialText.text = "  You fought";
+                tutorialText2.text = "  them off! As news of";
+                tutorialText3.text = "   your victory spread our";
+                tutorialText4.text = "  city attracted " + newCitizens + " new ";
+                tutorialText5.text = "   immigrants to bolster ";
+                tutorialText6.text = "      our ranks.";
+                break;
+            case "narrowVictory":
+                tutorialSprite = game.add.sprite(350, 469, 'assistant');
+                tutorialSpeechBubble.x = 150;
+                tutorialText.text = "  A narrow";
+                tutorialText2.text = "    victory, but a ";
+                tutorialText3.text = " victory nonetheless. 1 new";
+                tutorialText4.text = "   citizen moved to";
+                tutorialText5.text = "    our city when word";
+                tutorialText6.text = "   spread.";
+                break;
+            case "defeat":
+                tutorialSprite = game.add.sprite(350, 469, 'assistant');
+                tutorialSpeechBubble.x = 150;
+                tutorialText.text = "  Oh no! Our";
+                tutorialText2.text = "  forces were routed.";
+                tutorialText3.text = "  Our reserves fought off";
+                tutorialText4.text = "  the attackers but the raid";
+                tutorialText5.text = "   killed " + defenceStrength + " of our";
+                tutorialText6.text = "   citizens.";
                 break;
             case "": 
                 tutorialText.text = "";
@@ -664,8 +705,8 @@ var defenceState = {
                 tutorialText4.text = "";
                 tutorialText5.text = "";
                 tutorialText6.text = "";
-                defenceAudio.stop();
-                this.create();
+                tutorialSprite.destroy();
+                tutorialSpeechBubble.destroy();
                 break;
         }
         
@@ -677,6 +718,24 @@ var defenceState = {
                 this.tutorialShow();
                 break;
             case "second":
+                tutorialDefence = "";
+                tutorialSprite.kill();
+                tutorialSpeechBubble.kill();
+                this.tutorialShow();
+                break;
+            case "victory":
+                tutorialDefence = "";
+                tutorialSprite.kill();
+                tutorialSpeechBubble.kill();
+                this.tutorialShow();
+                break;
+            case "narrowVictory":
+                tutorialDefence = "";
+                tutorialSprite.kill();
+                tutorialSpeechBubble.kill();
+                this.tutorialShow();
+                break;
+            case "defeat":
                 tutorialDefence = "";
                 tutorialSprite.kill();
                 tutorialSpeechBubble.kill();

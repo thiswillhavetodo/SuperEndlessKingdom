@@ -81,6 +81,8 @@ var boy;
 var girlActive= false;
 var boyActive= false;
 
+var spaceBar;
+var assistantChangeTimer = 0;
 var assistant = "first";
 var assistantSprite;
 var assistantSpeechBubble;
@@ -236,7 +238,7 @@ var cityState = {
         warriorWoman1 = game.add.sprite(warriorMan1.x-6, 369, 'warriorWoman');
         game.physics.arcade.enable(warriorWoman1);
         warriorWoman1.animations.add('right', [3, 4, 5], 10, true);
-        warriorWoman1.speechBubble = warriorWoman1.addChild(game.add.sprite(-195, -115, 'speechBubble'));
+        warriorWoman1.speechBubble = warriorWoman1.addChild(game.add.sprite(-195, -113, 'speechBubble'));
         warriorWoman1.speech1 = warriorWoman1.addChild(game.add.bitmapText(-145, -106, 'fontWhite', '    Testing...', 15));
         warriorWoman1.speech2 = warriorWoman1.addChild(game.add.bitmapText(-175, -89, 'fontWhite', '           One...', 15));
         warriorWoman1.speech3 = warriorWoman1.addChild(game.add.bitmapText(-187, -72, 'fontWhite', '              Two...', 15));
@@ -303,6 +305,8 @@ var cityState = {
             marriageOptionsPromptButton = game.add.button(10, 50, 'blankButton', this.marriageOptionsChoose, this);
             marriageOptionsPromptText = game.add.bitmapText(50, 75, 'font', 'View Alliance Offers', 16);
         }
+        
+        spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
     update: function() {
         this.timeCheck();
@@ -372,6 +376,11 @@ var cityState = {
         if ((housing+commercial+industrial+education+popHealth+justice+defence+utilities+weaponsmith+armourer+enchanter+trainer)/12>95 && marriageOptions==false) {
             this.marriageOptionsPrompter();
             marriageOptions = true;
+        }
+        
+        if (spaceBar.isDown && assistant!="" && game.time.now>assistantChangeTimer) {
+            this.assistantChange();
+            assistantChangeTimer = game.time.now + 1000;
         }
     },
     timeCheck: function() {
@@ -1215,15 +1224,15 @@ var cityState = {
                 break;
             case 1:
                 warriorWoman1.speech1.text = "       Mana";
-                warriorWoman1.speech2.text = "   recharges much faster";
-                warriorWoman1.speech3.text = "    while standing still,";
+                warriorWoman1.speech2.text = "  recharges much faster";
+                warriorWoman1.speech3.text = "      while standing still,";
                 warriorWoman1.speech4.text = "    and even faster when";
                 warriorWoman1.speech5.text = "   a stage is cleared of";
                 warriorWoman1.speech6.text = "   enemies.";
                 break;
             case 2:
                 warriorWoman1.speech1.text = "      Your";
-                warriorWoman1.speech2.text = " level and any Artisan";
+                warriorWoman1.speech2.text = "  level and any Artisan";
                 warriorWoman1.speech3.text = "  bonuses will pass to your";
                 warriorWoman1.speech4.text = "  children, should you have";
                 warriorWoman1.speech5.text = "             any.";
@@ -1231,7 +1240,7 @@ var cityState = {
                 break;
             case 3:
                 warriorWoman1.speech1.text = "     If your";
-                warriorWoman1.speech2.text = "  approval rating reaches ";
+                warriorWoman1.speech2.text = " approval rating reaches ";
                 warriorWoman1.speech3.text = "   at least 95, neighbouring";
                 warriorWoman1.speech4.text = "   kingdoms may offer you ";
                 warriorWoman1.speech5.text = "         an alliance.";
@@ -1240,7 +1249,7 @@ var cityState = {
             case 4:
                 warriorWoman1.speech1.text = "  Alliances";
                 warriorWoman1.speech2.text = "  with neighbours are ";
-                warriorWoman1.speech3.text = " often sealed by marriage.";
+                warriorWoman1.speech3.text = "  often sealed by marriage.";
                 warriorWoman1.speech4.text = "   The dowries can be very";
                 warriorWoman1.speech5.text = "        generous.";
                 warriorWoman1.speech6.text = "";
@@ -1254,19 +1263,19 @@ var cityState = {
                 warriorWoman1.speech6.text = "   their perks.";
                 break;
             case 6:
-                warriorWoman1.speech1.text = "Taxes can fund";
-                warriorWoman1.speech2.text = " services and help your";
-                warriorWoman1.speech3.text = "  kingdom grow. But if they";
-                warriorWoman1.speech4.text = " are too high they may drive";
-                warriorWoman1.speech5.text = "      people away.";
+                warriorWoman1.speech1.text = "   Taxes can ";
+                warriorWoman1.speech2.text = " fund services and help ";
+                warriorWoman1.speech3.text = " your kingdom grow. But if ";
+                warriorWoman1.speech4.text = " they are too high they may ";
+                warriorWoman1.speech5.text = "    drive people away.";
                 warriorWoman1.speech6.text = "";
                 break;
             case 7:
-                warriorWoman1.speech1.text = "  The years ";
-                warriorWoman1.speech2.text = "     still pass in the ";
-                warriorWoman1.speech3.text = "   city while you are out ";
-                warriorWoman1.speech4.text = "    questing, but at a slower";
-                warriorWoman1.speech5.text = "         rate.";
+                warriorWoman1.speech1.text = "   The years ";
+                warriorWoman1.speech2.text = "      still pass in the ";
+                warriorWoman1.speech3.text = "    city while you are out ";
+                warriorWoman1.speech4.text = "     questing, but at a ";
+                warriorWoman1.speech5.text = "      slower rate.";
                 warriorWoman1.speech6.text = "";
                 break;
             case 8:

@@ -213,7 +213,7 @@ var tutorialState = {
         
         //  Our controls.
         cursors = game.input.keyboard.createCursorKeys();
-        fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
@@ -264,6 +264,12 @@ var tutorialState = {
                 this.fire();
             }
         }
+        
+        if (spaceBar.isDown && tutorialPractice!="" && game.time.now>assistantChangeTimer) {
+            this.tutorialChange();
+            assistantChangeTimer = game.time.now + 1000;
+        }
+        
         this.torchUpdate();
         this.tutorialShow();
         this.trainerPlayerPositionCheck();
@@ -325,6 +331,7 @@ var tutorialState = {
             xp += 5;
             this.checkLevelUp();
             tutorialPractice = "second";
+            nextPractice = "";
             if (player.x < 416) {
                 doorway = game.add.sprite(512, 352, 'doorway');
                 door = game.add.sprite(512, 352, 'animateddoor');
@@ -560,7 +567,7 @@ var tutorialState = {
             trainerText5.text = "  can hit all eight suits"; 
             trainerText6.text = "     of armour.";
         }
-        else if (nextPractice=="shoot" && tutorialPractice=="second") {
+        else if (nextPractice=="") {
             trainerText.text = " ";
             trainerText2.text = " ";
             trainerText3.text = "          My work here";

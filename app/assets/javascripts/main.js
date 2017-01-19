@@ -2574,9 +2574,9 @@ var playState = {
         resultText2.text = ' You found ' + questTotalCoins + ' coins on your quest.'
         resultText3.text = "   The Merchant Guild will double your coins for a minute of your time."
         var addStartButton = game.add.button(190, 250, 'blankButton', this.adWatch, this);
-        var addStartText = game.add.bitmapText(220, 275, 'font', 'Yes, watch ad', 16);
+        var addStartText = game.add.bitmapText(230, 280, 'font', 'Yes, watch ad', 16);
         var endLevelButton = game.add.button(410, 250, 'blankButton', this.questComplete, this);
-        var endLevelText = game.add.bitmapText(440, 275, 'font', 'No, return to my City', 16);
+        var endLevelText = game.add.bitmapText(450, 280, 'font', 'No, return to my City', 16);
         if (first==true) {
             assistant = "welcomeBack";
             first = false;
@@ -2585,14 +2585,23 @@ var playState = {
     adWatch: function() {
         advertImage = game.add.sprite(185, 89, 'advertImage');
         adStopTime = game.time.now + 14000;
-        adTimeText = game.add.bitmapText(622, 92, 'fontWhite', '', 21);
+        adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
         adTimeText.tint = 000000;
         var self = this;
         game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.adClose, this) });
     },
     adTimeUpdate: function() {
         if (adTimeText!=null) {
-            adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+            if (adStopTime - game.time.now<9500) {
+                adTimeText.text = "0" + Math.round((adStopTime - game.time.now)/1000);
+            }
+            else if (adStopTime>game.time.now) {
+                adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+            }
+            else {
+                adTimeText.text = "";
+            }
+            
         }
     },
     adClose: function() {

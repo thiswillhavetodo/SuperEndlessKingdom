@@ -247,6 +247,10 @@ var trainerUpgradeText;
 var trainerUpgradeCost = 200;
 
 var advert = false;
+var advertImage;
+var adStopTime;
+var adTimeText;
+var adCloseButton;
 
 var bonusType;
 var beamUnlockShown = false;
@@ -527,7 +531,7 @@ var shopState = {
                 shieldHealthText = game.add.bitmapText(317, 515, 'font', "Shield Health Bonus: " + shieldMaxHealth, 14);
                 shieldInvulnerableText = game.add.bitmapText(317, 530, 'font', "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
-                weaponsmithUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + weaponsmithUpgradeCost, 16);
+                weaponsmithUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + weaponsmithUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.weaponsmithUpgrade, this);
                 if (weaponsmithFunding<100) {
                     maxFunding = false;
@@ -568,7 +572,7 @@ var shopState = {
                 bootManaRegenText = game.add.bitmapText(317, 565, 'font', "Boots Mana Regen Bonus: " + bootManaRegenInterval, 14);
                 bootsInvulnerableText = game.add.bitmapText(317, 580, 'font', "Boots Invulnerable Bonus: " + bootInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
-                armourerUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + armourerUpgradeCost, 16);
+                armourerUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + armourerUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.armourerUpgrade, this);
                 if (armourerFunding<100) {
                     maxFunding = false;
@@ -603,7 +607,7 @@ var shopState = {
                 amuletShotSpeedText = game.add.bitmapText(317, 515, 'font', "Amulet Shot Speed Bonus: " + amuletShotSpeed, 14);
                 amuletAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Amulet Attack Speed Bonus: " + amuletBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
-                enchanterUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + enchanterUpgradeCost, 16);
+                enchanterUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + enchanterUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.enchanterUpgrade, this);
                 if (enchanterFunding<100) {
                     maxFunding = false;
@@ -638,7 +642,7 @@ var shopState = {
                 staminaShotSpeedText = game.add.bitmapText(317, 515, 'font', "Stamina Shot Speed Bonus: " + enduranceShotSpeed, 14);
                 staminaAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Stamina Attack Speed Bonus: " + enduranceBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
-                trainerUpgradeText = game.add.bitmapText(503, 205, 'font', "Buy Skill Material: " + trainerUpgradeCost, 16);
+                trainerUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + trainerUpgradeCost, 16);
                 game.add.button(708, 175, 'plusButton', this.trainerUpgrade, this);
                 if (trainerFunding<100) {
                     maxFunding = false;
@@ -662,6 +666,9 @@ var shopState = {
         }
         this.shopTextSelect();
         this.advertOptions();
+        this.adTimeUpdate();
+    },
+    update: function() {
         this.adTimeUpdate();
     },
     shopClose: function() {
@@ -1030,8 +1037,8 @@ var shopState = {
                         wandShotPower = wandShotPowerUpgrade;
                         wandImage.animations.stop();
                         wandImage.frame = 0;
-                        wandPerkText.text = "Upgrade:";
-                        wandPerkText2.text = "Wand Power +" + wandShotPower;
+                        wandPerkText.text = "  Upgrade:";
+                        wandPerkText2.text = "   Wand Power +" + wandShotPower;
                         wandPowerText.text = "Wand Power Bonus: " + wandShotPower;
                         increaseSFX.play();
                     }
@@ -1049,7 +1056,7 @@ var shopState = {
                         wandShotSpeed = wandShotSpeedUpgrade;
                         wandImage.animations.stop();
                         wandImage.frame = 2;
-                        wandPerkText.text = "Upgrade:";
+                        wandPerkText.text = "  Upgrade:";
                         wandPerkText2.text = "Projectile Speed +" + wandShotSpeed;
                         wandShotSpeedText.text = "Wand Shot Speed Bonus: " + wandShotSpeed;
                         self.bonusCheck();
@@ -1069,7 +1076,7 @@ var shopState = {
                         wandBulletSpacing = wandBulletSpacingUpgrade;
                         wandImage.animations.stop();
                         wandImage.frame = 4;
-                        wandPerkText.text = "Upgrade:"; 
+                        wandPerkText.text = "  Upgrade:"; 
                         wandPerkText2.text = "Wand Attack Speed +" + wandBulletSpacing; 
                         wandAttackSpeedText.text = "Wand Attack Speed Bonus: " + wandBulletSpacing;
                         increaseSFX.play();
@@ -1103,7 +1110,7 @@ var shopState = {
                         shieldKnockback = shieldKnockbackUpgrade;
                         shieldImage.animations.stop();
                         shieldImage.frame = 0;
-                        shieldPerkText.text = "Upgrade:";
+                        shieldPerkText.text = "  Upgrade:";
                         shieldPerkText2.text = "Shield Knockback +" + shieldKnockback;
                         shieldKnockbackText.text = "Shield Knockback Bonus: " + shieldKnockback;
                         increaseSFX.play();
@@ -1122,7 +1129,7 @@ var shopState = {
                         shieldMaxHealth = shieldMaxHealthUpgrade;
                         shieldImage.animations.stop();
                         shieldImage.frame = 2;
-                        shieldPerkText.text = "Upgrade:";
+                        shieldPerkText.text = "  Upgrade:";
                         shieldPerkText2.text = "Max Health +" + shieldMaxHealth;
                         shieldHealthText.text = "Shield Health Bonus: " + shieldMaxHealth;
                         increaseSFX.play();
@@ -1141,7 +1148,7 @@ var shopState = {
                         shieldInvulnerableSpacing = shieldInvulnerableSpacingUpgrade;
                         shieldImage.animations.stop();
                         shieldImage.frame = 4;
-                        shieldPerkText.text = "Upgrade:"; 
+                        shieldPerkText.text = "  Upgrade:"; 
                         shieldPerkText2.text = "Invincible Period +" + shieldInvulnerableSpacing; 
                         shieldInvulnerableText.text = "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing;
                         increaseSFX.play();
@@ -1163,7 +1170,7 @@ var shopState = {
             weaponsmithUpgradeCost = Math.round(weaponsmithUpgradeCost*multiplier);
             weaponsmithDropReward += weaponsmithDRBoost;
             this.dropRewardDiminishingReturns();
-            weaponsmithUpgradeText.text = "Buy Skill Material: " + weaponsmithUpgradeCost;
+            weaponsmithUpgradeText.text = " Buy Skill Material: " + weaponsmithUpgradeCost;
             shopCoinsText.text = coins;
             weaponsmithSkillLevelText.text = "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10);
             increaseSFX.play();
@@ -1181,7 +1188,7 @@ var shopState = {
             armourerUpgradeCost = Math.round(armourerUpgradeCost*multiplier);
             armourerDropReward += armourerDRBoost;
             this.dropRewardDiminishingReturns();
-            armourerUpgradeText.text = "Buy Skill Material: " + armourerUpgradeCost;
+            armourerUpgradeText.text = " Buy Skill Material: " + armourerUpgradeCost;
             shopCoinsText.text = coins;
             armourerSkillLevelText.text = "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10);
             increaseSFX.play();
@@ -1199,7 +1206,7 @@ var shopState = {
             enchanterUpgradeCost = Math.round(enchanterUpgradeCost*multiplier);
             enchanterDropReward += enchanterDRBoost;
             this.dropRewardDiminishingReturns();
-            enchanterUpgradeText.text = "Buy Skill Material: " + enchanterUpgradeCost;
+            enchanterUpgradeText.text = " Buy Skill Material: " + enchanterUpgradeCost;
             shopCoinsText.text = coins;
             enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
             increaseSFX.play();
@@ -1217,7 +1224,7 @@ var shopState = {
             trainerUpgradeCost = Math.round(trainerUpgradeCost*multiplier);
             trainerDropReward += trainerDRBoost;
             this.dropRewardDiminishingReturns();
-            trainerUpgradeText.text = "Buy Skill Material: " + trainerUpgradeCost;
+            trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
             shopCoinsText.text = coins;
             trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
             increaseSFX.play();
@@ -1283,7 +1290,7 @@ var shopState = {
                         armourMaxHealth = armourMaxHealthUpgrade;
                         armourImage.animations.stop();
                         armourImage.frame = 0;
-                        armourPerkText.text = "Upgrade:";
+                        armourPerkText.text = "  Upgrade:";
                         armourPerkText2.text = "Max Health +" + armourMaxHealth;
                         armourHealthBonusText.text = "Armour Health Bonus: " + armourMaxHealth;
                         increaseSFX.play();
@@ -1302,7 +1309,7 @@ var shopState = {
                         armourManaRegenInterval = armourManaRegenIntervalUpgrade;
                         armourImage.animations.stop();
                         armourImage.frame = 2;
-                        armourPerkText.text = "Upgrade:";
+                        armourPerkText.text = "  Upgrade:";
                         armourPerkText2.text = "Mana Regeneration +" + armourManaRegenInterval;
                         armourManaRegenBonus.text = "Armour Mana Regen Bonus: " + armourManaRegenInterval;
                         increaseSFX.play();
@@ -1322,7 +1329,7 @@ var shopState = {
                         armourInvulnerableSpacing = armourInvulnerableSpacingUpgrade;
                         armourImage.animations.stop();
                         armourImage.frame = 4;
-                        armourPerkText.text = "Upgrade:"; 
+                        armourPerkText.text = "  Upgrade:"; 
                         armourPerkText2.text = "Invincible Period +" + armourInvulnerableSpacing; 
                         armourInvulnerableText.text = "Armour Invulnerable Bonus: " + armourInvulnerableSpacing;
                         increaseSFX.play();
@@ -1357,7 +1364,7 @@ var shopState = {
                         hatMaxHealth = hatMaxHealthUpgrade;
                         hatImage.animations.stop();
                         hatImage.frame = 0;
-                        hatPerkText.text = "Upgrade:";
+                        hatPerkText.text = "  Upgrade:";
                         hatPerkText2.text = "Max Health +" + hatMaxHealth;
                         crownHealthText.text = "Crown Health Bonus: " + hatMaxHealth;
                         increaseSFX.play();
@@ -1376,7 +1383,7 @@ var shopState = {
                         hatManaRegenInterval = hatManaRegenIntervalUpgrade;
                         hatImage.animations.stop();
                         hatImage.frame = 2;
-                        hatPerkText.text = "Upgrade:";
+                        hatPerkText.text = "  Upgrade:";
                         hatPerkText2.text = "Mana Regeneration +" + hatManaRegenInterval;
                         crownManaRegenText.text = "Crown Mana Regen Bonus: " + hatManaRegenInterval;
                         increaseSFX.play();
@@ -1396,7 +1403,7 @@ var shopState = {
                         hatMaxMana = hatMaxManaUpgrade;
                         hatImage.animations.stop();
                         hatImage.frame = 4;
-                        hatPerkText.text = "Upgrade:"; 
+                        hatPerkText.text = "  Upgrade:"; 
                         hatPerkText2.text = "Max Mana +" + hatMaxMana; 
                         crownManaText.text = "Crown Mana Bonus: " + hatMaxMana;
                         increaseSFX.play();
@@ -1431,7 +1438,7 @@ var shopState = {
                         bootRunSpeed = bootRunSpeedUpgrade;
                         bootImage.animations.stop();
                         bootImage.frame = 0;
-                        bootPerkText.text = "Upgrade:";
+                        bootPerkText.text = "  Upgrade:";
                         bootPerkText2.text = "Run Speed +" + bootRunSpeed;
                         bootsRunSpeedText.text = "Boots Run Speed Bonus: " + bootRunSpeed;
                         increaseSFX.play();
@@ -1450,7 +1457,7 @@ var shopState = {
                         bootManaRegenInterval = bootManaRegenIntervalUpgrade;
                         bootImage.animations.stop();
                         bootImage.frame = 2;
-                        bootPerkText.text = "Upgrade:";
+                        bootPerkText.text = "  Upgrade:";
                         bootPerkText2.text = "Mana Regeneration +" + bootManaRegenInterval;
                         bootManaRegenText.text = "Boots Mana Regen Bonus: " + bootManaRegenInterval;
                         increaseSFX.play();
@@ -1470,7 +1477,7 @@ var shopState = {
                         bootInvulnerableSpacing = bootInvulnerableSpacingUpgrade;
                         bootImage.animations.stop();
                         bootImage.frame = 4;
-                        bootPerkText.text = "Upgrade:"; 
+                        bootPerkText.text = "  Upgrade:"; 
                         bootPerkText2.text = "Invincible Period +" + bootInvulnerableSpacing; 
                         bootsInvulnerableText.text = "Boots Invulnerable Bonus: " + bootInvulnerableSpacing;
                         increaseSFX.play();
@@ -1532,7 +1539,7 @@ var shopState = {
                         ringShotPower = ringShotPowerUpgrade;
                         ringImage.animations.stop();
                         ringImage.frame = 0;
-                        ringPerkText.text = "Upgrade:";
+                        ringPerkText.text = "  Upgrade:";
                         ringPerkText2.text = "Ring Power +" + ringShotPower;
                         ringPowerText.text = "Ring Power Bonus: " + ringShotPower;
                         increaseSFX.play();
@@ -1551,7 +1558,7 @@ var shopState = {
                         ringMaxMana = ringMaxManaUpgrade;
                         ringImage.animations.stop();
                         ringImage.frame = 2;
-                        ringPerkText.text = "Upgrade:";
+                        ringPerkText.text = "  Upgrade:";
                         ringPerkText2.text = "Max Mana +" + ringMaxMana;
                         ringManaText.text = "Ring Mana Bonus: " + ringMaxMana;
                         increaseSFX.play();
@@ -1570,7 +1577,7 @@ var shopState = {
                         ringKnockback = ringKnockbackUpgrade;
                         ringImage.animations.stop();
                         ringImage.frame = 4;
-                        ringPerkText.text = "Upgrade:"; 
+                        ringPerkText.text = "  Upgrade:"; 
                         ringPerkText2.text = "Knockback +" + ringKnockback; 
                         ringKnockbackText.text = "Ring Knockback Bonus: " + ringKnockback;
                         increaseSFX.play();
@@ -1605,7 +1612,7 @@ var shopState = {
                       amuletRunSpeed = amuletRunSpeedUpgrade;
                       amuletImage.animations.stop();
                       amuletImage.frame = 0;
-                      amuletPerkText.text = "Upgrade:";
+                      amuletPerkText.text = "  Upgrade:";
                       amuletPerkText2.text = "Run Speed +" + amuletRunSpeed;
                       amuletRunSpeedText.text = "Amulet Run Speed Bonus: " + amuletRunSpeed;
                       increaseSFX.play();
@@ -1624,7 +1631,7 @@ var shopState = {
                       amuletShotSpeed = amuletShotSpeedUpgrade;
                       amuletImage.animations.stop();
                       amuletImage.frame = 2;
-                      amuletPerkText.text = "Upgrade:";
+                      amuletPerkText.text = "  Upgrade:";
                       amuletPerkText2.text = "Shot Speed +" + amuletShotSpeed;
                       amuletShotSpeedText.text = "Amulet Shot Speed Bonus: " + amuletShotSpeed;
                       increaseSFX.play();
@@ -1644,7 +1651,7 @@ var shopState = {
                       amuletBulletSpacing = amuletBulletSpacingUpgrade;
                       amuletImage.animations.stop();
                       amuletImage.frame = 4;
-                      amuletPerkText.text = "Upgrade:"; 
+                      amuletPerkText.text = "  Upgrade:"; 
                       amuletPerkText2.text = "Attack Speed +" + amuletBulletSpacing;
                       amuletAttackSpeedText.text = "Amulet Attack Speed Bonus: " + amuletBulletSpacing;
                       increaseSFX.play();
@@ -1706,7 +1713,7 @@ var shopState = {
                         skillShotPower = skillShotPowerUpgrade;
                         skillImage.animations.stop();
                         skillImage.frame = 0;
-                        skillPerkText.text = "Upgrade:";
+                        skillPerkText.text = "  Upgrade:";
                         skillPerkText2.text = "Skill Power +" + skillShotPower;
                         skillPowerText.text = "Skill Power Bonus: " + skillShotPower;
                         increaseSFX.play();
@@ -1725,7 +1732,7 @@ var shopState = {
                         skillMaxMana = skillMaxManaUpgrade;
                         skillImage.animations.stop();
                         skillImage.frame = 2;
-                        skillPerkText.text = "Upgrade:";
+                        skillPerkText.text = "  Upgrade:";
                         skillPerkText2.text = "Max Mana +" + skillMaxMana;
                         skillManaText.text = "Skill Mana Bonus: " + skillMaxMana;
                         increaseSFX.play();
@@ -1744,7 +1751,7 @@ var shopState = {
                         skillKnockback = skillKnockbackUpgrade;
                         skillImage.animations.stop();
                         skillImage.frame = 4;
-                        skillPerkText.text = "Upgrade:"; 
+                        skillPerkText.text = "  Upgrade:"; 
                         skillPerkText2.text = "Knockback +" + skillKnockback; 
                         skillKnockbackText.text = "Skill Knockback Bonus: " + skillKnockback;
                         increaseSFX.play();
@@ -1779,7 +1786,7 @@ var shopState = {
                         enduranceRunSpeed = enduranceRunSpeedUpgrade;
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 0;
-                        endurancePerkText.text = "Upgrade:";
+                        endurancePerkText.text = "  Upgrade:";
                         endurancePerkText2.text = "Run Speed +" + enduranceRunSpeed;
                         staminaRunSpeedText.text = "Stamina Run Speed Bonus: " + enduranceRunSpeed;
                         increaseSFX.play();
@@ -1798,7 +1805,7 @@ var shopState = {
                         enduranceShotSpeed = enduranceShotSpeedUpgrade;
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 2;
-                        endurancePerkText.text = "Upgrade:";
+                        endurancePerkText.text = "  Upgrade:";
                         endurancePerkText2.text = "Shot Speed +" + enduranceShotSpeed;
                         staminaShotSpeedText.text = "Stamina Shot Speed Bonus: " + enduranceShotSpeed;
                         increaseSFX.play();
@@ -1818,7 +1825,7 @@ var shopState = {
                         enduranceBulletSpacing = enduranceBulletSpacingUpgrade;
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 4;
-                        endurancePerkText.text = "Upgrade:"; 
+                        endurancePerkText.text = "  Upgrade:"; 
                         endurancePerkText2.text = "Attack Speed +" + enduranceBulletSpacing; 
                         staminaAttackSpeedText.text = "Stamina Attack Speed Bonus: " + enduranceBulletSpacing;
                         increaseSFX.play();
@@ -2175,28 +2182,38 @@ var shopState = {
     adWatch: function() {
         advertImage = game.add.sprite(185, 89, 'advertImage');
         adStopTime = game.time.now + 14000;
-        adTimeText = game.add.bitmapText(622, 92, 'fontWhite', '', 21);
+        adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
         adTimeText.tint = 000000;
         var self = this;
         if (shop=="weaponsmith") {
-            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.weaponsmithAd, this) });
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   adCloseButton = game.add.button(618, 89, 'closeButton', self.weaponsmithAd, this) });
         }
         else if (shop=="armourer") {
-            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.armourerAd, this) });
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   adCloseButton = game.add.button(618, 89, 'closeButton', self.armourerAd, this) });
         }
         else if (shop=="enchanter") {
-            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.enchanterAd, this) });
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   adCloseButton = game.add.button(618, 89, 'closeButton', self.enchanterAd, this) });
         }
         else if (shop=="trainer") {
-            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.trainerAd, this) });
+            game.time.events.add(Phaser.Timer.SECOND * 14, function () {   adCloseButton = game.add.button(618, 89, 'closeButton', self.trainerAd, this) });
         }
     },
     adTimeUpdate: function() {
         if (adTimeText!=null) {
-            adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+            if (adStopTime - game.time.now<9500) {
+                adTimeText.text = "0" + Math.round((adStopTime - game.time.now)/1000);
+            }
+            else if (adStopTime>game.time.now) {
+                adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+            }
+            else {
+                adTimeText.text = "";
+            }
         }
     },
     weaponsmithAd: function() {
+        advertImage.destroy();
+        adCloseButton.kill();
         weaponsmithDropReward += (5*weaponsmithDRBoost);
         weaponsmithSkillLevelText.text = "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10);
         weaponsmithTimer = game.time.now - 10;
@@ -2204,9 +2221,11 @@ var shopState = {
         shieldTimer = game.time.now - 10;
         weaponsmithAdTimer = game.time.now + 3600000;
         advert = false;
-        this.create();
+        game.state.start('shop');   
     },
     armourerAd: function() {
+        advertImage.destroy();
+        adCloseButton.kill();
         armourerDropReward += (5*armourerDRBoost);
         armourerSkillLevelText.text = "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10);
         armourerTimer = game.time.now - 10;
@@ -2215,9 +2234,11 @@ var shopState = {
         bootTimer = game.time.now - 10;
         armourerAdTimer = game.time.now + 3600000;
         advert = false;
-        this.create();
+        game.state.start('shop');
     },
     enchanterAd: function() {
+        advertImage.destroy();
+        adCloseButton.kill();
         enchanterDropReward += (5*enchanterDRBoost);
         enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
         enchanterTimer = game.time.now - 10;
@@ -2225,9 +2246,11 @@ var shopState = {
         amuletTimer = game.time.now - 10;
         enchanterAdTimer = game.time.now + 3600000;
         advert = false;
-        this.create();
+        game.state.start('shop');
     },
     trainerAd: function() {
+        advertImage.destroy();
+        adCloseButton.kill();
         trainerDropReward += (5*trainerDRBoost);
         trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
         trainerTimer = game.time.now - 10;
@@ -2235,7 +2258,7 @@ var shopState = {
         enduranceTimer = game.time.now - 10;
         trainerAdTimer = game.time.now + 3600000;
         advert = false;
-        this.create();
+        game.state.start('shop'); 
     },
     weaponsmithAdNo: function() {
         weaponsmithAdTimer = game.time.now + 900000;
