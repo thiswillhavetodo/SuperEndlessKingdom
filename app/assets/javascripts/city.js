@@ -133,6 +133,7 @@ var marriageOptionsDisplayButton;
 var marriageOptionsDisplayText;
 var marriageOptionsHideButton;
 var marriageOptionsHideText;
+var pauseUpdate = false;
 
 var cityMusic;
 var cityMusicPlaying = false;
@@ -309,6 +310,7 @@ var cityState = {
         spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
     update: function() {
+        if (!pauseUpdate) {
         this.timeCheck();
         if (coins<=0 && year>debtWarnYear+1) {
             assistant = "debt";
@@ -381,6 +383,7 @@ var cityState = {
         if (spaceBar.isDown && assistant!="" && game.time.now>assistantChangeTimer) {
             this.assistantChange();
             assistantChangeTimer = game.time.now + 1000;
+        }
         }
     },
     timeCheck: function() {
@@ -1061,6 +1064,7 @@ var cityState = {
         enchanterDropReward += artisanIncrease;
         trainerDropReward += artisanIncrease;
         marriageOptions = false;
+        pauseUpdate = false;
         cityMusic.stop();
         game.state.start('reset');
     },
@@ -1091,14 +1095,17 @@ var cityState = {
     },
     marriageOptions: function() {
         this.marriageOptionsHide();
-        var names = ["Elsbeth", "Anastasia", "Matthe", "Susan", "Bob", "Esmerelda", "Leia", "Victoria", "Alexandra", "Emmeline", "Christabel", "Buttercup", "Cassandra", "Correen"];
-        var places = ["Dunnovia", "Somethingia", "Madeupistan", "Nextdoorbutone", "Farfaraway", "The Silly Isles", "Belgium"];
+        pauseUpdate = true;
+        boy.kill();
+        girl.kill();
+        var names = [" Princess Elsbeth", "Princess Anastasia", " Princess Matthe", "  Princess Susan", "   Princess Bob", "Princess Esmerelda", "  Princess Leia", "Princess Victoria", "Princess Alexandra", "Princess Emmeline", "Princess Christabel", "Princess Buttercup", "Princess Cassandra", " Princess Correen"];
+        var places = ["   Of Dunnovia", "  Of Somethingia", "  Of Madeupistan", "Of Nextdoorbutone", "  Of Farfaraway", "Of The Silly Isles", "    Of Belgium"];
         
         game.add.button(48, 150, 'ui_213x255', this.choiceOne, this);
         var name1 =  names[Math.floor(Math.random()*13.99)];
-        game.add.bitmapText(102, 162, 'font', "Princess " + name1, 14);
+        game.add.bitmapText(96, 162, 'font', name1, 14);
         var place1 =  places[Math.floor(Math.random()*6.99)];
-        game.add.bitmapText(102, 180, 'font', "Of " + place1, 14);
+        game.add.bitmapText(100, 180, 'font', place1, 14);
         var princess1 = game.add.sprite(125, 200, 'princesses');
         princess1.frame = Math.floor(Math.random()*23.99);
         xpReduction1 = Math.round(Math.random()*40)+10;

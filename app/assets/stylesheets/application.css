@@ -18,6 +18,7 @@
      background-color: #00b0ff;
      /*background: -moz-linear-gradient(top, #00b0ff,  #e0edff);*/
      background-image: url(/assets/SUPERlarge.png), -moz-linear-gradient(top, #e0edff, #00b0ff);
+     background-image: url(/assets/SUPERlarge.png), -webkit-linear-gradient(top, #e0edff, #00b0ff);
      background-repeat: no-repeat;
      /*background-position: -5vw 6vh;*/
      background-size: cover;
@@ -26,6 +27,50 @@
  
 canvas {
     display: none !important;
+}
+
+.submit {
+    background-color: red;
+    background-image: url(/assets/LoginButton.png);
+    width: 215px;
+    height: 61px;
+    border: solid black 3px;
+    border-radius: 10px;
+    margin-left: 31px;
+}
+
+.emailLabel {
+    background-image: url(/assets/Email.png);
+    width: 63px;
+    height: 23px;
+    float: left;
+    margin-left: 21px;
+    margin-right: 22px;
+}
+
+.passwordLabel {
+    background-image: url(/assets/Password.png);
+    width: 106px;
+    height: 23px;
+    float: left;
+}
+
+.emailBox {
+    float: right;
+}
+
+.login_form {
+    width: 277px;
+}
+
+.field {
+    margin: 10px;
+}
+
+#login_heading {
+    width: 277px;
+    height: 29px;
+    background-image: url(/assets/Enter-Login-Details.png);
 }
 
 .socialMediaButtons {
@@ -53,7 +98,7 @@ canvas {
     font-family: 'Open Sans', sans-serif;
     position: absolute;
     bottom: 160px;
-    right: 60px;
+    right: 55px;
 }
 .social-slide:hover {
 	background-position: 0px -48px;

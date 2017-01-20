@@ -64,7 +64,7 @@ var defenceState = {
             this.attackerCreate(680, i*32);
         }
         if (coins>=0) {
-            for (var i=1; i<=defenceStrength; i++) {
+            for (var i=0; i<=defenceStrength; i++) {
                 if (i<=12) {
                     this.defenderCreate(224, i*32);
                 }
@@ -674,7 +674,7 @@ var defenceState = {
                 tutorialText.text = "  You fought";
                 tutorialText2.text = "  them off! As news of";
                 tutorialText3.text = "   your victory spread our";
-                tutorialText4.text = "  city attracted " + newCitizens + " new ";
+                tutorialText4.text = "      city attracted " + newCitizens + " new ";
                 tutorialText5.text = "   immigrants to bolster ";
                 tutorialText6.text = "      our ranks.";
                 break;
@@ -682,11 +682,11 @@ var defenceState = {
                 tutorialSprite = game.add.sprite(350, 469, 'assistant');
                 tutorialSpeechBubble.x = 150;
                 tutorialText.text = "  A narrow";
-                tutorialText2.text = "    victory, but a ";
-                tutorialText3.text = " victory nonetheless. 1 new";
-                tutorialText4.text = "   citizen moved to";
-                tutorialText5.text = "    our city when word";
-                tutorialText6.text = "   spread.";
+                tutorialText2.text = "   victory, but a victory";
+                tutorialText3.text = "  nonetheless. 1 new citizen";
+                tutorialText4.text = "  moved to our city when";
+                tutorialText5.text = "  word of your success";
+                tutorialText6.text = "      spread.";
                 break;
             case "defeat":
                 tutorialSprite = game.add.sprite(350, 469, 'assistant');
@@ -705,8 +705,8 @@ var defenceState = {
                 tutorialText4.text = "";
                 tutorialText5.text = "";
                 tutorialText6.text = "";
-                tutorialSprite.destroy();
-                tutorialSpeechBubble.destroy();
+                tutorialSprite.kill();
+                tutorialSpeechBubble.kill();
                 break;
         }
         

@@ -2133,7 +2133,7 @@ var playState = {
             swordZombie.kill();
             swordZombie.isAlive = false;
             var death = game.add.sprite(swordZombie.x, swordZombie.y, 'deathSheet');
-            death.frame = 10;
+            death.frame = 14;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
             this.zombieDeathSFX();
             xp += 6;
@@ -2592,7 +2592,7 @@ var playState = {
     },
     adTimeUpdate: function() {
         if (adTimeText!=null) {
-            if (adStopTime - game.time.now<9500) {
+            if (adStopTime - game.time.now<9500  && adStopTime>game.time.now) {
                 adTimeText.text = "0" + Math.round((adStopTime - game.time.now)/1000);
             }
             else if (adStopTime>game.time.now) {

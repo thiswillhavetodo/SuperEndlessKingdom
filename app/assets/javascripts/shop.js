@@ -2200,7 +2200,7 @@ var shopState = {
     },
     adTimeUpdate: function() {
         if (adTimeText!=null) {
-            if (adStopTime - game.time.now<9500) {
+            if (adStopTime - game.time.now<9500  && adStopTime>game.time.now) {
                 adTimeText.text = "0" + Math.round((adStopTime - game.time.now)/1000);
             }
             else if (adStopTime>game.time.now) {
@@ -2298,7 +2298,7 @@ var shopState = {
                 bonusUnlockText = game.add.bitmapText(200, 477, 'font', 'Great news!', 15);
                 bonusUnlockText2 = game.add.bitmapText(170, 494, 'font', '  Your artisans have ', 15);
                 bonusUnlockText3 = game.add.bitmapText(158, 509, 'font', '  worked together to unlock ', 15);
-                bonusUnlockText4 = game.add.bitmapText(158, 524, 'font', 'the power of mana refills. ', 15);
+                bonusUnlockText4 = game.add.bitmapText(158, 524, 'font', '  the power of mana refills. ', 15);
                 bonusUnlockText5 = game.add.bitmapText(170, 539, 'font', ' Press Q during a quest ', 15);
                 bonusUnlockText6 = game.add.bitmapText(190, 554, 'font', 'to refill your mana.', 15);
                 manaRefillUnlockShown = true;
