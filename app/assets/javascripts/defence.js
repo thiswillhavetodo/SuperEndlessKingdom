@@ -720,7 +720,7 @@ var defenceState = {
             case "second":
                 tutorialDefence = "";
                 tutorialSprite.kill();
-                tutorialSpeechBubble.kill();
+                tutorialSpeechBubble.x = -200;
                 this.tutorialShow();
                 break;
             case "victory":

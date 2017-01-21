@@ -10,8 +10,8 @@
   </head>
 
   <body>
-  	<p class="flash"><%= flash.notice %></p>
     <%= yield %>
+    <p class="flash"><%= flash.notice %></p>
     <h5 class="loginInfo">
       <% if logged_in? %>
         

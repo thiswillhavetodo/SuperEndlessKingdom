@@ -314,6 +314,19 @@ var cityState = {
         this.timeCheck();
         if (coins<=0 && year>debtWarnYear+1) {
             assistant = "debt";
+            if (tax<100) {
+               tax ++; 
+            }
+            if (housingFunding>0) {
+                housingFunding--;
+            }
+            if (justiceFunding>0) {
+                justiceFunding--;
+            }
+            if (utilitiesFunding>0) {
+                utilitiesFunding--;
+            }
+            coins -= coins/20;
         }
         this.assistantShow();
         townWoman1.body.velocity.x = -40;
@@ -1227,7 +1240,7 @@ var cityState = {
                 warriorWoman1.speech3.text = "   gives gold and artisan ";
                 warriorWoman1.speech4.text = " materials but also a small";
                 warriorWoman1.speech5.text = "  mana boost. Use it";
-                warriorWoman1.speech6.text = "    wisely.";
+                warriorWoman1.speech6.text = "     wisely.";
                 break;
             case 1:
                 warriorWoman1.speech1.text = "       Mana";
