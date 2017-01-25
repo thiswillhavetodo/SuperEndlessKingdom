@@ -95,18 +95,6 @@ var defenceState = {
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
         
-        //  Set up text
-        /*coinsText = game.add.bitmapText(60, 600, 'font', 'Coins: ' + coins, 30);
-        xpText = game.add.bitmapText(270, 10, 'font', 'XP: ' + xp + '/' + nextLevelXp, 30);
-        healthText = game.add.bitmapText(637, 10, 'font', 'Health: ' + health + "/" + maxHealth, 30);
-        playerLevelText = game.add.bitmapText(15, 10, 'font', 'Player Level: ' + playerLevel, 30);
-        manaText = game.add.bitmapText(465, 10, 'font', 'Mana: ' + mana, 30); 
-        coinsText.alpha = 0.7;
-        xpText.alpha = 0.7;
-        healthText.alpha = 0.7;
-        playerLevelText.alpha = 0.7;
-        manaText.alpha = 0.7;*/
-        
         //  Set up gui and display text
         if (coins>=1000000) {
             coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
@@ -132,7 +120,10 @@ var defenceState = {
         xpBar.crop(xpCrop);
         xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
         this.xpDisplayConvert();
-        if (playerLevel>=10) {
+        if (playerLevel>=100) {
+           playerLevelText = game.add.bitmapText(9, 23, 'font', playerLevel, 30);  
+        }
+        else if (playerLevel>=10) {
            playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
         }
         else {
@@ -393,7 +384,7 @@ var defenceState = {
             xp += 3;
             this.xpDisplayConvert();
             attackerCount --;
-            console.log(attackerCount);
+            //console.log(attackerCount);
             this.checkLevelUp();
             this.checkDefenceComplete();
         }
@@ -566,7 +557,7 @@ var defenceState = {
                 population += newCitizens;
                 tutorialDefence = "victory";
             }
-            else if (defenderCount/defenceStrength > 0){
+            else {
                 population ++;
                 tutorialDefence = "narrowVictory";
             }
@@ -634,7 +625,7 @@ var defenceState = {
                 death.frame = 2;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
                 attackerCount --;
-                console.log(attackerCount);
+                //console.log(attackerCount);
                 this.checkDefenceComplete();
             }
             else {

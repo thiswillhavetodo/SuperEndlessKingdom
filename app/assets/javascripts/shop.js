@@ -299,7 +299,7 @@ var slotMachineSFX;
 var shopState = {
     create: function() {
         advert = false;
-        console.log("advertCreate = " + advert);
+        //console.log("advertCreate = " + advert);
         game.world.removeAll();
         increaseSFX = game.add.audio('collect');
         reduceSFX = game.add.audio('reduce');
@@ -554,9 +554,9 @@ var shopState = {
                 efffectivenessScoreText.text = "  Artisan Effectiveness: " + Math.round(weaponsmith);
                 if (population>111 && weaponsmithTimer>game.time.now && weaponsmithAdTimer<game.time.now) {
                     advert = true;
-                    console.log("advert = " + advert);
-                    console.log("weaponsmithAdTimer = " + weaponsmithAdTimer);
-                    console.log("game.time.now = " + game.time.now);
+                    //console.log("advert = " + advert);
+                    //console.log("weaponsmithAdTimer = " + weaponsmithAdTimer);
+                    //console.log("game.time.now = " + game.time.now);
                 }
                 break; 
             case "armourer":
@@ -996,7 +996,7 @@ var shopState = {
     weaponsmithImprove: function() {
        if (game.time.now > weaponsmithTimer && population >= 110) {
          baseChance = Math.round(((popScore*0.22) + (weaponsmith*0.3) + (weaponsmithDropReward*0.48))/2);
-         console.log("Base Chance: " + baseChance);
+         //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          wandImage = game.add.sprite(108, 258, 'wandAnimation');
          wandImage.frame = 0;
@@ -1028,14 +1028,14 @@ var shopState = {
                 weaponsmithTimer = game.time.now + 1800000;
             }
             var wandPerkChance = Math.random()*5;
-            console.log(wandPerkChance);
+            //console.log(wandPerkChance);
             wandImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (wandPerkChance<=1.66) {
                     wandShotPowerUpgrade = Math.round(baseChance + wandPerkChance);
-                    console.log(wandShotPowerUpgrade);
+                    //console.log(wandShotPowerUpgrade);
                     if (wandShotPowerUpgrade>wandShotPower) {
                         shotPower += 0.01*(wandShotPowerUpgrade - wandShotPower);
                         wandShotPower = wandShotPowerUpgrade;
@@ -1047,6 +1047,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        wandPerkText.x = 70;
                         wandPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1070,6 +1071,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        wandPerkText.x = 70;
                         wandPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1092,6 +1094,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        wandPerkText.x = 70;
                         wandPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1111,14 +1114,14 @@ var shopState = {
                 weaponsmithTimer = game.time.now + 1800000;
             }
             var shieldPerkChance = Math.random()*5;
-            console.log(shieldPerkChance);
+            //console.log(shieldPerkChance);
             shieldImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (shieldPerkChance<=1.66) {
                     shieldKnockbackUpgrade = Math.round(baseChance + shieldPerkChance);
-                    console.log(shieldKnockbackUpgrade);
+                    //console.log(shieldKnockbackUpgrade);
                     if (shieldKnockbackUpgrade>shieldKnockback) {
                         knockback += 0.1*(shieldKnockbackUpgrade - shieldKnockback);
                         shieldKnockback = shieldKnockbackUpgrade;
@@ -1130,6 +1133,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        shieldPerkText.x = 620;
                         shieldPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1152,6 +1156,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        shieldPerkText.x = 620;
                         shieldPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1174,6 +1179,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        shieldPerkText.x = 620;
                         shieldPerkText.text = "No upgrade this time";
                         weaponsmithDropReward += weaponsmithDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1265,7 +1271,7 @@ var shopState = {
     armourerImprove: function() {
        if (game.time.now > armourerTimer && population >= 125) {
          baseChance = Math.round(((popScore*0.22) + (armourer*0.3) + (armourerDropReward*0.48))/2);
-         console.log("Base Chance: " + baseChance);
+         //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          armourImage = game.add.sprite(108, 258, 'armourAnimation');
          armourImage.frame = 0;
@@ -1304,14 +1310,14 @@ var shopState = {
                 armourerTimer = game.time.now + 1800000;
             }
             var armourPerkChance = Math.random()*5;
-            console.log(armourPerkChance);
+            //console.log(armourPerkChance);
             armourImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (armourPerkChance<=1.66) {
                     armourMaxHealthUpgrade = Math.round((baseChance + armourPerkChance)/2);
-                    console.log(armourMaxHealthUpgrade);
+                    //console.log(armourMaxHealthUpgrade);
                     if (armourMaxHealthUpgrade>armourMaxHealth) {
                         maxHealth += (armourMaxHealthUpgrade - armourMaxHealth);
                         armourMaxHealth = armourMaxHealthUpgrade;
@@ -1323,6 +1329,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        armourPerkText.x = 70;
                         armourPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1346,6 +1353,7 @@ var shopState = {
                         self.bonusCheck();
                     }
                     else {
+                        armourPerkText.x = 70;
                         armourPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1368,6 +1376,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        armourPerkText.x = 70;
                         armourPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1387,14 +1396,14 @@ var shopState = {
                 armourerTimer = game.time.now + 1800000;
             }
             var hatPerkChance = Math.random()*5;
-            console.log(hatPerkChance);
+            //console.log(hatPerkChance);
             hatImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (hatPerkChance<=1.66) {
                     hatMaxHealthUpgrade = Math.round((baseChance + hatPerkChance)/2);
-                    console.log(hatMaxHealthUpgrade);
+                    //console.log(hatMaxHealthUpgrade);
                     if (hatMaxHealthUpgrade>hatMaxHealth) {
                         maxHealth += (hatMaxHealthUpgrade - hatMaxHealth);
                         hatMaxHealth = hatMaxHealthUpgrade;
@@ -1406,6 +1415,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        hatPerkText.x = 350;
                         hatPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1429,6 +1439,7 @@ var shopState = {
                         self.bonusCheck();
                     }
                     else {
+                        hatPerkText.x = 350;
                         hatPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1446,11 +1457,12 @@ var shopState = {
                         hatImage.animations.stop();
                         hatImage.frame = 4;
                         hatPerkText.text = "  Upgrade:"; 
-                        hatPerkText2.text = "Max Mana +" + hatMaxMana; 
+                        hatPerkText2.text = "    Max Mana +" + hatMaxMana; 
                         crownManaText.text = "Crown Mana Bonus: " + hatMaxMana;
                         increaseSFX.play();
                     }
                     else {
+                        hatPerkText.x = 350;
                         hatPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1470,14 +1482,14 @@ var shopState = {
                 armourerTimer = game.time.now + 1800000;
             }
             var bootPerkChance = Math.random()*5;
-            console.log(bootPerkChance);
+            //console.log(bootPerkChance);
             bootImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (bootPerkChance<=1.66) {
                     bootRunSpeedUpgrade = Math.round(baseChance + bootPerkChance);
-                    console.log(bootRunSpeedUpgrade);
+                    //console.log(bootRunSpeedUpgrade);
                     if (bootRunSpeedUpgrade>bootRunSpeed) {
                         runSpeed += 0.1*(bootRunSpeedUpgrade - bootRunSpeed);
                         bootRunSpeed = bootRunSpeedUpgrade;
@@ -1489,6 +1501,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        bootPerkText.x = 620;
                         bootPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1512,6 +1525,7 @@ var shopState = {
                         self.bonusCheck();
                     }
                     else {
+                        bootPerkText.x = 620;
                         bootPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1529,11 +1543,12 @@ var shopState = {
                         bootImage.animations.stop();
                         bootImage.frame = 4;
                         bootPerkText.text = "  Upgrade:"; 
-                        bootPerkText2.text = "Invincible Period +" + bootInvulnerableSpacing; 
+                        bootPerkText2.text = " Invincible Period +" + bootInvulnerableSpacing; 
                         bootsInvulnerableText.text = "Boots Invulnerable Bonus: " + bootInvulnerableSpacing;
                         increaseSFX.play();
                     }
                     else {
+                        bootPerkText.x = 620;
                         bootPerkText.text = "No upgrade this time";
                         armourerDropReward += armourerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1549,7 +1564,7 @@ var shopState = {
     enchanterImprove: function() {
        if (game.time.now > enchanterTimer && population >= 150) {
          baseChance = Math.round(((popScore*0.22) + (enchanter*0.3) + (enchanterDropReward*0.48))/2);
-         console.log("Base Chance: " + baseChance);
+         //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          ringImage = game.add.sprite(108, 258, 'ringAnimation');
          ringImage.frame = 0;
@@ -1563,7 +1578,7 @@ var shopState = {
          amuletImage.animations.add('spin', [0, 1, 2, 3, 4, 5], 10, true);
          amuletPerkButton = game.add.button(580, 330, 'blankButton', this.amuletPerk, this);
          amuletPerkText = game.add.bitmapText(650, 350, 'font', "  Request", 15);
-         amuletPerkText2 = game.add.bitmapText(615, 370, 'font', " Amulet Improvement", 15);
+         amuletPerkText2 = game.add.bitmapText(615, 370, 'font', "  Amulet Improvement", 15);
        }
        else if (population<150) {
            shopMessageBackground.x = 196;
@@ -1581,14 +1596,14 @@ var shopState = {
                 enchanterTimer = game.time.now + 1800000;
             }
             var ringPerkChance = Math.random()*5;
-            console.log(ringPerkChance);
+            //console.log(ringPerkChance);
             ringImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (ringPerkChance<=1.66) {
                     ringShotPowerUpgrade = Math.round(baseChance + ringPerkChance);
-                    console.log(ringShotPowerUpgrade);
+                    //console.log(ringShotPowerUpgrade);
                     if (ringShotPowerUpgrade>ringShotPower) {
                         shotPower += 0.01*(ringShotPowerUpgrade - ringShotPower);
                         ringShotPower = ringShotPowerUpgrade;
@@ -1600,6 +1615,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        ringPerkText.x = 70;
                         ringPerkText.text = "No upgrade this time";
                         enchanterDropReward += enchanterDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1622,6 +1638,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        ringPerkText.x = 70;
                         ringPerkText.text = "No upgrade this time";
                         enchanterDropReward += enchanterDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1644,6 +1661,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        ringPerkText.x = 70;
                         ringPerkText.text = "No upgrade this time";
                         enchanterDropReward += enchanterDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1663,14 +1681,14 @@ var shopState = {
               enchanterTimer = game.time.now + 1800000;
           }
           var amuletPerkChance = Math.random()*5;
-          console.log(amuletPerkChance);
+          //console.log(amuletPerkChance);
           amuletImage.animations.play('spin');
           slotMachineSFX.play();
           var self = this;
           game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
               if (amuletPerkChance<=1.66) {
                   amuletRunSpeedUpgrade = Math.round(baseChance + amuletPerkChance);
-                  console.log(amuletRunSpeedUpgrade);
+                  //console.log(amuletRunSpeedUpgrade);
                   if (amuletRunSpeedUpgrade>amuletRunSpeed) {
                       runSpeed += 0.1*(amuletRunSpeedUpgrade - amuletRunSpeed);
                       amuletRunSpeed = amuletRunSpeedUpgrade;
@@ -1682,6 +1700,7 @@ var shopState = {
                       increaseSFX.play();
                   }
                   else {
+                      amuletPerkText.x = 620;
                       amuletPerkText.text = "No upgrade this time";
                       enchanterDropReward += enchanterDRBoost;
                       self.dropRewardDiminishingReturns();
@@ -1705,6 +1724,7 @@ var shopState = {
                       self.bonusCheck();
                   }
                   else {
+                      amuletPerkText.x = 620;
                       amuletPerkText.text = "No upgrade this time";
                       enchanterDropReward += enchanterDRBoost;
                       self.dropRewardDiminishingReturns();
@@ -1727,7 +1747,11 @@ var shopState = {
                       increaseSFX.play();
                   }
                   else {
+                      amuletPerkText.x = 620;
                       amuletPerkText.text = "No upgrade this time";
+                      enchanterDropReward += enchanterDRBoost;
+                      self.dropRewardDiminishingReturns();
+                      enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
                       reduceSFX.play();
                       amuletImage.animations.stop();
                       amuletImage.frame = 4;
@@ -1739,7 +1763,7 @@ var shopState = {
     trainerImprove: function() {
        if (game.time.now > trainerTimer && population >= 200) {
          baseChance = Math.round(((popScore*0.22) + (trainer*0.3) + (trainerDropReward*0.48))/2);
-         console.log("Base Chance: " + baseChance);
+         //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          skillImage = game.add.sprite(108, 258, 'skillAnimation');
          skillImage.frame = 0;
@@ -1771,27 +1795,27 @@ var shopState = {
                 trainerTimer = game.time.now + 1800000;
             }
             var skillPerkChance = Math.random()*5;
-            console.log(skillPerkChance);
+            //console.log(skillPerkChance);
             skillImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (skillPerkChance<=1.66) {
                     skillShotPowerUpgrade = Math.round(baseChance + skillPerkChance);
-                    console.log(skillShotPowerUpgrade);
+                    //console.log(skillShotPowerUpgrade);
                     if (skillShotPowerUpgrade>skillShotPower) {
                         shotPower += 0.01*(skillShotPowerUpgrade - skillShotPower);
                         skillShotPower = skillShotPowerUpgrade;
                         skillImage.animations.stop();
                         skillImage.frame = 0;
                         skillPerkText.text = "  Upgrade:";
-                        skillPerkText2.text = "Skill Power +" + skillShotPower;
+                        skillPerkText2.text = "    Skill Power +" + skillShotPower;
                         skillPowerText.text = "Skill Power Bonus: " + skillShotPower;
                         increaseSFX.play();
                     }
                     else {
+                        skillPerkText.x = 70;
                         skillPerkText.text = "No upgrade this time";
-                        trainerUpgradeCost = Math.round(trainerUpgradeCost*multiplier);
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
                         trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
@@ -1808,11 +1832,12 @@ var shopState = {
                         skillImage.animations.stop();
                         skillImage.frame = 2;
                         skillPerkText.text = "  Upgrade:";
-                        skillPerkText2.text = "Max Mana +" + skillMaxMana;
+                        skillPerkText2.text = "    Max Mana +" + skillMaxMana;
                         skillManaText.text = "Skill Mana Bonus: " + skillMaxMana;
                         increaseSFX.play();
                     }
                     else {
+                        skillPerkText.x = 70;
                         skillPerkText.text = "No upgrade this time";
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1835,6 +1860,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        skillPerkText.x = 70;
                         skillPerkText.text = "No upgrade this time";
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1854,14 +1880,14 @@ var shopState = {
                 trainerTimer = game.time.now + 1800000;
             }
             var endurancePerkChance = Math.random()*5;
-            console.log(endurancePerkChance);
+            //console.log(endurancePerkChance);
             enduranceImage.animations.play('spin');
             slotMachineSFX.play();
             var self = this;
             game.time.events.add(Phaser.Timer.SECOND * 2, function () {   
                 if (endurancePerkChance<=1.66) {
                     enduranceRunSpeedUpgrade = Math.round(baseChance + endurancePerkChance);
-                    console.log(enduranceRunSpeedUpgrade);
+                    //console.log(enduranceRunSpeedUpgrade);
                     if (enduranceRunSpeedUpgrade>enduranceRunSpeed) {
                         runSpeed += 0.1*(enduranceRunSpeedUpgrade - enduranceRunSpeed);
                         enduranceRunSpeed = enduranceRunSpeedUpgrade;
@@ -1873,6 +1899,7 @@ var shopState = {
                         increaseSFX.play();
                     }
                     else {
+                        endurancePerkText.x = 620;
                         endurancePerkText.text = "No upgrade this time";
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1896,6 +1923,7 @@ var shopState = {
                         self.bonusCheck();
                     }
                     else {
+                        endurancePerkText.x = 620;
                         endurancePerkText.text = "No upgrade this time";
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -1913,11 +1941,12 @@ var shopState = {
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 4;
                         endurancePerkText.text = "  Upgrade:"; 
-                        endurancePerkText2.text = " Attack Speed +" + enduranceBulletSpacing; 
+                        endurancePerkText2.text = "   Attack Speed +" + enduranceBulletSpacing; 
                         staminaAttackSpeedText.text = "Stamina Attack Speed Bonus: " + enduranceBulletSpacing;
                         increaseSFX.play();
                     }
                     else {
+                        endurancePerkText.x = 620;
                         endurancePerkText.text = "No upgrade this time";
                         trainerDropReward += trainerDRBoost;
                         self.dropRewardDiminishingReturns();
@@ -2047,7 +2076,7 @@ var shopState = {
         }
     },
     shopTextSelect: function() {
-        console.log("Priority Service: " + priorityService);
+        //console.log("Priority Service: " + priorityService);
         if (shop=="castle") {
             
         }
@@ -2083,39 +2112,39 @@ var shopState = {
         }
     },
     advertOptions: function() {
-        console.log("time" + game.time.now);
-        console.log("weaponsmithAdTimer" + weaponsmithAdTimer);
+        //console.log("time" + game.time.now);
+        //console.log("weaponsmithAdTimer" + weaponsmithAdTimer);
         if (advert==true) {
             shopText.text = " Your Majesty!";
             shopText2.text = "  The Merchant Guild ";
             shopText3.text = "   has offered to fund your";
-            shopText4.text = "  " + shop + " in return for a";
-            shopText5.text = "       few minutes of"; 
+            shopText4.text = "  " + shop + " in return for";
+            shopText5.text = "     a few minutes of"; 
             shopText6.text = "       your time.";
             switch(shop) {
                 case "weaponsmith":
-                    console.log(shop);
+                    //console.log(shop);
                     addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(270, 150, 'blankButton', this.weaponsmithAdNo, this);
                     addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
                     break;
                 case "armourer":
-                    console.log(shop);
+                    //console.log(shop);
                     addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(270, 150, 'blankButton', this.armourerAdNo, this);
                     addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
                     break;
                 case "enchanter":
-                    console.log(shop);
+                    //console.log(shop);
                     addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(270, 150, 'blankButton', this.enchanterAdNo, this);
                     addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
                     break;
                 case "trainer":
-                    console.log(shop);
+                    //console.log(shop);
                     addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
                     addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(270, 150, 'blankButton', this.trainerAdNo, this);

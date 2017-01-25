@@ -19,7 +19,7 @@ var resetState = {
         resetLowerTypewriter.init(game, {
             x: 116,
             y: 490,
-            time: Phaser.Timer.SECOND / 16,
+            time: Phaser.Timer.SECOND / 18,
             fontFamily: "font",
             fontSize: 16,
             maxWidth: 600,
@@ -31,7 +31,7 @@ var resetState = {
         resetTypewriter.init(game, {
             x: 116,
             y: 65,
-            time: Phaser.Timer.SECOND / 16,
+            time: Phaser.Timer.SECOND / 18,
             fontFamily: "font",
             fontSize: 16,
             maxWidth: 600,

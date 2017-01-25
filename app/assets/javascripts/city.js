@@ -157,7 +157,7 @@ var cityState = {
         game.add.sprite(496, 415, 'shopBorder');
         game.add.sprite(656, 415, 'shopBorder');
         
-        console.log(cityMusicPlaying);
+        //console.log(cityMusicPlaying);
         //if (!cityMusic.isPlaying) {
         if (cityMusicPlaying!=true) {
             cityMusic = game.add.audio('cityMusic');
@@ -263,7 +263,7 @@ var cityState = {
             
         }
         else if (defending == false) {
-            console.log(defending);
+            //console.log(defending);
             questButton = game.add.button(115, 540, 'questButton', this.quest, this);
         }
         else {
@@ -410,31 +410,31 @@ var cityState = {
         }
         while (game.time.now > currentTime+30000 || questYears>0) {
             year++;
-          console.log("Year: " + year);
+          //console.log("Year: " + year);
           housing += (housingFunding-housing)/12;
-          console.log("housing: " + housing); 
+          //console.log("housing: " + housing); 
           commercial += (commercialFunding-commercial)/12;
-          console.log("commercial: " + commercial);    
+          //console.log("commercial: " + commercial);    
           industrial += (industrialFunding-industrial)/12;
-          console.log("industrial: " + industrial);   
+          //console.log("industrial: " + industrial);   
           education += (educationFunding-education)/12;
-          console.log("education: " + education); 
+          //console.log("education: " + education); 
           popHealth += (healthFunding-popHealth)/12;
-          console.log("Health: " + popHealth);
+          //console.log("Health: " + popHealth);
           justice += (justiceFunding-justice)/12;
-          console.log("justice: " + justice);
+          //console.log("justice: " + justice);
           defence += (defenceFunding-defence)/12;
-          console.log("defence: " + defence);   
+          //console.log("defence: " + defence);   
           utilities += (utilitiesFunding-utilities)/12;
-          console.log("utilities: " + utilities);
+          //console.log("utilities: " + utilities);
           weaponsmith += (weaponsmithFunding-weaponsmith)/12;
-          console.log("weaponsmith: " + weaponsmith);    
+          //console.log("weaponsmith: " + weaponsmith);    
           armourer += (armourerFunding-armourer)/12;
-          console.log("armourer: " + armourer);   
+          //console.log("armourer: " + armourer);   
           enchanter += (enchanterFunding-enchanter)/12;
-          console.log("enchanter: " + enchanter); 
+          //console.log("enchanter: " + enchanter); 
           trainer += (trainerFunding-trainer)/12;
-          console.log("trainer: " + trainer);  
+          //console.log("trainer: " + trainer);  
           previousPopulation = population;
           population += population*((housing-33)/4000);
           population += population*((education-33)/9000);
@@ -460,13 +460,13 @@ var cityState = {
           else {
             population = 0;
           }
-          console.log("Population: " + population);
+          //console.log("Population: " + population);
           questHappinessModifier = Math.floor(stage/20) + questsUndertaken;
           happiness = Math.round(20 + questHappinessModifier + (4*(housing/15 + commercial/100 + industrial/100 + education/100 + popHealth/15 + justice/20 + defence/100 + utilities/80)));
           if (happiness>100) {
               happiness = 100;
           }
-          console.log("Happiness: " + happiness);
+          //console.log("Happiness: " + happiness);
           previousEconomyMod = economyMod;
           economyMod = 1;
           economyMod += ((commercial-34)/950);
@@ -479,10 +479,10 @@ var cityState = {
           economyMod += ((trainer-34)/6000);
           economyMod += ((utilities-33)/9000);
           economyMod -= ((tax-30)/3000);
-          console.log("Productivity Modifier: " + economyMod);
+          //console.log("Productivity Modifier: " + economyMod);
           previousIncome = income;
           income = population*economyMod*(1.17*tax);
-          console.log("Income: " + income);
+          //console.log("Income: " + income);
           averageFunding = Math.round((housingFunding + commercialFunding + industrialFunding + educationFunding + healthFunding
                          + justiceFunding + defenceFunding + utilitiesFunding + weaponsmithFunding + armourerFunding
                           + enchanterFunding + trainerFunding)/12);
@@ -491,13 +491,13 @@ var cityState = {
                           + enchanterFunding + trainerFunding;
           previousExpenditure = expenditure;
           expenditure = totalFunding*(4.45 + year/22) + (population*(totalFunding/20));
-          console.log("Expenditure: " + expenditure);
+          //console.log("Expenditure: " + expenditure);
           previousNetIncome = netIncome;
           netIncome = income - expenditure;
-          console.log("Net Income: " + netIncome);
+          //console.log("Net Income: " + netIncome);
           previousCoins = coins;
           coins = Math.round(coins + income - expenditure);
-          console.log("Balance: " + coins);
+          //console.log("Balance: " + coins);
             currentTime = game.time.now;
             if (questYears>0) {
                 questYears --;
@@ -697,6 +697,7 @@ var cityState = {
         questsUndertaken ++;
         questStartTime = game.time.now;
         questStartCoins = coins;
+        game.world.removeAll();
         game.state.start('play');
     },
     defend: function() {
@@ -711,11 +712,13 @@ var cityState = {
         if (tutorialDefence=="first") {
             cityMusic.stop();
             cityMusicPlaying = false;
+            game.world.removeAll();
             game.state.start('tutorial');
         }
         else {
             cityMusic.stop();
             cityMusicPlaying = false;
+            game.world.removeAll();
             game.state.start('defence');
         }
     },
@@ -732,18 +735,18 @@ var cityState = {
                 assistantText2.text = "   This year's census is ";
                 assistantText3.text = "very worrying. Your people's";
                 assistantText4.text = "   health and education is";
-                assistantText5.text = "still in decline. We must";
-                assistantText6.text = "   do something.";
+                assistantText5.text = " in decline. <Click> or";
+                assistantText6.text = "   press SPACE.";
                 break;
             case "second":
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
-                assistantText.text = "  We should";
-                assistantText2.text = "  undertake to increase";
-                assistantText3.text = "      the budget of the";
-                assistantText4.text = "   Departments of Health";
-                assistantText5.text = "      and Education.";
-                assistantText6.text = "";
+                assistantText.text = "  We must do";
+                assistantText2.text = " something. You should";
+                assistantText3.text = "    increase the budgets";
+                assistantText4.text = "  of the Departments  ";
+                assistantText5.text = "    of Health and ";
+                assistantText6.text = "    Education.";
                 break;
             case "defend":
                 if (educationFunding>40 && healthFunding>40) {
@@ -880,6 +883,18 @@ var cityState = {
                 assistantText6.text = "";
                 this.create();
                 break;
+            case "":
+                assistant = "";
+                assistantSprite.kill();
+                assistantSpeechBubble.kill();
+                assistantText.text = "";
+                assistantText2.text = "";
+                assistantText3.text = "";
+                assistantText4.text = "";
+                assistantText5.text = "";
+                assistantText6.text = "";
+                this.create();
+                break;
         }
     },
     highlight: function() {
@@ -906,6 +921,8 @@ var cityState = {
         saveObject.manaRegenHolder = manaRegenHolder;
         saveObject.bossZombieKilled = bossZombieKilled;
         saveObject.bossTreeBeastKilled = bossTreeBeastKilled;
+        saveObject.bossSkeletonKilled = bossSkeletonKilled;
+        saveObject.bossZombieBirdKilled = bossZombieBirdKilled;
         saveObject.coins = coins;
         saveObject.stage = stage;
         saveObject.bestStage = bestStage;
@@ -1025,8 +1042,11 @@ var cityState = {
         localStorage.setItem("save", JSON.stringify(saveObject));
     },
     restart: function() {
+        this.assistantChange();
         bossZombieKilled = false;
         bossTreeBeastKilled = false;
+        bossSkeletonKilled = false;
+        bossZombieBirdKilled = false;
         coins = 1500 + startingGoldIncrease;
         stage = Math.floor(bestStage/4);
         bestStage = 0;
@@ -1079,6 +1099,7 @@ var cityState = {
         marriageOptions = false;
         pauseUpdate = false;
         cityMusic.stop();
+        game.world.removeAll();
         game.state.start('reset');
     },
     marriageOptionsPrompter: function() {
@@ -1111,8 +1132,8 @@ var cityState = {
         pauseUpdate = true;
         boy.kill();
         girl.kill();
-        var names = [" Princess Elsbeth", "Princess Anastasia", " Princess Matthe", "  Princess Susan", "   Princess Bob", "Princess Esmerelda", "  Princess Leia", "Princess Victoria", "Princess Alexandra", "Princess Emmeline", "Princess Christabel", "Princess Buttercup", "Princess Cassandra", " Princess Correen"];
-        var places = ["   Of Dunnovia", "  Of Somethingia", "  Of Madeupistan", "Of Nextdoorbutone", "  Of Farfaraway", "Of The Silly Isles", "    Of Belgium"];
+        var names = [" Princess Elsbeth", "Princess Anastasia", " Princess Matthe", "  Princess Susan", "   Princess Bob", "Princess Esmerelda", "  Princess Leia", " Princess Victoria", "Princess Alexandra", "Princess Emmeline", "Princess Christabel", "Princess Buttercup", "Princess Cassandra", " Princess Correen"];
+        var places = ["   Of Dunnovia", " Of Somethingia", "  Of Madeupistan", "Of Nextdoorbutone", "  Of Farfaraway", "Of The Silly Isles", "    Of Belgium"];
         
         game.add.button(48, 150, 'ui_213x255', this.choiceOne, this);
         var name1 =  names[Math.floor(Math.random()*13.99)];
@@ -1147,9 +1168,9 @@ var cityState = {
         
         game.add.button(309, 150, 'ui_213x255', this.choiceTwo, this);
         var name2 =  names[Math.floor(Math.random()*13.99)];
-        game.add.bitmapText(363, 162, 'font', "Princess " + name2, 14);
+        game.add.bitmapText(347, 162, 'font', name2, 14);
         var place2 =  places[Math.floor(Math.random()*6.99)];
-        game.add.bitmapText(363, 180, 'font', "Of " + place2, 14);
+        game.add.bitmapText(351, 180, 'font', place2, 14);
         var princess2 = game.add.sprite(386, 200, 'princesses');
         princess2.frame = Math.floor(Math.random()*23.99);
         xpReduction2 = Math.round(Math.random()*40)+10;
@@ -1178,9 +1199,9 @@ var cityState = {
         
         game.add.button(570, 150, 'ui_213x255', this.choiceThree, this);
         var name3 =  names[Math.floor(Math.random()*13.99)];
-        game.add.bitmapText(624, 162, 'font', "Princess " + name3, 14);
+        game.add.bitmapText(608, 162, 'font', name3, 14);
         var place3 =  places[Math.floor(Math.random()*6.99)];
-        game.add.bitmapText(624, 180, 'font', "Of " + place3, 14);
+        game.add.bitmapText(612, 180, 'font', place3, 14);
         var princess3 = game.add.sprite(647, 200, 'princesses');
         princess3.frame = Math.floor(Math.random()*23.99);
         xpReduction3 = Math.round(Math.random()*40)+10;
@@ -1267,11 +1288,11 @@ var cityState = {
                 warriorWoman1.speech6.text = "";
                 break;
             case 4:
-                warriorWoman1.speech1.text = "  Alliances";
+                warriorWoman1.speech1.text = "   Alliances";
                 warriorWoman1.speech2.text = "  with neighbours are ";
                 warriorWoman1.speech3.text = "  often sealed by marriage.";
                 warriorWoman1.speech4.text = "   The dowries can be very";
-                warriorWoman1.speech5.text = "        generous.";
+                warriorWoman1.speech5.text = "          generous.";
                 warriorWoman1.speech6.text = "";
                 break;
             case 5:
@@ -1294,8 +1315,8 @@ var cityState = {
                 warriorWoman1.speech1.text = "   The years ";
                 warriorWoman1.speech2.text = "      still pass in the ";
                 warriorWoman1.speech3.text = "    city while you are out ";
-                warriorWoman1.speech4.text = "     questing, but at a ";
-                warriorWoman1.speech5.text = "      slower rate.";
+                warriorWoman1.speech4.text = "      questing, but at a ";
+                warriorWoman1.speech5.text = "        slower rate.";
                 warriorWoman1.speech6.text = "";
                 break;
             case 8:

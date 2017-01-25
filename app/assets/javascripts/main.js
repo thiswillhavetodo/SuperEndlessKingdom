@@ -9,7 +9,7 @@ var beamWeapon = false;
 var shotSpeed = 320;
 var manaCost = 5;
 var flameBullets;
-var flameBulletSpacing = 3300;
+var flameBulletSpacing = 4000;
 var iceBeams;
 var waterShots;
 var iceBeamSpacing = 50;
@@ -40,9 +40,14 @@ var spiders;
 var swampCreatures;
 var treeBeasts;
 var evilRoots;
+var vampires;
+var decoys;
 var bossZombies;
+var bossZombieBirds;
 var bossZombieKilled = false;
 var bossTreeBeastKilled = false;
+var bossSkeletonKilled = false;
+var bossZombieBirdKilled = false;
 
 var cursors;
 var fireButton;
@@ -133,7 +138,7 @@ var playState = {
         game.world.removeAll();
         //  enable the Arcade Physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        if (Math.random()>0.66 || stage == 65) { 
+        if (Math.random()>0.66 || stage == 60) { 
             game.add.sprite(0, 0, 'field');
             backgroundScene = "wasteland";
             gameMusic = game.add.audio('wastelandMusic');
@@ -154,7 +159,7 @@ var playState = {
         
         //  Set up gui and display text
         if (coins>=1000000) {
-            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
+            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins*0.001))*0.001 + "M", 30);
         }
         else {
             coinsText = game.add.bitmapText(395, 10, 'font', coins, 30);
@@ -177,7 +182,10 @@ var playState = {
         xpBar.crop(xpCrop);
         xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
         this.xpDisplayConvert();
-        if (playerLevel>=10) {
+        if (playerLevel>=100) {
+           playerLevelText = game.add.bitmapText(9, 23, 'font', playerLevel, 30);  
+        }
+        else if (playerLevel>=10) {
            playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
         }
         else {
@@ -244,17 +252,23 @@ var playState = {
         evilRoots.enableBody = true;
         bossZombies = game.add.group();
         bossZombies.enableBody = true;
+        bossZombieBirds = game.add.group();
+        bossZombieBirds.enableBody = true;
+        vampires = game.add.group();
+        vampires.enableBody = true;
+        decoys = game.add.group();
+        decoys.enableBody = true;
         
         //  The platforms group
         platforms = game.add.group();
         //  We will enable physics for any object that is created in this group
         platforms.enableBody = true;
         
-        if (stage==55 && bossZombieKilled==false) {
+        if (stage==50 && bossZombieKilled==false) {
             this.bossZombieCreate(760, 200, "green");
             baddieCreated = baddieTotal;
         }
-        if (stage==65 && bossTreeBeastKilled==false) {
+        if (stage==60 && bossTreeBeastKilled==false) {
             this.treeBeastCreate(64, 64);
             this.treeBeastCreate(448, 54);
             this.treeBeastCreate(704, 74);
@@ -278,13 +292,21 @@ var playState = {
             this.treeCreate(448, 512);
             sceneryCount = 28;
         }
+        if (stage==70 && bossSkeletonKilled==false) {
+            this.skeletonCreate(750, 200, "redBoss");
+            baddieCreated = baddieTotal;
+        }
+        if (stage==80 && bossZombieBirdKilled==false) {
+            this.bossZombieBirdCreate(750, 200);
+            baddieCreated = baddieTotal;
+        }
         while(baddieCreated<baddieTotal) {
           var i = array[Math.floor(Math.random() * array.length-1)];
           if (nullArray.indexOf(i) >= 0/*includes(i)*/) {
                 //stops enemies spawning in bottom left of screen near the player
           }
           else if (array.indexOf(i) >= 0/*includes(i)*/) {
-            if (Math.random()>(0.85-stage/100)) {
+            if (Math.random()>(0.85-stage*0.01)) {
               remainder = i%13;
               if (remainder<1) {
                 remainder = 13;
@@ -294,9 +316,18 @@ var playState = {
               if (baddieY<0 || baddieY.isNaN) {
                   baddieY = 0;
               }
-              if (Math.random()>(0.6) && (baddieTotal>10) && ((baddieTotal-baddieCreated)*0.1365)>9&& evilwizardCount<1) {
+              if (Math.random()>(0.6) && (baddieTotal>11) && ((baddieTotal-baddieCreated)*0.1)>9) {
+                this.vampireCreate(baddieX, baddieY);
+                //console.log(i + ": vampire, " + baddieX + ", " + baddieY);
+                baddieCreated += 11;
+                index = array.indexOf(i);
+                if (index > -1) {
+                  array.splice(index, 1);
+                }
+              }
+              else if (Math.random()>(0.6) && (baddieTotal>10) && ((baddieTotal-baddieCreated)*0.1365)>9&& evilwizardCount<1) {
                 this.evilwizardCreate(baddieX, baddieY);
-                console.log(i + ": evil wizard, " + baddieX + ", " + baddieY);
+                //console.log(i + ": evil wizard, " + baddieX + ", " + baddieY);
                 baddieCreated += 10;
                 evilwizardCount ++;
                 index = array.indexOf(i);
@@ -306,7 +337,7 @@ var playState = {
               }
               else if (backgroundScene=="wasteland" && (baddieTotal>9) && ((baddieTotal-baddieCreated)*0.135)>7.5) {
                 this.treeBeastCreate(baddieX, baddieY);
-                console.log(i + ": tree beast, " + baddieX + ", " + baddieY);
+                //console.log(i + ": tree beast, " + baddieX + ", " + baddieY);
                 baddieCreated += 9;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -315,7 +346,7 @@ var playState = {
               }
               else if (Math.random()>(0.55) && (baddieTotal>9) && ((baddieTotal-baddieCreated)*0.135)>7.5&& swampCreatureCount<1) {
                 this.swampCreatureCreate(baddieX, baddieY);
-                console.log(i + ": swamp creature, " + baddieX + ", " + baddieY);
+                //console.log(i + ": swamp creature, " + baddieX + ", " + baddieY);
                 baddieCreated += 9;
                 swampCreatureCount ++;
                 index = array.indexOf(i);
@@ -325,7 +356,7 @@ var playState = {
               }
               else if (Math.random()>(0.5) && (baddieTotal>8) && ((baddieTotal-baddieCreated)*0.14)>6.5&& zombieBirdCount<=5) {
                 this.zombieBirdCreate(baddieX, baddieY);
-                console.log(i + ": zombie bird, " + baddieX + ", " + baddieY);
+                //console.log(i + ": zombie bird, " + baddieX + ", " + baddieY);
                 baddieCreated += 8;
                 zombieBirdCount ++;
                 index = array.indexOf(i);
@@ -335,7 +366,7 @@ var playState = {
               }
               else if (Math.random()>(0.45) && (baddieTotal>7) && ((baddieTotal-baddieCreated)*0.15)>5.5) {
                 this.mummyCreate(baddieX, baddieY);
-                console.log(i + ": mummy, " + baddieX + ", " + baddieY);
+                //console.log(i + ": mummy, " + baddieX + ", " + baddieY);
                 baddieCreated += 7;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -344,7 +375,7 @@ var playState = {
               }
               else if (Math.random()>(0.4) && (baddieTotal>6) && ((baddieTotal-baddieCreated)*0.21)>5 && flameCount<=2) {
                 this.flameCreate(baddieX, baddieY);
-                console.log(i + ": flame, " + baddieX + ", " + baddieY);
+                //console.log(i + ": flame, " + baddieX + ", " + baddieY);
                 baddieCreated += 6;
                 flameCount += 1;
                 index = array.indexOf(i);
@@ -359,7 +390,7 @@ var playState = {
                 else {
                     this.skeletonCreate(baddieX, baddieY, "grey");
                 }
-                console.log(i + ": skeleton, " + baddieX + ", " + baddieY);
+                //console.log(i + ": skeleton, " + baddieX + ", " + baddieY);
                 baddieCreated += 5;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -368,7 +399,7 @@ var playState = {
               }
               else if (Math.random()>(0.25) && (baddieTotal > baddieCreated)&&(baddieTotal>4)&&((baddieTotal-baddieCreated)*0.14)>2) {
                 this.swordZombieCreate(baddieX, baddieY, "green");
-                console.log(i + ": swordZombie, " + baddieX + ", " + baddieY);
+                //console.log(i + ": swordZombie, " + baddieX + ", " + baddieY);
                 baddieCreated += 4;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -377,7 +408,7 @@ var playState = {
               }
               else if (Math.random()>(0.2) && (baddieTotal > baddieCreated)&&(baddieTotal>3)&&((baddieTotal-baddieCreated)*0.24)>2) {
                 this.spiderCreate(baddieX, baddieY);
-                console.log(i + ": spider, " + baddieX + ", " + baddieY);
+                //console.log(i + ": spider, " + baddieX + ", " + baddieY);
                 baddieCreated += 3;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -391,7 +422,7 @@ var playState = {
                 else {
                     this.baddieCreate(baddieX, baddieY, "green");
                 }
-                console.log(i + ": zombie, " + baddieX + ", " + baddieY);
+                //console.log(i + ": zombie, " + baddieX + ", " + baddieY);
                 baddieCreated ++;
                 index = array.indexOf(i);
                 if (index > -1) {
@@ -404,24 +435,24 @@ var playState = {
         stars = game.add.group();
         stars.enableBody = true;
         
-        while (chestCreated < starTotal) {
+        while (chestCreated+1 < starTotal) {
             var starX = Math.random(0.05, 1) * 780;
             var starY = Math.random(0.1, 1) * 580;
             if (starTotal - chestCreated > 20) {
                 this.coinCreate(starX, starY, "yellow"); 
-                chestCreated += 10;
+                chestCreated += 25;
             }
             else if (starTotal - chestCreated > 10) {
                 this.coinCreate(starX, starY, "green");
-                chestCreated += 5;
+                chestCreated += 10;
             }
             else if (starTotal - chestCreated > 4) {
                 this.coinCreate(starX, starY, "blue");
-                chestCreated += 2;
+                chestCreated += 5;
             }
             else {
                 this.coinCreate(starX, starY, "red");
-                chestCreated ++;
+                chestCreated += 2;
             }
         }
     
@@ -435,9 +466,9 @@ var playState = {
               var blockX = (remainder-1)*64 + Math.round(Math.random()*10);
               var blockY = Math.floor((array[i]-1)/13)*64 + Math.round(Math.random()*10);
               var index;
-              var sceneryModifier = 1 + (1-(sceneryCount/28)) + stage/1000;
+              var sceneryModifier = 1 + (1-(sceneryCount/28)) + stage*0.001;
               if ((Math.random()<(0.10*sceneryModifier))) {
-                console.log(array[i] + ": tree, " + blockX + ", " + blockY);
+                //console.log(array[i] + ": tree, " + blockX + ", " + blockY);
                 if (backgroundScene=="wasteland") {
                     var tree = platforms.create(blockX, blockY, 'tree');
                     tree.body.setSize(35, 20, 0, 33);
@@ -463,7 +494,7 @@ var playState = {
                 }
               }
               else if (Math.random()>(1-(0.10*sceneryModifier))) {
-                console.log(array[i] + ": rock, " + blockX + ", " + blockY);
+                //console.log(array[i] + ": rock, " + blockX + ", " + blockY);
                 if (backgroundScene=="wasteland") {
                     var rock = platforms.create(blockX, blockY, 'rock');
                     rock.body.immovable = true;
@@ -488,7 +519,7 @@ var playState = {
                 }
               } 
               else if (Math.random()>=0.2 && Math.random()<(0.3*(sceneryModifier/3))) {
-                console.log(array[i] + ": gravestone, " + blockX + ", " + blockY);
+                //console.log(array[i] + ": gravestone, " + blockX + ", " + blockY);
                 if (backgroundScene=="wasteland") {
                     var gravestone = platforms.create(blockX, blockY, 'gravestone');
                     gravestone.body.immovable = true;
@@ -512,7 +543,7 @@ var playState = {
                 }
               } 
               else if ((28-sceneryCount)>=(116-array[i])) {
-                console.log(array[i] + ": tree");
+                //console.log(array[i] + ": tree");
                 if (backgroundScene=="wasteland") {
                     tree = platforms.create(blockX, blockY, 'tree');
                     tree.body.setSize(35, 20, 0, 33);
@@ -554,7 +585,7 @@ var playState = {
         /*
         //  Set up gui and display text
         if (coins>=1000000) {
-            coinsText = game.add.bitmapText(10, 600, 'font', 'Coins: ' + (Math.round(coins/1000))/1000 + "M", 30);
+            coinsText = game.add.bitmapText(10, 600, 'font', 'Coins: ' + (Math.round(coins*0.001))*0.001 + "M", 30);
         }
         else {
             coinsText = game.add.bitmapText(10, 600, 'font', 'Coins: ' + coins, 30);
@@ -606,6 +637,27 @@ var playState = {
         game.physics.arcade.collide(mummies, skeletons); 
         game.physics.arcade.collide(mummies, spiders); 
         game.physics.arcade.collide(mummies, mummies); 
+        game.physics.arcade.collide(vampires, baddies); 
+        game.physics.arcade.collide(vampires, flames);
+        game.physics.arcade.collide(vampires, skeletons); 
+        game.physics.arcade.collide(vampires, spiders); 
+        game.physics.arcade.collide(vampires, mummies);
+        game.physics.arcade.collide(vampires, vampires);
+        game.physics.arcade.collide(vampires, decoys);
+        game.physics.arcade.collide(swordZombies, baddies); 
+        game.physics.arcade.collide(swordZombies, flames);
+        game.physics.arcade.collide(swordZombies, skeletons); 
+        game.physics.arcade.collide(swordZombies, spiders); 
+        game.physics.arcade.collide(swordZombies, mummies);
+        game.physics.arcade.collide(swordZombies, vampires);
+        game.physics.arcade.collide(swordZombies, decoys);
+        game.physics.arcade.collide(decoys, baddies); 
+        game.physics.arcade.collide(decoys, flames);
+        game.physics.arcade.collide(decoys, skeletons); 
+        game.physics.arcade.collide(decoys, spiders); 
+        game.physics.arcade.collide(decoys, mummies);
+        game.physics.arcade.collide(decoys, vampires);
+        game.physics.arcade.collide(decoys, decoys);
         game.physics.arcade.collide(spiders, baddies); 
         game.physics.arcade.collide(spiders, spiders); 
         game.physics.arcade.collide(spiders, flames);
@@ -622,6 +674,7 @@ var playState = {
             game.physics.arcade.overlap(player, baddies, this.badTouch, null, this);
             game.physics.arcade.overlap(player, swordZombies, this.badTouch, null, this);
             game.physics.arcade.overlap(player, bossZombies, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, bossZombieBirds, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, flames, this.badTouch, null, this);
             game.physics.arcade.overlap(player, flameBullets, this.badTouch, null, this);
             game.physics.arcade.overlap(player, skeletons, this.badTouchTwo, null, this);
@@ -634,12 +687,15 @@ var playState = {
             game.physics.arcade.overlap(player, spiders, this.badTouch, null, this);
             game.physics.arcade.overlap(player, treeBeasts, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, evilRoots, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, vampires, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, decoys, this.badTouch, null, this);
         }
         else {
             player.alpha = 0.5;
         }
         game.physics.arcade.collide(bullets, baddies, this.badKill, null, this);
         game.physics.arcade.collide(bullets, bossZombies, this.bossZombieKill, null, this);
+        game.physics.arcade.collide(bullets, bossZombieBirds, this.bossZombieBirdKill, null, this);
         game.physics.arcade.collide(bullets, flames, this.flameKill, null, this);
         game.physics.arcade.collide(bullets, skeletons, this.skeletonKill, null, this);
         game.physics.arcade.collide(bullets, mummies, this.mummyKill, null, this);
@@ -651,9 +707,12 @@ var playState = {
         game.physics.arcade.collide(bullets, platforms, this.bulletKill, null, this);
         game.physics.arcade.collide(bullets, treeBeasts, this.treeBeastKill, null, this);
         game.physics.arcade.collide(bullets, swordZombies, this.swordZombieKill, null, this);
+        game.physics.arcade.collide(bullets, vampires, this.vampireKill, null, this);
+        game.physics.arcade.collide(bullets, decoys, this.decoyKill, null, this);
         game.physics.arcade.overlap(skeletons, platforms, this.skeletonSmash, null, this);
         game.physics.arcade.overlap(mummies, platforms, this.mummySmash, null, this);
         game.physics.arcade.overlap(bossZombies, platforms, this.bossZombieSmash, null, this);
+        game.physics.arcade.overlap(bossZombieBirds, platforms, this.bossZombieBirdSmash, null, this);
         game.physics.arcade.overlap(spiders, platforms, this.spiderClimb, null, this);
         game.physics.arcade.collide(swordZombies, platforms, this.swordZombieSteer, null, this);
         game.physics.arcade.overlap(platforms, stars, this.moveStar, null, this);
@@ -722,11 +781,14 @@ var playState = {
         this.treeBeastUpdate();
         this.evilRootUpdate();
         this.bossZombieUpdate();
+        this.bossZombieBirdUpdate();
         this.manaRegen();
         this.beamTimerUpdate();
         this.manaRefillTimerUpdate();
         this.swordZombieUpdate();
         this.adTimeUpdate();
+        this.vampireUpdate();
+        this.decoyUpdate();
         //this.coinUpdate();
         hpCrop.x = (1-(health/maxHealth))*80;
         hpBar.updateCrop();
@@ -808,19 +870,20 @@ var playState = {
             var bossZombie = bossZombies.create(x, y, 'bossZombie');
             bossZombie.health = 250;
             bossZombie.maxHealth = 250;
-            bossZombie.colour = "green"
+            bossZombie.colour = "green";
         }
         else if (colour=="red") {
-            var bossZombie = bossZombies.create(x, y, 'zombieRed');
+            bossZombie = bossZombies.create(x, y, 'zombieRed');
             bossZombie.health = 375;
             bossZombie.maxHealth = 375;
-            bossZombie.colour = "red"
+            bossZombie.colour = "red";
         }
         //  enable physics on the bossZombie
         game.physics.arcade.enable(bossZombie);
         bossZombie.body.collideWorldBounds = true;
         bossZombie.timer = game.time.now;
         bossZombie.interval = 4000;
+        bossZombie.damageTimer = 0;
         
         bossZombie.healthBarBack = bossZombie.addChild(game.add.graphics(0, 0));
         bossZombie.healthBarBack.lineStyle(3, 0xba3500, 1);
@@ -850,10 +913,10 @@ var playState = {
             game.physics.arcade.collide(bossZombie, platforms);
             
             if (bossZombie.colour=="green") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 110);
+                    game.physics.arcade.moveToObject(bossZombie, player, 120);
             }
             else if (bossZombie.colour=="red") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 135);
+                    game.physics.arcade.moveToObject(bossZombie, player, 145);
             }
             if (player.body.x < bossZombie.body.x) {
                 bossZombie.animations.play('bossZombieLeft');
@@ -868,11 +931,11 @@ var playState = {
         var woodSmash = game.add.audio('woodSmash'); 
         woodSmash.play(); 
         var self = this;
-        game.time.events.add(Phaser.Timer.SECOND * 0.75, function () { self.rubbleCreate(platforms.x, platforms.y); });
+        game.time.events.add(Phaser.Timer.SECOND * 0.6, function () { self.rubbleCreate(platforms.x, platforms.y); });
     },
     rubbleCreate: function(x, y) {
         var rubble = platforms.create(x, y, 'rubble');
-        console.log("rubble");
+        //console.log("rubble");
         rubble.body.setSize(32, 16, 0, 16);
         rubble.body.immovable = true;
     },
@@ -1035,11 +1098,23 @@ var playState = {
             skeleton.colour = "grey";
         }
         else if (colour=="red") {
-            var skeleton = skeletons.create(x, y, 'skeleton');
+            skeleton = skeletons.create(x, y, 'skeleton');
             skeleton.health = 28;
             skeleton.maxHealth = 28;
             skeleton.colour = "red";
             skeleton.tint = 0xba3500;
+        }
+        else if (colour=="redBoss") {
+            skeleton = skeletons.create(x, y, 'skeleton');
+            skeleton.health = 325;
+            skeleton.maxHealth = 325;
+            skeleton.colour = "redBoss";
+            skeleton.tint = 0xba3500;
+            skeleton.scale.x = 2.5;
+            skeleton.scale.y = 2.5;
+            skeleton.bossTimer = 0;
+            skeleton.bossDamageTimer = 0;
+            skeleton.isAlive = true;
         }
         //  enable physics on the skeleton
         game.physics.arcade.enable(skeleton);
@@ -1064,7 +1139,9 @@ var playState = {
         skeleton.animations.add('smash', [9, 10], 10, true);
     },
     skeletonUpdate: function() {
+        var self = this;
         skeletons.forEach(function(skeleton) {
+            
             skeleton.body.velocity.x = 0;
             skeleton.body.velocity.y = 0;
             
@@ -1079,12 +1156,15 @@ var playState = {
                 skeleton.animations.stop();
                 skeleton.animations.play('smash');
             }
-            else if ((Math.abs(player.x - skeleton.x)) + (Math.abs(player.y - skeleton.y)) < 275) {
+            else if ((Math.abs(player.x - skeleton.x)) + (Math.abs(player.y - skeleton.y)) < 275 || skeleton.colour=="redBoss") {
                 if (skeleton.colour=="grey") {
                     game.physics.arcade.moveToObject(skeleton, player, 178-skeleton.health*2);
                 }
                 else if (skeleton.colour=="red") {
                     game.physics.arcade.moveToObject(skeleton, player, 232-skeleton.health*2);
+                }
+                else if (skeleton.colour=="redBoss") {
+                    game.physics.arcade.moveToObject(skeleton, player, 190-skeleton.health*0.1);
                 }
                 if (player.body.x < skeleton.body.x) {
                     skeleton.animations.play('skeletonLeft');
@@ -1109,6 +1189,12 @@ var playState = {
             }
             else {
                 skeleton.animations.play('stomp');
+            }
+            if (skeleton.colour=="redBoss" && skeleton.bossTimer<game.time.now && flameCount<3 && skeleton.isAlive) {
+                self.flameCreate(skeleton.x, skeleton.y);
+                flameCount++;
+                baddieCount += 6;
+                skeleton.bossTimer = game.time.now + 2000;
             }
         });
     },
@@ -1237,10 +1323,8 @@ var playState = {
             if ((game.time.now > flame.timer) && flame.isAlive) {
                 var flameBullet = flameBullets.create(flame.x, flame.y, 'flame');
                 flameBullet.animations.add('fire', [0], true);
-                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 130);
+                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 140);
                 flameBullet.animations.play('fire');
-                flameBullet.checkWorldBounds = true;
-                flameBullet.outOfBoundsKill = true;
                 flame.timer = game.time.now + flameBulletSpacing;
                 var flameShot = game.add.audio('flameShot');
                 flameShot.play();
@@ -1335,7 +1419,7 @@ var playState = {
         evilwizard.timer = game.time.now;
         evilwizard.chargeTimer = game.time.now + 1000;
         evilwizard.shotTimer = game.time.now + 3000;
-        evilwizard.stopTimer = game.time.now + 8000;
+        evilwizard.stopTimer = game.time.now + 7500;
         evilwizard.isAlive = true;
         
         evilwizard.healthBarBack = evilwizard.addChild(game.add.graphics(0, 0));
@@ -1393,16 +1477,21 @@ var playState = {
                 charge.animations.add('chargeUp', [0, 1, 2, 3, 4, 4], 2, false);
                 charge.animations.play('chargeUp');
                 evilwizard.chargeTimer = game.time.now + 10000;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function() { charge.kill(); beamSFX.play();});
+                game.time.events.add(Phaser.Timer.SECOND * 2, function() {  charge.kill();
+                                                                            if (evilwizard.isAlive) {
+                                                                                beamSFX.play();
+                                                                            }
+                                                                        });
             }
             if (game.time.now > evilwizard.shotTimer && evilwizard.isAlive) {
                 var iceBeam = iceBeams.create(evilwizard.x + 16, evilwizard.y + 24, 'iceBeamMini');
+                iceBeam.scale.x = 1.2;
                 iceBeam.animations.add('beam', [0], true);
                 game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
                 iceBeam.animations.play('beam');
-                evilwizard.shotTimer = game.time.now + 8;
-                game.time.events.add(Phaser.Timer.SECOND * 5, function() { 
+                evilwizard.shotTimer = game.time.now + 16;
+                game.time.events.add(Phaser.Timer.SECOND * 4.5, function() { 
                                                                 iceBeams.forEach(function(iceBeam) { 
                                                                     iceBeam.destroy(); 
                                                                     beamSFX.stop();
@@ -1410,7 +1499,7 @@ var playState = {
                                                               );});
             }
             if (game.time.now > evilwizard.stopTimer) {
-                evilwizard.shotTimer = game.time.now + 5000;
+                evilwizard.shotTimer = game.time.now + 5500;
                 evilwizard.stopTimer = game.time.now + 10000;
             }
             if (player.body.x < evilwizard.body.x) {
@@ -1462,7 +1551,7 @@ var playState = {
             swampCreature.healthBar.lineTo(20*(swampCreature.health/swampCreature.maxHealth), 0);
             
             if (game.time.now > swampCreature.crouchTimer && swampCreature.isAlive) {
-                console.log('crouch');
+                //console.log('crouch');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 swampCreature.animations.stop();
@@ -1471,7 +1560,7 @@ var playState = {
             }
             if (game.time.now > swampCreature.jumpTimer && swampCreature.isAlive) {
                 swampCreature.body.immovable = false;
-                console.log('jump');
+                //console.log('jump');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 swampCreature.frame = 7;
@@ -1480,7 +1569,7 @@ var playState = {
             }
             if (game.time.now > swampCreature.shotTimer1 && swampCreature.isAlive) {
                 swampCreature.body.immovable = true;
-                console.log('fire');
+                //console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 if (player.body.x < swampCreature.body.x) {
@@ -1497,7 +1586,7 @@ var playState = {
                 swampCreature.shotTimer1 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer2 && swampCreature.isAlive) {
-                console.log('fire');
+                //console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
@@ -1508,7 +1597,7 @@ var playState = {
                 swampCreature.shotTimer2 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer3 && swampCreature.isAlive) {
-                console.log('fire');
+                //console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
@@ -1519,7 +1608,7 @@ var playState = {
                 swampCreature.shotTimer3 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer4 && swampCreature.isAlive) {
-                console.log('fire');
+                //console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
@@ -1530,7 +1619,7 @@ var playState = {
                 swampCreature.shotTimer4 = game.time.now + 10000;
             }
             if (game.time.now > swampCreature.shotTimer5 && swampCreature.isAlive) {
-                console.log('fire');
+                //console.log('fire');
                 swampCreature.body.velocity.x = 0;
                 swampCreature.body.velocity.y = 0;
                 var waterShot = waterShots.create(swampCreature.x+10, swampCreature.y+10, 'waterShot');
@@ -1679,6 +1768,179 @@ var playState = {
             }
         });
     }, 
+    bossZombieBirdCreate: function(x, y) {
+        var bossZombieBird = bossZombieBirds.create(x, y, 'zombieBird');
+        bossZombieBird.health = 400;
+        bossZombieBird.maxHealth = 400;
+        bossZombieBird.scale.x = 2.5;
+        bossZombieBird.scale.y = 2.5;
+        bossZombieBird.damageTimer = 0;
+        bossZombieBird.createMiniTimer = 0;
+        bossZombieBird.isAlive = true;
+        //  enable physics
+        game.physics.arcade.enable(bossZombieBird);
+        bossZombieBird.body.collideWorldBounds = true;
+        
+        bossZombieBird.healthBarBack = bossZombieBird.addChild(game.add.graphics(0, 0));
+        bossZombieBird.healthBarBack.lineStyle(3, 0xba3500, 1);
+        bossZombieBird.healthBarBack.moveTo(0, 0);
+        bossZombieBird.healthBarBack.lineTo(20, 0);
+        bossZombieBird.healthBar = bossZombieBird.addChild(game.add.graphics(0, 0));
+        bossZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+        bossZombieBird.healthBar.moveTo(0, 0);
+        bossZombieBird.healthBar.lineTo(20*(bossZombieBird.health/bossZombieBird.maxHealth), 0);
+        
+        bossZombieBird.healthBarBack.visible = false;
+        bossZombieBird.healthBar.visible = false;
+        //  animations.
+        bossZombieBird.animations.add('bossZombieBirdLeft', [0, 1, 2, 3], 10, true);
+        bossZombieBird.animations.add('bossZombieBirdRight', [4, 5, 6, 7], 10, true); 
+    },
+    bossZombieBirdUpdate: function() {
+        var self = this;
+        bossZombieBirds.forEach(function(bossZombieBird) {
+            bossZombieBird.body.velocity.x = 0;
+            bossZombieBird.body.velocity.y = 0;
+            
+            bossZombieBird.healthBar.clear();
+            bossZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+            bossZombieBird.healthBar.moveTo(0, 0);
+            bossZombieBird.healthBar.lineTo(20*(bossZombieBird.health/bossZombieBird.maxHealth), 0);
+            
+            game.physics.arcade.collide(bossZombieBird, platforms);
+            game.physics.arcade.moveToObject(bossZombieBird, player, 150-bossZombieBird.health*0.1);
+            if (player.body.x < bossZombieBird.body.x) {
+                    bossZombieBird.animations.play('bossZombieBirdLeft');
+            }
+            else {
+                    bossZombieBird.animations.play('bossZombieBirdRight');
+            }
+            if (game.time.now>bossZombieBird.createMiniTimer && bossZombieBird.isAlive) {
+                self.miniZombieBirdCreate(bossZombieBird.x, bossZombieBird.y);
+                bossZombieBird.createMiniTimer = game.time.now + 3000;
+                baddieCount += 2;
+            }
+        });
+    }, 
+    bossZombieBirdSmash: function(bossZombieBird, platforms) {
+        platforms.kill(); 
+        var woodSmash = game.add.audio('woodSmash'); 
+        woodSmash.play(); 
+        var self = this;
+        game.time.events.add(Phaser.Timer.SECOND * 0.6, function () { self.rubbleCreate(platforms.x, platforms.y); });
+    },
+    vampireCreate: function(x, y) {
+        var vampire = vampires.create(x, y, 'vampire');
+        vampire.health = 44;
+        vampire.maxHealth = 44;
+        
+        //  enable physics on the vampire
+        game.physics.arcade.enable(vampire);
+        vampire.body.collideWorldBounds = true;
+        vampire.visible = true;
+        vampire.healthBarBack = vampire.addChild(game.add.graphics(0, 0));
+        vampire.healthBarBack.lineStyle(3, 0xba3500, 1);
+        vampire.healthBarBack.moveTo(0, 0);
+        vampire.healthBarBack.lineTo(20, 0);
+        vampire.healthBar = vampire.addChild(game.add.graphics(0, 0));
+        vampire.healthBar.lineStyle(3, 0xffd900, 1);
+        vampire.healthBar.moveTo(0, 0);
+        vampire.healthBar.lineTo(20*(vampire.health/vampire.maxHealth), 0);
+        
+        vampire.healthBarBack.visible = false;
+        vampire.healthBar.visible = false;
+        //  Our two animations, walking left and right.
+        vampire.animations.add('vampireLeft', [9, 10, 11], 15, true);
+        vampire.animations.add('vampireRight', [3, 4, 5], 15, true);
+    },
+    vampireUpdate: function() {
+        vampires.forEach(function(vampire) {
+            vampire.body.velocity.x = 0;
+            vampire.body.velocity.y = 0;
+        
+            game.physics.arcade.collide(vampire, platforms);
+            
+            vampire.healthBar.clear();
+            vampire.healthBar.lineStyle(3, 0xffd900, 1);
+            vampire.healthBar.moveTo(0, 0);
+            vampire.healthBar.lineTo(20*(vampire.health/vampire.maxHealth), 0);
+            
+            game.physics.arcade.moveToObject(vampire, player, 155);
+                
+            if (player.body.x < vampire.body.x) {
+                vampire.animations.play('vampireLeft');
+            }
+            else {
+                vampire.animations.play('vampireRight');
+            }
+        });
+    },
+    vampireEvade: function() {
+        var self = this;
+        vampires.forEach(function(vampire) {
+            vampire.visible = false;
+            var smoke = game.add.sprite(vampire.x, vampire.y, 'smokeAnimation');
+            smoke.animations.add('disperse', [0, 1, 2, 3], 16, true);
+            smoke.animations.play('disperse');
+            if (player.x<600) {
+                var vampireOffsetX = 75*(1+Math.random());
+            }
+            else {
+                vampireOffsetX = -75*(1+Math.random());
+            }
+            if (player.y<450) {
+                var vampireOffsetY = 75*(1+Math.random());
+            }
+            else {
+                vampireOffsetY = -75*(1+Math.random());
+            }
+            
+            game.time.events.add(Phaser.Timer.SECOND * 0.25, function () {  smoke.kill(); 
+                                                                            smoke = game.add.sprite(player.x+vampireOffsetX, player.y+vampireOffsetY, 'smokeAnimation');
+                                                                            smoke.animations.add('disperse', [0, 1, 2, 3], 16, true);
+                                                                            smoke.animations.play('disperse');
+                                                                            self.decoyCreate(smoke.x+(vampireOffsetX*0.5), smoke.y-(vampireOffsetY*0.5));
+                                                                            self.decoyCreate(smoke.x-(vampireOffsetX*0.5), smoke.y+(vampireOffsetY*0.5));
+                                                                         });
+            game.time.events.add(Phaser.Timer.SECOND * 0.5, function () {   smoke.kill(); 
+                                                                            vampire.visible = true;
+                                                                            vampire.x = smoke.x;
+                                                                            vampire.y = smoke.y;
+                                                                        });
+        });
+    },
+    decoyCreate: function(x, y) {
+        var decoySmoke = game.add.sprite(x, y, 'smokeAnimation');
+        decoySmoke.animations.add('disperse', [0, 1, 2, 3], 16, true);
+        decoySmoke.animations.play('disperse');
+        game.time.events.add(Phaser.Timer.SECOND * 0.25, function () {  decoySmoke.kill();
+                                                                        var decoy = decoys.create(x, y, 'vampire');
+                                                                        //  enable physics on the decoy
+                                                                        game.physics.arcade.enable(decoy);
+                                                                        decoy.body.collideWorldBounds = true;
+                                                                        decoy.visible = true;
+                                                                        //  Our two animations, walking left and right.
+                                                                        decoy.animations.add('decoyLeft', [9, 10, 11], 15, true);
+                                                                        decoy.animations.add('decoyRight', [3, 4, 5], 15, true);
+                                                                     });
+    },
+    decoyUpdate: function() {
+        decoys.forEach(function(decoy) {
+            decoy.body.velocity.x = 0;
+            decoy.body.velocity.y = 0;
+        
+            game.physics.arcade.collide(decoy, platforms);
+            
+            game.physics.arcade.moveToObject(decoy, player, 155);
+                
+            if (player.body.x < decoy.body.x) {
+                decoy.animations.play('decoyLeft');
+            }
+            else {
+                decoy.animations.play('decoyRight');
+            }
+        });
+    },
     coinCreate: function(x, y, colour) {
         var star;
         if (colour=="red") {
@@ -1754,7 +2016,7 @@ var playState = {
         });
         coins += coinAmount;
         if (coins>=1000000) {
-            coinsText.text = (Math.round(coins/1000))/1000 + "M";
+            coinsText.text = (Math.round(coins*0.001))*0.001 + "M";
         }
         else {
             coinsText.text = coins;
@@ -1765,7 +2027,7 @@ var playState = {
     },
     badTouch: function() {
         var damage = Math.floor(1 + stage/32);
-        console.log(damage);
+        //console.log(damage);
         if (health>damage) {
             health -= damage;
             var grunt = game.add.audio('grunt');
@@ -1778,15 +2040,15 @@ var playState = {
         }
     },
     badTouchTwo: function() {
-        var damage = Math.floor(2 + stage/25);
-        console.log(damage);
+        var damage = Math.floor(2 + stage*0.04);
+        //console.log(damage);
         if (health>damage) {
             health -= damage;
             var grunt = game.add.audio('grunt');
             grunt.play();
             healthText.text = 'HP: ' + health + '/' + maxHealth;
             invulnerableTimer = game.time.now + invulnerableSpacing;
-            if (stage==55 && bossZombieKilled==false) {
+            if (stage==50 && bossZombieKilled==false) {
                 this.badTouch();
             }
         }
@@ -1796,11 +2058,11 @@ var playState = {
     },
     freeze: function() {
         if (game.time.now>freezeTimer) {
-            console.log(runSpeed);
+            //console.log(runSpeed);
             runSpeed = 2*(runSpeed/3);
-            console.log(runSpeed);
+            //console.log(runSpeed);
             freezeTimer = game.time.now + 4000;
-            game.time.events.add(Phaser.Timer.SECOND * 3, function() { runSpeed = runSpeed*1.5; console.log(runSpeed);});
+            game.time.events.add(Phaser.Timer.SECOND * 3, function() { runSpeed = runSpeed*1.5; /*console.log(runSpeed);*/});
             }
     },
     moveStar: function(x, star) {
@@ -1831,8 +2093,6 @@ var playState = {
         emitter.lifespan = 500;
         bullet.scale.x = 0.8;
         bullet.scale.y = 0.8;
-        bullet.checkWorldBounds = true;
-        bullet.outOfBoundsKill = true;
         
         if (cursors.left.isDown) {
             game.physics.arcade.moveToXY(bullet, 0, bullet.y, shotSpeed);
@@ -1957,12 +2217,14 @@ var playState = {
         }
         bullet.kill();
         if (baddie.health <= shotPower) {
-            this.coinCreate(baddie.x, baddie.y, "red");
-            if (Math.random()>0.88 && baddie.colour=="red") {
+            if (Math.random()>0.85 && baddie.colour=="red") {
                this.coinCreate(baddie.x+5, baddie.y+5, "blue"); 
             }
-            else if (Math.random()>0.92) {
-               this.coinCreate(baddie.x+5, baddie.y+5, "red"); 
+            else if (Math.random()>0.9) {
+               this.coinCreate(baddie.x+5, baddie.y+5, "blue"); 
+            }
+            else {
+               this.coinCreate(baddie.x, baddie.y, "red"); 
             }
             if (Math.random()>0.8) {
                 var risenZombie = game.add.sprite(baddie.x, baddie.y, 'zombieRising');
@@ -1998,75 +2260,148 @@ var playState = {
         this.smallExplosion(bullet.x, bullet.y);
         if (Math.random()>0.66) {
             if (bullet.travel == 'left') {
-                bossZombie.x -= knockback/10;
+                bossZombie.x -= knockback*0.1;
             }
             else if (bullet.travel == 'right') {
-                bossZombie.x += knockback/10;
+                bossZombie.x += knockback*0.1;
             }
             else if (bullet.travel == 'up') {
-                bossZombie.y -= knockback/10;
+                bossZombie.y -= knockback*0.1;
             }
             else if (bullet.travel == 'down') {
-                bossZombie.y += knockback/10;
+                bossZombie.y += knockback*0.1;
             }
         }
         bullet.kill();
-        if (bossZombie.health <= shotPower) {
-            this.coinCreate(bossZombie.x, bossZombie.y, "yellow");
-            this.coinCreate(bossZombie.x+15, bossZombie.y-2, "yellow");
-            this.coinCreate(bossZombie.x-15, bossZombie.y+2, "yellow");
-            var wand = game.add.sprite(bossZombie.x-10, bossZombie.y+10, 'wand');
-            weaponsmithDropReward ++;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
-            var armour = game.add.sprite(bossZombie.x+10, bossZombie.y+10, 'armour');
-            armourerDropReward ++;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
-            var ring = game.add.sprite(bossZombie.x+10, bossZombie.y-10, 'ring');
-            enchanterDropReward ++;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
-            var buff = game.add.sprite(bossZombie.x-10, bossZombie.y-10, 'buff');
-            trainerDropReward ++;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
-            if (Math.random()>0.8 && bossZombie.colour=="red") {
-               this.coinCreate(bossZombie.x+5, bossZombie.y+5, "yellow"); 
-               this.coinCreate(bossZombie.x-5, bossZombie.y-5, "yellow"); 
-            }
-            else if (Math.random()>0.9) {
-               this.coinCreate(bossZombie.x+5, bossZombie.y+5, "green"); 
-               this.coinCreate(bossZombie.x-5, bossZombie.y-5, "green"); 
-            }
-            if (Math.random()>0.8) {
-                this.baddieCreate(bossZombie.x, bossZombie.y, "red");
-                baddieCount ++;
-            }
-            bossZombie.kill();
-            bossZombieKilled = true;
-            this.zombieDeathSFX();
-            var death = game.add.sprite(bossZombie.x, bossZombie.y, 'deathSheet');
-            if (bossZombie.colour=="red") {
-                xp += 330;
-                death.frame = 11;
+        if (game.time.now>bossZombie.damageTimer) {
+            bossZombie.damageTimer = game.time.now>bossZombie+200;
+            if (bossZombie.health <= shotPower) {
+                this.coinCreate(bossZombie.x, bossZombie.y, "yellow");
+                this.coinCreate(bossZombie.x+15, bossZombie.y-2, "yellow");
+                this.coinCreate(bossZombie.x-15, bossZombie.y+2, "yellow");
+                var wand = game.add.sprite(bossZombie.x-10, bossZombie.y+10, 'wand');
+                weaponsmithDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
+                var armour = game.add.sprite(bossZombie.x+10, bossZombie.y+10, 'armour');
+                armourerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
+                var ring = game.add.sprite(bossZombie.x+10, bossZombie.y-10, 'ring');
+                enchanterDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
+                var buff = game.add.sprite(bossZombie.x-10, bossZombie.y-10, 'buff');
+                trainerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
+                if (Math.random()>0.8 && bossZombie.colour=="red") {
+                   this.coinCreate(bossZombie.x+5, bossZombie.y+5, "yellow"); 
+                   this.coinCreate(bossZombie.x-5, bossZombie.y-5, "yellow"); 
+                }
+                else if (Math.random()>0.9) {
+                   this.coinCreate(bossZombie.x+5, bossZombie.y+5, "green"); 
+                   this.coinCreate(bossZombie.x-5, bossZombie.y-5, "green"); 
+                }
+                if (Math.random()>0.8) {
+                    this.baddieCreate(bossZombie.x, bossZombie.y, "red");
+                    baddieCount ++;
+                }
+                bossZombie.kill();
+                bossZombieKilled = true;
+                this.zombieDeathSFX();
+                var death = game.add.sprite(bossZombie.x, bossZombie.y, 'deathSheet');
+                if (bossZombie.colour=="red") {
+                    xp += 330;
+                    death.frame = 11;
+                }
+                else {
+                    xp += 220;
+                    death.frame = 10;
+                }
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+                this.xpDisplayConvert();
+                baddieCount -= 57;
+                this.checkLevelUp();
+                this.checkStageComplete();
             }
             else {
-                xp += 220;
-                death.frame = 10;
+                bossZombie.health -= shotPower;
+                //var self = this;
+                if (bossZombie.timer+bossZombie.interval<=game.time.now) {
+                    this.baddieCreate(bossZombie.x, bossZombie.y, "red");
+                    bossZombie.timer = game.time.now;
+                    baddieCount ++;
+                }
+                bossZombie.healthBarBack.visible = true;
+                bossZombie.healthBar.visible = true;
             }
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
-            this.xpDisplayConvert();
-            baddieCount -= 62;
-            this.checkLevelUp();
-            this.checkStageComplete();
         }
-        else {
-            bossZombie.health -= shotPower;
-            //var self = this;
-            if (bossZombie.timer+bossZombie.interval<=game.time.now) {
-                this.baddieCreate(bossZombie.x, bossZombie.y, "red");
-                bossZombie.timer = game.time.now;
-                baddieCount ++;
+    },
+    bossZombieBirdKill: function(bullet, bossZombieBird) {
+        this.smallExplosion(bullet.x, bullet.y);
+        if (Math.random()>0.66) {
+            if (bullet.travel == 'left') {
+                bossZombieBird.x -= knockback*0.1;
             }
-            bossZombie.healthBarBack.visible = true;
-            bossZombie.healthBar.visible = true;
+            else if (bullet.travel == 'right') {
+                bossZombieBird.x += knockback*0.1;
+            }
+            else if (bullet.travel == 'up') {
+                bossZombieBird.y -= knockback*0.1;
+            }
+            else if (bullet.travel == 'down') {
+                bossZombieBird.y += knockback*0.1;
+            }
+        }
+        bullet.kill();
+        if (game.time.now>bossZombieBird.damageTimer) {
+            bossZombieBird.damageTimer = game.time.now>bossZombieBird+200;
+            if (bossZombieBird.health <= shotPower) {
+                this.coinCreate(bossZombieBird.x, bossZombieBird.y, "yellow");
+                this.coinCreate(bossZombieBird.x+15, bossZombieBird.y-2, "yellow");
+                this.coinCreate(bossZombieBird.x-15, bossZombieBird.y+2, "yellow");
+                this.coinCreate(bossZombieBird.x+5, bossZombieBird.y+5, "yellow"); 
+                this.coinCreate(bossZombieBird.x-5, bossZombieBird.y-5, "yellow"); 
+                var wand = game.add.sprite(bossZombieBird.x-10, bossZombieBird.y+10, 'wand');
+                weaponsmithDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
+                var armour = game.add.sprite(bossZombieBird.x+10, bossZombieBird.y+10, 'armour');
+                armourerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
+                var ring = game.add.sprite(bossZombieBird.x+10, bossZombieBird.y-10, 'ring');
+                enchanterDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
+                var buff = game.add.sprite(bossZombieBird.x-10, bossZombieBird.y-10, 'buff');
+                trainerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
+                if (Math.random()>0.5) {
+                   this.coinCreate(bossZombieBird.x+15, bossZombieBird.y+5, "yellow"); 
+                   this.coinCreate(bossZombieBird.x-5, bossZombieBird.y-15, "yellow"); 
+                }
+                bossZombieBird.kill();
+                bossZombieBird.isAlive = false;
+                this.birdDeathSFX();
+                var death = game.add.sprite(bossZombieBird.x, bossZombieBird.y, 'deathSheet');
+                xp += 450;
+                death.frame = 12;
+                death.scale.x = 2.5;
+                death.scale.y = 2.5;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+                this.xpDisplayConvert();
+                baddieCount -= 45;
+                this.checkLevelUp();
+                this.zombieBirdCreate(bossZombieBird.x, bossZombieBird.y);
+                this.zombieBirdCreate(bossZombieBird.x+30, bossZombieBird.y);
+                this.zombieBirdCreate(bossZombieBird.x, bossZombieBird.y+30);
+                this.zombieBirdCreate(bossZombieBird.x+30, bossZombieBird.y+30);
+                this.miniZombieBirdCreate(bossZombieBird.x, bossZombieBird.y);
+                this.miniZombieBirdCreate(bossZombieBird.x+20, bossZombieBird.y);
+                this.miniZombieBirdCreate(bossZombieBird.x+40, bossZombieBird.y);
+                this.miniZombieBirdCreate(bossZombieBird.x, bossZombieBird.y+20);
+                this.miniZombieBirdCreate(bossZombieBird.x+30, bossZombieBird.y+20);
+            }
+            else {
+                bossZombieBird.health -= shotPower;
+                bossZombieBird.healthBarBack.visible = true;
+                bossZombieBird.healthBar.visible = true;
+            }
         }
     },
     spiderKill: function(bullet, spider) {
@@ -2087,9 +2422,11 @@ var playState = {
         }
         bullet.kill();
         if (spider.health <= shotPower) {
-            this.coinCreate(spider.x, spider.y, "red");
             if (Math.random()>0.85) {
-               this.coinCreate(spider.x+5, spider.y+5, "red"); 
+               this.coinCreate(spider.x+5, spider.y+5, "blue"); 
+            }
+            else {
+               this.coinCreate(spider.x, spider.y, "red"); 
             }
             spider.kill();
             var death = game.add.sprite(spider.x, spider.y, 'deathSheet');
@@ -2126,9 +2463,11 @@ var playState = {
         }
         bullet.kill();
         if (swordZombie.health <= shotPower) {
-            this.coinCreate(swordZombie.x, swordZombie.y, "red");
             if (Math.random()>0.7) {
-               this.coinCreate(swordZombie.x+5, swordZombie.y+5, "red"); 
+               this.coinCreate(swordZombie.x+5, swordZombie.y+5, "blue"); 
+            }
+            else {
+               this.coinCreate(swordZombie.x, swordZombie.y, "red"); 
             }
             swordZombie.kill();
             swordZombie.isAlive = false;
@@ -2165,44 +2504,82 @@ var playState = {
             }
         }
         bullet.kill();
-        if (skeleton.health <= shotPower) {
-            this.coinCreate(skeleton.x, skeleton.y, "blue");
-            if (Math.random()>0.7 && skeleton.colour=="grey") {
-               this.coinCreate(skeleton.x+5, skeleton.y+5, "red"); 
+        if (skeleton.colour!="redBoss" || game.time.now>skeleton.bossDamageTimer) {
+            if (skeleton.colour=="redBoss") {
+                skeleton.bossDamageTimer = game.time.now+200;
             }
-            else if (Math.random()>0.6 && skeleton.colour=="red") {
-               this.coinCreate(skeleton.x+5, skeleton.y+5, "blue"); 
-            }
-            skeleton.kill();
-            var death = game.add.sprite(skeleton.x, skeleton.y, 'deathSheet');
-            death.frame = 6;
-            game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
-            this.skeletonDeathSFX();
-            if (skeleton.colour=="red") {
-                xp += 8;
-                death.tint = 0xba3500;
+            if (skeleton.health <= shotPower) {
+                this.coinCreate(skeleton.x, skeleton.y, "blue");
+                if (Math.random()>0.7 && skeleton.colour=="grey") {
+                   this.coinCreate(skeleton.x+5, skeleton.y+5, "red"); 
+                }
+                else if (Math.random()>0.6 && skeleton.colour=="red") {
+                   this.coinCreate(skeleton.x+5, skeleton.y+5, "blue"); 
+                }
+                else if (skeleton.colour=="redBoss") {
+                    this.coinCreate(skeleton.x+5, skeleton.y+5, "yellow");
+                    this.coinCreate(skeleton.x-5, skeleton.y-5, "yellow");
+                    this.coinCreate(skeleton.x+15, skeleton.y-2, "yellow");
+                    this.coinCreate(skeleton.x-15, skeleton.y+2, "yellow");
+                    var wand = game.add.sprite(skeleton.x-10, skeleton.y+10, 'wand');
+                    weaponsmithDropReward ++;
+                    game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.kill(); });
+                    var armour = game.add.sprite(skeleton.x+10, skeleton.y+10, 'armour');
+                    armourerDropReward ++;
+                    game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.kill(); });
+                    var ring = game.add.sprite(skeleton.x+10, skeleton.y-10, 'ring');
+                    enchanterDropReward ++;
+                    game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.kill(); });
+                    var buff = game.add.sprite(skeleton.x-10, skeleton.y-10, 'buff');
+                    trainerDropReward ++;
+                    game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.kill(); });
+                }
+                skeleton.kill();
+                var death = game.add.sprite(skeleton.x, skeleton.y, 'deathSheet');
+                death.frame = 6;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+                this.skeletonDeathSFX();
+                if (skeleton.colour=="red") {
+                    xp += 8;
+                    death.tint = 0xba3500;
+                }
+                else if (skeleton.colour=="redBoss") {
+                    skeleton.isAlive = false;
+                    xp += 325;
+                    death.tint = 0xba3500;
+                    death.scale.x = 2.5;
+                    death.scale.y = 2.5;
+                    bossSkeletonKilled = true;
+                }
+                else {
+                    xp += 6;
+                }
+                this.xpDisplayConvert();
+                if (skeleton.colour=="redBoss") {
+                    baddieCount -= 77;
+                }
+                else {
+                    baddieCount -= 5;
+                }
+                this.checkLevelUp();
+                this.checkStageComplete();
             }
             else {
-                xp += 6;
+                skeleton.health -= shotPower;
+                skeleton.healthBarBack.visible = true;
+                skeleton.healthBar.visible = true;
             }
-            this.xpDisplayConvert();
-            baddieCount -= 5;
-            this.checkLevelUp();
-            this.checkStageComplete();
-        }
-        else {
-            skeleton.health -= shotPower;
-            skeleton.healthBarBack.visible = true;
-            skeleton.healthBar.visible = true;
         }
     },
     flameKill: function(bullet, flame) {
         this.smallExplosion(bullet.x, bullet.y);
         bullet.kill();
         if (flame.health <= shotPower) {
-            this.coinCreate(flame.x, flame.y, "red");
-            if (Math.random()>0.73) {
+            if (Math.random()>0.65) {
                this.coinCreate(flame.x+5, flame.y+5, "blue"); 
+            }
+            else {
+               this.coinCreate(flame.x, flame.y, "red"); 
             }
             flame.kill();
             flame.isAlive = false;
@@ -2212,12 +2589,16 @@ var playState = {
             baddieCount -= 6;
             this.checkLevelUp();
             this.checkStageComplete();
+            if (stage==70) {
+                flameCount--;
+            }
         }
         else {
             flame.health -= shotPower;
             flame.healthBarBack.visible = true;
             flame.healthBar.visible = true;
         }
+        
     },
     mummyKill: function(bullet, mummy) {
         this.smallExplosion(bullet.x, bullet.y);
@@ -2237,9 +2618,11 @@ var playState = {
         }
         bullet.kill();
         if (mummy.health <= shotPower) {
-            this.coinCreate(mummy.x, mummy.y, "blue");
             if (Math.random()>0.67) {
-               this.coinCreate(mummy.x+5, mummy.y+5, "blue"); 
+               this.coinCreate(mummy.x+5, mummy.y+5, "green"); 
+            }
+            else {
+               this.coinCreate(mummy.x, mummy.y, "blue"); 
             }
             mummy.kill();
             if (backgroundScene=="wasteland") {
@@ -2290,9 +2673,11 @@ var playState = {
             else {
                this.miniZombieBirdCreate(zombieBird.x-50, zombieBird.y); 
             }
-            this.coinCreate(zombieBird.x, zombieBird.y, "blue");
             if (Math.random()>0.7) {
-               this.coinCreate(zombieBird.x+5, zombieBird.y+5, "red"); 
+               this.coinCreate(zombieBird.x+5, zombieBird.y+5, "green"); 
+            }
+            else {
+                this.coinCreate(zombieBird.x, zombieBird.y, "blue");
             }
             zombieBird.kill();
             var death = game.add.sprite(zombieBird.x, zombieBird.y, 'deathSheet');
@@ -2329,9 +2714,11 @@ var playState = {
         }
         bullet.kill();
         if (miniZombieBird.health <= shotPower) {
-            this.coinCreate(miniZombieBird.x, miniZombieBird.y, "blue");
-            if (Math.random()>0.7) {
-               this.coinCreate(miniZombieBird.x+5, miniZombieBird.y+5, "red"); 
+            if (Math.random()>0.75) {
+               this.coinCreate(miniZombieBird.x+5, miniZombieBird.y+5, "green"); 
+            }
+            else {
+               this.coinCreate(miniZombieBird.x, miniZombieBird.y, "blue"); 
             }
             miniZombieBird.kill();
             var death = game.add.sprite(miniZombieBird.x, miniZombieBird.y, 'deathSheet');
@@ -2390,8 +2777,8 @@ var playState = {
             this.woodSmashSFX();
             xp += 14;
             this.xpDisplayConvert();
-            if (stage==65 && bossTreeBeastKilled==false) {
-                baddieCount -= 5.2;
+            if (stage==60 && bossTreeBeastKilled==false) {
+                baddieCount -= 4.8;
             }
             else {
                 baddieCount -= 9;
@@ -2431,6 +2818,39 @@ var playState = {
             evilwizard.healthBar.visible = true;
         }
     },
+    vampireKill: function(bullet, vampire) {
+        this.smallExplosion(bullet.x, bullet.y);
+        bullet.kill();
+        if (vampire.visible) {
+            if (vampire.health <= shotPower) {
+                this.coinCreate(vampire.x-5, vampire.y-5, "green");
+                this.coinCreate(vampire.x, vampire.y, "yellow");
+                if (Math.random()>0.4) {
+                   this.coinCreate(vampire.x+5, vampire.y+5, "yellow"); 
+                }
+                vampire.kill();
+                var death = game.add.sprite(vampire.x, vampire.y, 'deathSheet');
+                death.frame = 3;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.kill(); });
+                this.maleDeathSFX();
+                vampire.isAlive = false;
+                xp += 25;
+                this.xpDisplayConvert();
+                baddieCount -= 11;
+                this.checkLevelUp();
+                this.checkStageComplete();
+            }
+            else {
+                vampire.health -= shotPower;
+                this.vampireEvade();
+                vampire.healthBarBack.visible = true;
+                vampire.healthBar.visible = true;
+            }
+        }
+    },
+    decoyKill: function(bullet, decoy) {
+        decoy.kill();
+    },
     checkStageComplete: function() {
         if (baddieCount <= 0 && doorAvailable==false) {
             if (player.x < 75 && player.y < 145) {
@@ -2447,8 +2867,11 @@ var playState = {
             door.animations.add('openDoor', [0, 1, 2, 3], 4, false);
             game.physics.arcade.enable(door);
             door.body.immovable = true;
-            if (stage==65) {
+            if (stage==60) {
                 bossTreeBeastKilled = true;
+            }
+            if (stage==80) {
+                bossZombieBirdKilled = true;
             }
         }
     },
@@ -2473,6 +2896,7 @@ var playState = {
     },
     questComplete: function() {
         questEndTime = game.time.now;
+        game.world.removeAll();
         game.state.start('city');
     },
     checkLevelUp: function() {
@@ -2484,7 +2908,7 @@ var playState = {
             levelUpSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {   levelUpImage.kill();  });
             xp -= nextLevelXp;
-            nextLevelXp += Math.round(9 + playerLevel/2);
+            nextLevelXp += Math.round(9 + playerLevel*0.5);
             maxHealth ++;
             maxMana += 2;
             shotPower += 0.035;
@@ -2554,13 +2978,13 @@ var playState = {
             levelRecordBackground.x = 96;
             levelRecord.text = "Congratulations!";
             levelRecord2.text = "New Highest Stage Record!";
-            levelRecord3.text = "            You receive " + Math.round(reward*10) + " XP and " + Math.round(reward*20) + " Coins!";
+            levelRecord3.text = "        You receive " + Math.round(reward*10) + " XP and " + Math.round(reward*20) + " Coins!";
             xp += Math.round(reward*10);
             this.xpDisplayConvert();
             this.checkLevelUp();
             coins += Math.round(reward*20);
             if (coins>=1000000) {
-                coinsText.text = (Math.round(coins/1000))/1000 + "M";
+                coinsText.text = (Math.round(coins*0.001))*0.001 + "M";
             }
             else {
                 coinsText.text = coins;
@@ -2593,10 +3017,10 @@ var playState = {
     adTimeUpdate: function() {
         if (adTimeText!=null) {
             if (adStopTime - game.time.now<9500  && adStopTime>game.time.now) {
-                adTimeText.text = "0" + Math.round((adStopTime - game.time.now)/1000);
+                adTimeText.text = "0" + Math.round((adStopTime - game.time.now)*0.001);
             }
             else if (adStopTime>game.time.now) {
-                adTimeText.text = Math.round((adStopTime - game.time.now)/1000);
+                adTimeText.text = Math.round((adStopTime - game.time.now)*0.001);
             }
             else {
                 adTimeText.text = "";
@@ -2611,12 +3035,12 @@ var playState = {
     },
     beamWeaponActivate: function() {
         manaCost = 1;
-        bulletSpacing = bulletSpacing/20;
-        shotPower += shotSpeed/100;
+        bulletSpacing = bulletSpacing/18;
+        shotPower += shotSpeed*0.01;
         beamWeapon = false;
         beamSprite.frame = 0;
         var self = this;
-        game.time.events.add(Phaser.Timer.SECOND * 5, function () {   manaCost = 5; bulletSpacing = bulletSpacing*20; shotPower -= shotSpeed/100; self.beamWeaponTimer(); });
+        game.time.events.add(Phaser.Timer.SECOND * 5, function () {   manaCost = 5; bulletSpacing = bulletSpacing*18; shotPower -= shotSpeed*0.01; self.beamWeaponTimer(); });
     },
     beamWeaponTimer: function() {
         timerBeam = game.time.create();
@@ -2630,7 +3054,7 @@ var playState = {
             beamText.fontSize = 19;
             beamText.x = 234;
             beamText.y = 607;
-            beamText.text = this.formatTime(Math.round((timerBeamEvent.delay - timerBeam.ms) / 1000));
+            beamText.text = this.formatTime(Math.round((timerBeamEvent.delay - timerBeam.ms) *0.001));
         }
     },
     endBeamTimer: function() {
@@ -2662,7 +3086,7 @@ var playState = {
             bottleText.x = 532;
             bottleText.y = 607;
             bottleText.fontSize = 16;
-            bottleText.text = this.formatTime(Math.round((timerManaEvent.delay - timerMana.ms) / 1000));
+            bottleText.text = this.formatTime(Math.round((timerManaEvent.delay - timerMana.ms) *0.001));
         }
     },
     endManaRefillTimer: function() {

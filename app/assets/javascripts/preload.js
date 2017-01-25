@@ -27,7 +27,7 @@ var preloadState = {
         game.load.audio('teleport', '/assets/teleport.ogg');
         game.load.audio('levelUpSound', '/assets/Accept.ogg');
         game.load.audio('titleTheme', '/assets/titleTheme.ogg');
-        game.load.audio('bubbles', '/assets/bubbles.ogg');
+        game.load.audio('bubble', '/assets/bubbles.ogg');
         game.load.audio('creakylightwoodendoor1', '/assets/creakylightwoodendoor1.ogg');
         game.load.audio('shotSFX', '/assets/shotSFX.ogg');
         game.load.audio('swampCreatureDeath', '/assets/swampCreatureDeath.ogg');
@@ -165,7 +165,9 @@ var preloadState = {
         game.load.spritesheet('treeBeast', '/assets/treeBeast1.png', 105, 53); 
         game.load.spritesheet('bottle', '/assets/bottle.png', 34, 34); 
         game.load.spritesheet('beamIcon', '/assets/beamIcon.png', 68, 34); 
-        game.load.spritesheet('evilRoot', '/assets/evilRoot.png', 22, 30); 
+        game.load.spritesheet('evilRoot', '/assets/evilRoot.png', 22, 30);
+        game.load.spritesheet('vampire', '/assets/vampire.png', 32, 36); 
+        game.load.spritesheet('smokeAnimation', '/assets/smokeAnimation.png', 32, 16); 
         game.load.bitmapFont('font', '/assets/font.png', '/assets/font.fnt');
         game.load.bitmapFont('fontWhite', '/assets/fontWhite.png', '/assets/fontWhite.fnt');
     },
