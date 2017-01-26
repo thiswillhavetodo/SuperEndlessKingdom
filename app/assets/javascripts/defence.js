@@ -53,6 +53,7 @@ var defenceState = {
         
         bullets = game.add.group();
         bullets.enableBody = true;
+        bullets.createMultiple(90, 'bullet');
         attackers = game.add.group();
         attackers.enableBody = true;  
         defenders = game.add.group();
@@ -402,9 +403,9 @@ var defenceState = {
         game.time.events.add(Phaser.Timer.SECOND * 0.2, function () {   explode.destroy();  });
     },
     fire: function() {
-        var bullet = bullets.create(player.x + 10, player.y + 15, 'bullet');
-        bullet.animations.add('spin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], 26, true);
-        
+        var bullet = bullets.getFirstExists(false);//bullets.create(player.x + 10, player.y + 15, 'bullet');
+        bullet.reset(player.x + 10, player.y + 15);
+        bullet.animations.add('spin', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], 13, true);
         var emitter = game.add.emitter(game.world.centerX, game.world.centerY, 20);
         emitter.makeParticles('bulletParticles', [0, 1, 2, 3]);
         emitter.gravity.y = 0;
@@ -413,11 +414,12 @@ var defenceState = {
         }, this);
         emitter.start(false, 500, 50);
         bullet.addChild(emitter);
-        emitter.y = 0;
+        game.time.events.add(Phaser.Timer.SECOND * 1, function() { emitter.destroy();});
         emitter.x = 0;
-        emitter.lifespan = 500;
+        emitter.y = 0;
         bullet.scale.x = 0.8;
         bullet.scale.y = 0.8;
+        bullet.lifespan = (832/shotSpeed)*1000;
         
         if (cursors.left.isDown) {
             game.physics.arcade.moveToXY(bullet, 0, bullet.y, shotSpeed);
@@ -697,7 +699,7 @@ var defenceState = {
                 tutorialText5.text = "";
                 tutorialText6.text = "";
                 tutorialSprite.kill();
-                tutorialSpeechBubble.kill();
+                tutorialSpeechBubble.x = -200;
                 break;
         }
         
