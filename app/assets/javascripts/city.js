@@ -923,6 +923,7 @@ var cityState = {
         saveObject.bossTreeBeastKilled = bossTreeBeastKilled;
         saveObject.bossSkeletonKilled = bossSkeletonKilled;
         saveObject.bossZombieBirdKilled = bossZombieBirdKilled;
+        saveObject.bossMummyKilled = bossMummyKilled;
         saveObject.coins = coins;
         saveObject.stage = stage;
         saveObject.bestStage = bestStage;

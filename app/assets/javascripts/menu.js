@@ -79,6 +79,7 @@ var menuState = {
         bossTreeBeastKilled = saveObject.bossTreeBeastKilled;
         bossSkeletonKilled = saveObject.bossSkeletonKilled;
         bossZombieBirdKilled = saveObject.bossZombieBirdKilled;
+        bossMummyKilled = saveObject.bossMummyKilled;
         coins = saveObject.coins;
         stage = saveObject.stage;
         bestStage = saveObject.bestStage;

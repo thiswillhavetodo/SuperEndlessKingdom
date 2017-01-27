@@ -536,6 +536,12 @@ var shopState = {
                 shieldInvulnerableText = game.add.bitmapText(317, 530, 'font', "Shield Invulnerable Bonus: " + shieldInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 weaponsmithUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + weaponsmithUpgradeCost, 16);
+                if (weaponsmithUpgradeCost>=1000000) {
+                  weaponsmithUpgradeText.text = " Buy Skill Material: " + (Math.round(weaponsmithUpgradeCost/100000)/10) + "M";
+                }
+                else {
+                  weaponsmithUpgradeText.text = " Buy Skill Material: " + weaponsmithUpgradeCost;
+                }
                 game.add.button(708, 175, 'plusButton', this.weaponsmithUpgrade, this);
                 if (weaponsmithFunding<100) {
                     maxFunding = false;
@@ -577,6 +583,12 @@ var shopState = {
                 bootsInvulnerableText = game.add.bitmapText(317, 595, 'font', "Boots Invulnerable Bonus: " + bootInvulnerableSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 armourerUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + armourerUpgradeCost, 16);
+                if (armourerUpgradeCost>=1000000) {
+                  armourerUpgradeText.text = " Buy Skill Material: " + (Math.round(armourerUpgradeCost/100000)/10) + "M";
+                }
+                else {
+                  armourerUpgradeText.text = " Buy Skill Material: " + armourerUpgradeCost;
+                }
                 game.add.button(708, 175, 'plusButton', this.armourerUpgrade, this);
                 if (armourerFunding<100) {
                     maxFunding = false;
@@ -612,6 +624,12 @@ var shopState = {
                 amuletAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Amulet Attack Speed Bonus: " + amuletBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 enchanterUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + enchanterUpgradeCost, 16);
+                if (enchanterUpgradeCost>=1000000) {
+                  enchanterUpgradeText.text = " Buy Skill Material: " + (Math.round(enchanterUpgradeCost/100000)/10) + "M";
+                }
+                else {
+                  enchanterUpgradeText.text = " Buy Skill Material: " + enchanterUpgradeCost;
+                }
                 game.add.button(708, 175, 'plusButton', this.enchanterUpgrade, this);
                 if (enchanterFunding<100) {
                     maxFunding = false;
@@ -647,6 +665,12 @@ var shopState = {
                 staminaAttackSpeedText = game.add.bitmapText(317, 530, 'font', "Stamina Attack Speed Bonus: " + enduranceBulletSpacing, 14);
                 game.add.sprite(483, 175, 'blankButton');
                 trainerUpgradeText = game.add.bitmapText(503, 205, 'font', " Buy Skill Material: " + trainerUpgradeCost, 16);
+                if (trainerUpgradeCost>=1000000) {
+                  trainerUpgradeText.text = " Buy Skill Material: " + (Math.round(trainerUpgradeCost/100000)/10) + "M";
+                }
+                else {
+                  trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
+                }
                 game.add.button(708, 175, 'plusButton', this.trainerUpgrade, this);
                 if (trainerFunding<100) {
                     maxFunding = false;
@@ -1199,7 +1223,12 @@ var shopState = {
             weaponsmithUpgradeCost = Math.round(weaponsmithUpgradeCost*multiplier);
             weaponsmithDropReward += weaponsmithDRBoost;
             this.dropRewardDiminishingReturns();
-            weaponsmithUpgradeText.text = " Buy Skill Material: " + weaponsmithUpgradeCost;
+            if (weaponsmithUpgradeCost>=1000000) {
+              weaponsmithUpgradeText.text = " Buy Skill Material: " + (Math.round(weaponsmithUpgradeCost/100000)/10) + "M";
+            }
+            else {
+              weaponsmithUpgradeText.text = " Buy Skill Material: " + weaponsmithUpgradeCost;
+            }
             shopCoinsText.text = coins;
             weaponsmithSkillLevelText.text = "Weaponsmith Skill Level: " + (Math.round(weaponsmithDropReward*10)/10);
             increaseSFX.play();
@@ -1218,7 +1247,12 @@ var shopState = {
             armourerUpgradeCost = Math.round(armourerUpgradeCost*multiplier);
             armourerDropReward += armourerDRBoost;
             this.dropRewardDiminishingReturns();
-            armourerUpgradeText.text = " Buy Skill Material: " + armourerUpgradeCost;
+            if (armourerUpgradeCost>=1000000) {
+              armourerUpgradeText.text = " Buy Skill Material: " + (Math.round(armourerUpgradeCost/100000)/10) + "M";
+            }
+            else {
+              armourerUpgradeText.text = " Buy Skill Material: " + armourerUpgradeCost;
+            }
             shopCoinsText.text = coins;
             armourerSkillLevelText.text = "Armourer Skill Level: " + (Math.round(armourerDropReward*10)/10);
             increaseSFX.play();
@@ -1237,7 +1271,12 @@ var shopState = {
             enchanterUpgradeCost = Math.round(enchanterUpgradeCost*multiplier);
             enchanterDropReward += enchanterDRBoost;
             this.dropRewardDiminishingReturns();
-            enchanterUpgradeText.text = " Buy Skill Material: " + enchanterUpgradeCost;
+            if (enchanterUpgradeCost>=1000000) {
+              enchanterUpgradeText.text = " Buy Skill Material: " + (Math.round(enchanterUpgradeCost/100000)/10) + "M";
+            }
+            else {
+              enchanterUpgradeText.text = " Buy Skill Material: " + enchanterUpgradeCost;
+            }
             shopCoinsText.text = coins;
             enchanterSkillLevelText.text = "Enchanter Skill Level: " + (Math.round(enchanterDropReward*10)/10);
             increaseSFX.play();
@@ -1256,6 +1295,12 @@ var shopState = {
             trainerUpgradeCost = Math.round(trainerUpgradeCost*multiplier);
             trainerDropReward += trainerDRBoost;
             this.dropRewardDiminishingReturns();
+            if (trainerUpgradeCost>=1000000) {
+              trainerUpgradeText.text = " Buy Skill Material: " + (Math.round(trainerUpgradeCost/100000)/10) + "M";
+            }
+            else {
+              trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
+            }
             trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
             shopCoinsText.text = coins;
             trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
