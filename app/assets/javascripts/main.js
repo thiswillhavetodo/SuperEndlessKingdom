@@ -1086,7 +1086,7 @@ var playState = {
     swordZombieSteer: function(swordZombie, platforms) {
         if (swordZombie.collide == false) {
             swordZombie.collide = true;
-            game.time.events.add(Phaser.Timer.SECOND * 0.3, function () { swordZombie.collide = false; });
+            game.time.events.add(Phaser.Timer.SECOND * 0.1, function () { swordZombie.collide = false; });
         }
     },
     skeletonCreate: function(x, y, colour) {

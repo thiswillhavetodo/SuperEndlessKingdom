@@ -312,22 +312,6 @@ var cityState = {
     update: function() {
         if (!pauseUpdate) {
         this.timeCheck();
-        if (coins<=0 && year>debtWarnYear+1) {
-            assistant = "debt";
-            if (tax<100) {
-               tax ++; 
-            }
-            if (housingFunding>0) {
-                housingFunding--;
-            }
-            if (justiceFunding>0) {
-                justiceFunding--;
-            }
-            if (utilitiesFunding>0) {
-                utilitiesFunding--;
-            }
-            coins -= coins/20;
-        }
         this.assistantShow();
         townWoman1.body.velocity.x = -40;
         townWoman1.animations.play('left');
@@ -443,7 +427,7 @@ var cityState = {
           population += population*((defence-33)/14000);
           population += population*((utilities-33)/9000);
           population += population*((trainer-33)/14300);
-          population -= population*((tax-30)/2000);
+          population -= population*(((tax*1.05)-(happiness*0.5))/2000);
           if (year<=30) {
             population += 1 + year/10;
           }
@@ -521,6 +505,22 @@ var cityState = {
         cityHappinessText.text = happiness;
         cityYearText.text = "Year: " + year;
         this.popScoreCalc();
+        if (coins<=0 && year>debtWarnYear+1) {
+            assistant = "debt";
+            if (tax<100) {
+               tax ++; 
+            }
+            if (housingFunding>0) {
+                housingFunding--;
+            }
+            if (justiceFunding>0) {
+                justiceFunding--;
+            }
+            if (utilitiesFunding>0) {
+                utilitiesFunding--;
+            }
+            coins -= Math.round(coins*0.05);
+        }
         this.save();
     },
     popScoreCalc: function() {
@@ -744,9 +744,9 @@ var cityState = {
                 assistantText.text = "  We must do";
                 assistantText2.text = " something. You should";
                 assistantText3.text = "    increase the budgets";
-                assistantText4.text = "  of the Departments  ";
-                assistantText5.text = "    of Health and ";
-                assistantText6.text = "    Education.";
+                assistantText4.text = "     of the Departments  ";
+                assistantText5.text = "       of Health and ";
+                assistantText6.text = "     Education.";
                 break;
             case "defend":
                 if (educationFunding>40 && healthFunding>40) {
@@ -755,8 +755,8 @@ var cityState = {
                     assistantText.text = " Your Majesty!";
                     assistantText2.text = "     Our city is under";
                     assistantText3.text = "    attack. You must lead";
-                    assistantText4.text = "      the Army in our";
-                    assistantText5.text = "         Defence.";
+                    assistantText4.text = "        the Army in our";
+                    assistantText5.text = "          Defence.";
                     assistantText6.text = "";
                 }
                 break;

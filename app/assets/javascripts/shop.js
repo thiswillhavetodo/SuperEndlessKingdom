@@ -1066,7 +1066,7 @@ var shopState = {
                         wandImage.animations.stop();
                         wandImage.frame = 0;
                         wandPerkText.text = "  Upgrade:";
-                        wandPerkText2.text = "   Wand Power +" + wandShotPower;
+                        wandPerkText2.text = "    Wand Power +" + wandShotPower;
                         wandPowerText.text = "Wand Power Bonus: " + wandShotPower;
                         increaseSFX.play();
                     }
@@ -1175,7 +1175,7 @@ var shopState = {
                         shieldImage.animations.stop();
                         shieldImage.frame = 2;
                         shieldPerkText.text = "  Upgrade:";
-                        shieldPerkText2.text = "Max Health +" + shieldMaxHealth;
+                        shieldPerkText2.text = "    Max Health +" + shieldMaxHealth;
                         shieldHealthText.text = "Shield Health Bonus: " + shieldMaxHealth;
                         increaseSFX.play();
                     }
@@ -1541,7 +1541,7 @@ var shopState = {
                         bootImage.animations.stop();
                         bootImage.frame = 0;
                         bootPerkText.text = "  Upgrade:";
-                        bootPerkText2.text = "    Run Speed +" + bootRunSpeed;
+                        bootPerkText2.text = "     Run Speed +" + bootRunSpeed;
                         bootsRunSpeedText.text = "Boots Run Speed Bonus: " + bootRunSpeed;
                         increaseSFX.play();
                     }
