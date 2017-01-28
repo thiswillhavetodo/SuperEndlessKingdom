@@ -885,21 +885,21 @@ var playState = {
     bossZombieCreate: function(x, y, colour) {
         if (colour=="green") {
             var bossZombie = bossZombies.create(x, y, 'bossZombie');
-            bossZombie.health = 250;
-            bossZombie.maxHealth = 250;
+            bossZombie.health = 300;
+            bossZombie.maxHealth = 300;
             bossZombie.colour = "green";
         }
         else if (colour=="red") {
             bossZombie = bossZombies.create(x, y, 'zombieRed');
-            bossZombie.health = 375;
-            bossZombie.maxHealth = 375;
+            bossZombie.health = 400;
+            bossZombie.maxHealth = 400;
             bossZombie.colour = "red";
         }
         //  enable physics on the bossZombie
         game.physics.arcade.enable(bossZombie);
         bossZombie.body.collideWorldBounds = true;
         bossZombie.timer = game.time.now;
-        bossZombie.interval = 4000;
+        bossZombie.interval = 3000;
         bossZombie.damageTimer = 0;
         
         bossZombie.healthBarBack = bossZombie.addChild(game.add.graphics(0, 0));
@@ -930,10 +930,10 @@ var playState = {
             game.physics.arcade.collide(bossZombie, platforms);
             
             if (bossZombie.colour=="green") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 120);
+                    game.physics.arcade.moveToObject(bossZombie, player, 160-(bossZombie.health*0.1));
             }
             else if (bossZombie.colour=="red") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 145);
+                    game.physics.arcade.moveToObject(bossZombie, player, 200-(bossZombie.health*0.1));
             }
             if (player.body.x < bossZombie.body.x) {
                 bossZombie.animations.play('bossZombieLeft');
@@ -1030,7 +1030,6 @@ var playState = {
             swordZombie.health = 23;
             swordZombie.maxHealth = 23;
             swordZombie.colour = "red";
-            swordZombie.tint = 0xba3500;
         }
         //  enable physics on the swordZombie
         game.physics.arcade.enable(swordZombie);
@@ -1053,6 +1052,8 @@ var playState = {
         //  Our two animations, walking left and right.
         swordZombie.animations.add('swordZombieLeft', [0, 1, 2], 15, true);
         swordZombie.animations.add('swordZombieRight', [3, 4, 5], 15, true);
+        swordZombie.animations.add('swordZombieLeftRed', [6, 7, 8], 15, true);
+        swordZombie.animations.add('swordZombieRightRed', [9, 10, 11], 15, true);
     },
     swordZombieUpdate: function() {
         swordZombies.forEach(function(swordZombie) {
@@ -1071,7 +1072,13 @@ var playState = {
                     game.physics.arcade.moveToObject(swordZombie, player, 140);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 70);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 80);
+                }
+                if (player.body.x < swordZombie.body.x) {
+                    swordZombie.animations.play('swordZombieLeft');
+                }
+                else {
+                    swordZombie.animations.play('swordZombieRight');
                 }
             }
             else if (swordZombie.colour=="red") {
@@ -1079,14 +1086,14 @@ var playState = {
                     game.physics.arcade.moveToObject(swordZombie, player, 165);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 80);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 90);
                 }
-            }
-            if (player.body.x < swordZombie.body.x) {
-                swordZombie.animations.play('swordZombieLeft');
-            }
-            else {
-                swordZombie.animations.play('swordZombieRight');
+                if (player.body.x < swordZombie.body.x) {
+                    swordZombie.animations.play('swordZombieLeftRed');
+                }
+                else {
+                    swordZombie.animations.play('swordZombieRightRed');
+                }
             }
         });
     },
@@ -1094,7 +1101,7 @@ var playState = {
         if (swordZombie.collide == false && game.time.now>swordZombie.collideTimer) {
             swordZombie.collideTimer = game.time.now + 1000;
             swordZombie.collide = true;
-            game.time.events.add(Phaser.Timer.SECOND * 0.1, function () { swordZombie.collide = false; });
+            game.time.events.add(Phaser.Timer.SECOND * 0.15, function () { swordZombie.collide = false; });
         }
     },
     skeletonCreate: function(x, y, colour) {
@@ -1668,10 +1675,14 @@ var playState = {
         zombieBird.moveDownTimer = game.time.now + 3000;
         //zombieBird.body.bounce.set(0.1);
         zombieBird.healthBarBack = zombieBird.addChild(game.add.graphics(0, 0));
+        zombieBird.healthBarBack.scale.x = 2.5;
+        zombieBird.healthBarBack.scale.y = 2.5;
         zombieBird.healthBarBack.lineStyle(3, 0xba3500, 1);
         zombieBird.healthBarBack.moveTo(0, 0);
         zombieBird.healthBarBack.lineTo(20, 0);
         zombieBird.healthBar = zombieBird.addChild(game.add.graphics(0, 0));
+        zombieBird.healthBar.scale.x = 2.5;
+        zombieBird.healthBar.scale.y = 2.5;
         zombieBird.healthBar.lineStyle(3, 0xffd900, 1);
         zombieBird.healthBar.moveTo(0, 0);
         zombieBird.healthBar.lineTo(20*(zombieBird.health/zombieBird.maxHealth), 0);
@@ -2193,7 +2204,7 @@ var playState = {
         }, this);
         emitter.start(false, 500, 50);
         bullet.addChild(emitter);
-        game.time.events.add(Phaser.Timer.SECOND * 0.7, function() { emitter.destroy();});
+        game.time.events.add(Phaser.Timer.SECOND * 0.5, function() { emitter.destroy();});
         emitter.x = 0;
         emitter.y = 0;
         bullet.scale.x = 0.8;
@@ -2640,12 +2651,13 @@ var playState = {
             swordZombie.kill();
             swordZombie.isAlive = false;
             var death = game.add.sprite(swordZombie.x, swordZombie.y, 'deathSheet');
-            death.frame = 14;
+            
             if (swordZombie.colour=="red") {
-               death.tint = 0xba3500;
+               death.frame = 16;
                xp += 9;
             }
             else {
+               death.frame = 14;
                xp += 6; 
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });

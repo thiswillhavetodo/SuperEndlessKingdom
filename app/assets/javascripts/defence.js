@@ -414,7 +414,7 @@ var defenceState = {
         }, this);
         emitter.start(false, 500, 50);
         bullet.addChild(emitter);
-        game.time.events.add(Phaser.Timer.SECOND * 1, function() { emitter.destroy();});
+        game.time.events.add(Phaser.Timer.SECOND * 0.5, function() { emitter.destroy();});
         emitter.x = 0;
         emitter.y = 0;
         bullet.scale.x = 0.8;
