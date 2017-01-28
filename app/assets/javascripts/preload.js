@@ -67,7 +67,7 @@ var preloadState = {
         game.load.image('deptHighlight', '/assets/deptHighlight.png');
         game.load.image('shopBackground', '/assets/shopBackground.png');
         game.load.spritesheet('animateddoor', '/assets/animateddoor.png', 63.5, 72);
-        game.load.spritesheet('zombieBird', '/assets/zombieBird.png', 32, 25);
+        game.load.spritesheet('zombieBird', '/assets/zombieBird.png', 82, 62);
         game.load.spritesheet('miniZombieBird', '/assets/miniZombieBird.png', 16, 13);
         game.load.spritesheet('blueCharge', '/assets/blueCharge.png', 16, 16);
         game.load.spritesheet('evilWizard', '/assets/evilWizard.png', 32, 36);

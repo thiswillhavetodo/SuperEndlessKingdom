@@ -507,6 +507,7 @@ var cityState = {
         this.popScoreCalc();
         if (coins<=0 && year>debtWarnYear+1) {
             assistant = "debt";
+            debtWarnYear = year+3;
             if (tax<100) {
                tax ++; 
             }
@@ -859,7 +860,6 @@ var cityState = {
                 this.create();
                 break;
             case "debt":
-                debtWarnYear = year+3;
                 assistant = "";
                 assistantSprite.kill();
                 assistantSpeechBubble.kill();
