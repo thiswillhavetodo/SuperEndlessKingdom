@@ -8,7 +8,7 @@ var year = 0;
 var population = 100;
 var happiness = 44;
 var happinessDisplay;
-var popScore = 0;
+var popScore = 1;
 var popText;
 var popDisplay;
 var cityCoinsText;
@@ -525,12 +525,12 @@ var cityState = {
         this.save();
     },
     popScoreCalc: function() {
-        var x = 1000;
+        var x = 100;
         var popHolder = population;
         while (popHolder>x) {
-            popScore ++;
+            popScore += 0.1;
             popHolder -= x;
-            x += 1000;
+            x += 100;
         }
         if (popScore > 100) {
             popScore = 100;
@@ -663,7 +663,7 @@ var cityState = {
     },
     quest: function() {
         game.world.removeAll();
-        cityMusic.stop();
+        cityMusic.destroy();
         cityMusicPlaying = false;
         stage = Math.floor(stage/5)*5;
         if (stage<1) {
@@ -702,7 +702,7 @@ var cityState = {
         game.state.start('play');
     },
     defend: function() {
-        cityMusic.stop();
+        cityMusic.destroy();
         cityMusicPlaying = false;
         game.world.removeAll();
         health = maxHealth;
@@ -711,13 +711,11 @@ var cityState = {
         defenceStrength = Math.round(defence/4);
         defenderCount = Math.round(defence/4);
         if (tutorialDefence=="first") {
-            cityMusic.stop();
             cityMusicPlaying = false;
             game.world.removeAll();
             game.state.start('tutorial');
         }
         else {
-            cityMusic.stop();
             cityMusicPlaying = false;
             game.world.removeAll();
             game.state.start('defence');
@@ -1099,7 +1097,7 @@ var cityState = {
         trainerDropReward += artisanIncrease;
         marriageOptions = false;
         pauseUpdate = false;
-        cityMusic.stop();
+        cityMusic.destroy();
         game.world.removeAll();
         game.state.start('reset');
     },

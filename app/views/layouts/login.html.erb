@@ -11,6 +11,13 @@
   <body>
     <%= yield %>
     <p class="flash"><%= flash.notice %></p>
+    <div class="blurb-holder">
+      <p class="blurb">Can you save</p>
+      <p class="blurb">your kingdom</p>
+      <p class="blurb">from the horrors </p>
+      <p class="blurb">in this fast&#8209;paced</p>
+      <p class="blurb">retro arcade shooter?</p>
+    </div>
     <h5 class="loginInfo">
       <% if logged_in? %>
         <%= "Logged in as #{current_user.username}" %>
@@ -27,6 +34,7 @@
       <div class="facebook-hover social-slide"></div>
       <div class="email-hover social-slide"></div>
       <div class="studio-hover social-slide"></div>
+      <p class="copyright">&copy Paul McGarry 2017</p>
     </div>
      
   </body>

@@ -14,16 +14,26 @@
  *= require_self
  */
  
- html {
-     background-color: #00b0ff;
-     /*background: -moz-linear-gradient(top, #00b0ff,  #e0edff);*/
-     background-image: url(/assets/SUPERlarge.png), -moz-linear-gradient(top, #e0edff, #00b0ff);
-     background-image: url(/assets/SUPERlarge.png), -webkit-linear-gradient(top, #e0edff, #00b0ff);
-     background-repeat: no-repeat;
-     /*background-position: -5vw 6vh;*/
-     background-size: cover;
-     
- }
+html {
+    margin-left: 185px;
+    margin-right: 185px;
+    background-color: #ffffff;
+    /*background: -moz-linear-gradient(top, #00b0ff,  #e0edff);*/
+    height: 100%; 
+}
+
+body {
+    background-image: url(/assets/SUPERlarge.png), -moz-linear-gradient(top, #e0edff, #00b0ff);
+    background-image: url(/assets/SUPERlarge.png), -webkit-linear-gradient(top, #e0edff, #00b0ff);
+    background-repeat: no-repeat;
+    /*background-position: -5vw 6vh;*/
+    background-size: 100% 100%;
+    height: 100%; 
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    border: solid #787878;
+    border-width: 0 4px 0 4px;
+}
  
 canvas {
     display: none !important;
@@ -32,45 +42,61 @@ canvas {
 .submit {
     background-color: red;
     background-image: url(/assets/LoginButton.png);
-    width: 215px;
+    background-size: 100% 100%;
+    width: 195px;
     height: 61px;
     border: solid black 3px;
     border-radius: 10px;
-    margin-left: 31px;
+    margin-left: 0px;
+    cursor: pointer;
 }
 
 .emailLabel {
     background-image: url(/assets/Email.png);
     width: 106px;
     height: 23px;
-    float: left;
+    margin: auto;
 }
 
 .passwordLabel {
     background-image: url(/assets/Password.png);
     width: 106px;
     height: 23px;
-    float: left;
+    margin: auto;
 }
 
-.emailBox {
-    float: right;
+#email {
+    display: block;
+    margin: auto;
 }
 
-.login_form {
-    width: 277px;
+#password {
+    display: block;
+    margin: auto;
+}
+
+#login_form {
+    width: 195px;
+    background-color: #787878;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.flash {
+    display: none;
 }
 
 .field {
-    margin-left: 10px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin: 2px;
 }
 
 #login_heading {
-    width: 277px;
+    width: 195px;
     height: 29px;
+    
     background-image: url(/assets/Enter-Login-Details.png);
+    background-repeat: no-repeat;
 }
 
 .socialMediaButtons {
@@ -78,7 +104,7 @@ canvas {
     height: 136px;
     position: absolute;
     bottom: 30px;
-    right: 30px;
+    right: 25px;
 }
 .social-slide {
 	height: 48px;
@@ -92,13 +118,17 @@ canvas {
 	transition: all ease 0.3s;
 }
 .loginInfo {
-    font-family: 'Open Sans', sans-serif;
+    margin-top: 0px !important;
+    padding-left: 5px;
+    font-family: 'Raleway', sans-serif;
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
 }
 .contactUs {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Raleway', sans-serif;
     position: absolute;
     bottom: 160px;
-    right: 55px;
+    right: 50px;
 }
 .social-slide:hover {
 	background-position: 0px -48px;
@@ -116,3 +146,26 @@ canvas {
 .studio-hover {
 	background-image: url('/assets/thistledoSmall.jpg');
 }
+
+.copyright {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    position: absolute;
+    bottom: -33px;
+    right: 10px;
+}
+
+.blurb-holder {
+    position: absolute;
+    top: 30vh;
+    left: 0px;
+    width: 185px;
+}
+
+.blurb {
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    text-align: center;
+    color: #787878;
+}
+

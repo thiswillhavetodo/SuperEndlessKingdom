@@ -20,23 +20,26 @@ var armourerAdTimerHolder;
 var enchanterAdTimerHolder;
 var trainerAdTimerHolder;
 var canvasElement;
+var menuBackground;
 
 /*global game*/
 
 var menuState = {
     create: function() {
-        game.add.sprite(0, 0, 'menuBackground');
-        game.add.sprite(66, 40, 'titleBack');
-        game.add.sprite(146, 50, 'title');
+        menuBackground = game.add.sprite(0, 0, 'menuBackground');
+        menuBackground.scale.x = 0.356;
+        menuBackground.scale.y = 0.376;
+        //game.add.sprite(66, 40, 'titleBack');
+        //game.add.sprite(146, 50, 'title');
         //game.stage.backgroundColor = '#3b5998';
         
         var creditsButton = game.add.button(0, 0, 'creditsButton', this.credits, this);
-        var startButton = game.add.button(210, 320, 'startButton', this.start, this);
-        var loadButton = game.add.button(450, 320, 'loadButton', this.loadSave, this);
-        game.add.sprite(60, 394, 'castle');
+        var startButton = game.add.button(210, 420, 'startButton', this.start, this);
+        var loadButton = game.add.button(450, 420, 'loadButton', this.loadSave, this);
+        /*game.add.sprite(60, 394, 'castle');
         titlePlayer = game.add.sprite(600, 570, 'dude');
         game.physics.arcade.enable(titlePlayer);
-        titlePlayer.animations.add('left', [9, 10, 11], 10, true);
+        titlePlayer.animations.add('left', [9, 10, 11], 10, true);*/
         themeSound = game.add.audio('titleTheme');
         var displayCSS = document.getElementById("canvasID").style.left;
         console.log(displayCSS);
@@ -44,13 +47,13 @@ var menuState = {
             themeSound.play();
         }
     }, 
-    update: function() {
+    /*update: function() {
         titlePlayer.body.velocity.x = -100;
         titlePlayer.animations.play('left');
         if (titlePlayer.x < 0) {
             titlePlayer.x = 900;
         }
-    },
+    },*/
     start: function() {
         game.world.removeAll();
         game.state.start('intro');

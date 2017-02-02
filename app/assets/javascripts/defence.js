@@ -35,6 +35,50 @@ var defenceState = {
         defenceAudio = game.add.audio('defence');
         defenceAudio.stop();
         defenceAudio.loopFull(0.5);
+        
+        //  Set up gui and display text
+        if (coins>=1000000) {
+            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
+        }
+        else {
+            coinsText = game.add.bitmapText(395, 10, 'font', coins, 30);
+        }
+        hudDisplay = game.add.sprite(0, 0, 'hudDisplay');
+        hudDisplay.scale.setTo(1.1, 1.1);
+        hpBar = game.add.sprite(92, 7, 'hudBarRed');
+        hpBar.scale.setTo(1.1, 1.1);
+        hpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        hpBar.crop(hpCrop);
+        healthText = game.add.bitmapText(93, 7, 'fontWhite', 'HP: ' + health + "/" + maxHealth, 15);
+        manaBar = game.add.sprite(92, 28, 'hudBarBlue');
+        manaBar.scale.setTo(1.1, 1.1);
+        manaCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        manaBar.crop(manaCrop);
+        manaText = game.add.bitmapText(93, 28, 'fontWhite', 'MP: ' + mana + "/" + maxMana, 15); 
+        xpBar = game.add.sprite(92, 50, 'hudBarGreen');
+        xpBar.scale.setTo(1.1, 1.1);
+        xpCrop = new Phaser.Rectangle(0, 0, 88, 15);
+        xpBar.crop(xpCrop);
+        xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
+        this.xpDisplayConvert();
+        if (playerLevel>=100) {
+           playerLevelText = game.add.bitmapText(9, 23, 'font', playerLevel, 30);  
+        }
+        else if (playerLevel>=10) {
+           playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
+        }
+        else {
+           playerLevelText = game.add.bitmapText(26, 23, 'font', playerLevel, 30); 
+        }
+        
+        coinsText.alpha = 0.7;
+        xpText.alpha = 0.7;
+        healthText.alpha = 0.7;
+        manaText.alpha = 0.7;
+        playerLevelText.alpha = 0.7;
+        coinDisplay = game.add.sprite(360, 8, 'coin');
+        coinDisplay.frame = 0;
+        
         // The player and its settings
         player = game.add.sprite(16, 120, 'dude');
         
@@ -95,49 +139,6 @@ var defenceState = {
         aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
         sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
         dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-        
-        //  Set up gui and display text
-        if (coins>=1000000) {
-            coinsText = game.add.bitmapText(395, 10, 'font', (Math.round(coins/1000))/1000 + "M", 30);
-        }
-        else {
-            coinsText = game.add.bitmapText(395, 10, 'font', coins, 30);
-        }
-        hudDisplay = game.add.sprite(0, 0, 'hudDisplay');
-        hudDisplay.scale.setTo(1.1, 1.1);
-        hpBar = game.add.sprite(92, 7, 'hudBarRed');
-        hpBar.scale.setTo(1.1, 1.1);
-        hpCrop = new Phaser.Rectangle(0, 0, 88, 15);
-        hpBar.crop(hpCrop);
-        healthText = game.add.bitmapText(93, 7, 'fontWhite', 'HP: ' + health + "/" + maxHealth, 15);
-        manaBar = game.add.sprite(92, 28, 'hudBarBlue');
-        manaBar.scale.setTo(1.1, 1.1);
-        manaCrop = new Phaser.Rectangle(0, 0, 88, 15);
-        manaBar.crop(manaCrop);
-        manaText = game.add.bitmapText(93, 28, 'fontWhite', 'MP: ' + mana + "/" + maxMana, 15); 
-        xpBar = game.add.sprite(92, 50, 'hudBarGreen');
-        xpBar.scale.setTo(1.1, 1.1);
-        xpCrop = new Phaser.Rectangle(0, 0, 88, 15);
-        xpBar.crop(xpCrop);
-        xpText = game.add.bitmapText(93, 50, 'fontWhite', 'XP: ' + xpDisplay + '/' + nextLevelXpDisplay, 15);
-        this.xpDisplayConvert();
-        if (playerLevel>=100) {
-           playerLevelText = game.add.bitmapText(9, 23, 'font', playerLevel, 30);  
-        }
-        else if (playerLevel>=10) {
-           playerLevelText = game.add.bitmapText(18, 23, 'font', playerLevel, 30);  
-        }
-        else {
-           playerLevelText = game.add.bitmapText(26, 23, 'font', playerLevel, 30); 
-        }
-        
-        coinsText.alpha = 0.7;
-        xpText.alpha = 0.7;
-        healthText.alpha = 0.7;
-        manaText.alpha = 0.7;
-        playerLevelText.alpha = 0.7;
-        coinDisplay = game.add.sprite(360, 8, 'coin');
-        coinDisplay.frame = 0;
         
         resultBackground = game.add.sprite(-1000, 150, 'scrollStrip');
         resultText = game.add.bitmapText(140, 185, 'font', '', 32);

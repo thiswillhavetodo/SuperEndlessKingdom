@@ -1,5 +1,5 @@
 /*global Phaser*/
-var game = new Phaser.Game(832, 640, Phaser.AUTO, '');
+var game = new Phaser.Game(832, 640, Phaser.CANVAS, '');
 
 game.state.add('boot', bootState);
 game.state.add('preload', preloadState);

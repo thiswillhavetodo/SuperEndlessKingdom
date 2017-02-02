@@ -7,7 +7,7 @@ var preloadState = {
         game.preloadBar.anchor.setTo(0);
      
         game.load.setPreloadSprite(game.preloadBar);
-        game.load.audio('pew', '/assets/laserfire01.ogg');
+        game.load.audio('pew', '/assets/laserfire01.ogg');//
         game.load.audio('collect', '/assets/itemCollect.ogg');
         game.load.audio('reduce', '/assets/reduceFunds.ogg');
         game.load.audio('slotMachine', '/assets/slotMachine.ogg');
@@ -49,7 +49,6 @@ var preloadState = {
         game.load.image('ChestGreen', '/assets/ChestGreen.png');
         game.load.image('iceBeamMini', '/assets/iceBeamMini.png');
         game.load.image('doorway', '/assets/doorway.png');
-        game.load.image('title', '/assets/SUPER1.png');
         game.load.image('stonepaving', '/assets/stonepaving.png');
         game.load.image('HousingDpt', '/assets/HousingDpt.png');
         game.load.image('CommerceDpt', '/assets/CommerceDpt.png');
@@ -77,8 +76,10 @@ var preloadState = {
         game.load.spritesheet('explosionMini', '/assets/explosionMini.png', 16, 16);
         game.load.spritesheet('levelUp', '/assets/levelUp.png', 570, 80);
         game.load.spritesheet('spider', '/assets/spiderGreen.png', 32, 32);
+        //game.load.image('title', '/assets/SUPER1.png');
+        game.load.image('menuBackground', '/assets/titlescreeenArtwork.png');
         game.load.image('startButton', '/assets/START.png');
-        game.load.image('titleBack', '/assets/titleBack1.png');
+        //game.load.image('titleBack', '/assets/titleBack1.png');
         game.load.image('loadButton', '/assets/LOAD.png');
         game.load.image('creditsButton', '/assets/CREDITS.png');
         game.load.image('blankButton', '/assets/blankButton.png');
@@ -98,7 +99,7 @@ var preloadState = {
         game.load.image('rightArrow', '/assets/rightArrow.png');
         game.load.spritesheet('statue', '/assets/statue.png', 32, 68);
         game.load.spritesheet('pillars', '/assets/pillars.png', 32, 96);
-        game.load.image('menuBackground', '/assets/menuBackground.png');
+        //game.load.image('menuBackground', '/assets/menuBackground.png');
         game.load.image('shopBorder', '/assets/shopBorder.png');
         game.load.image('barrel', '/assets/barrel.png');
         game.load.image('chestWooden', '/assets/chestWooden.png');

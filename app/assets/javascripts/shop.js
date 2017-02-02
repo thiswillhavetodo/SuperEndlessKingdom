@@ -256,9 +256,10 @@ var addStartText;
 var addRejectButton;
 var addRejectText;
 
-var bonusType;
+var bonusType = "";
 var beamUnlockShown = false;
 var manaRefillUnlockShown = false;
+var spaceBar;
 
 var weaponsmithSkillLevelText;
 var wandPowerText;
@@ -333,6 +334,7 @@ var shopState = {
         efffectivenessScoreBackground = game.add.sprite(500, 60, 'dbox_thinShort');
         efffectivenessScoreText = game.add.bitmapText(515, 75, 'font', '', 17);
         this.dropRewardDiminishingReturns();
+        spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         switch(shop) {
             case "castle":
                 taxHolder = game.add.sprite(305, 250, 'blankButton');
@@ -361,7 +363,7 @@ var shopState = {
                     shopText.text = " Your Majesty!";
                     shopText2.text = "  The general feeling";
                     shopText3.text = "   among your people is";
-                    shopText4.text = "       that the level of ";
+                    shopText4.text = "         that the level of ";
                     shopText5.text = "       taxation is just "; 
                     shopText6.text = "    about right.";
                 }
@@ -698,6 +700,9 @@ var shopState = {
     },
     update: function() {
         this.adTimeUpdate();
+        if (bonusType!="" && spaceBar.isDown) {
+          this.create();
+        }
     },
     shopClose: function() {
         game.world.removeAll();
@@ -1019,7 +1024,7 @@ var shopState = {
     },
     weaponsmithImprove: function() {
        if (game.time.now > weaponsmithTimer && population >= 110) {
-         baseChance = Math.round(((popScore*0.22) + (weaponsmith*0.3) + (weaponsmithDropReward*0.48))/2);
+         baseChance = Math.round(((popScore*0.15) + (weaponsmith*0.25) + (weaponsmithDropReward*0.6))/2);
          //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          wandImage = game.add.sprite(108, 258, 'wandAnimation');
@@ -1236,7 +1241,7 @@ var shopState = {
         }
         else {
             shopMessageBackground.x = 196;
-            shopMessageText.text = "      Not enough coins.";
+            shopMessageText.text = "                        Not enough coins.";
             reduceSFX.play();
         }
     },
@@ -1260,7 +1265,7 @@ var shopState = {
         }
         else {
             shopMessageBackground.x = 196;
-            shopMessageText.text = "      Not enough coins.";
+            shopMessageText.text = "                        Not enough coins.";
             reduceSFX.play();
         }
     },
@@ -1284,7 +1289,7 @@ var shopState = {
         }
         else {
             shopMessageBackground.x = 196;
-            shopMessageText.text = "      Not enough coins.";
+            shopMessageText.text = "                        Not enough coins.";
             reduceSFX.play();
         }
     },
@@ -1301,7 +1306,6 @@ var shopState = {
             else {
               trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
             }
-            trainerUpgradeText.text = " Buy Skill Material: " + trainerUpgradeCost;
             shopCoinsText.text = coins;
             trainerSkillLevelText.text = "Trainer Skill Level: " + (Math.round(trainerDropReward*10)/10);
             increaseSFX.play();
@@ -1309,13 +1313,13 @@ var shopState = {
         }
         else {
             shopMessageBackground.x = 196;
-            shopMessageText.text = "      Not enough coins.";
+            shopMessageText.text = "                        Not enough coins.";
             reduceSFX.play();
         }
     },
     armourerImprove: function() {
        if (game.time.now > armourerTimer && population >= 125) {
-         baseChance = Math.round(((popScore*0.22) + (armourer*0.3) + (armourerDropReward*0.48))/2);
+         baseChance = Math.round(((popScore*0.15) + (armourer*0.25) + (armourerDropReward*0.6))/2);
          //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          armourImage = game.add.sprite(108, 258, 'armourAnimation');
@@ -1369,7 +1373,7 @@ var shopState = {
                         armourImage.animations.stop();
                         armourImage.frame = 0;
                         armourPerkText.text = "  Upgrade:";
-                        armourPerkText2.text = "Max Health +" + armourMaxHealth;
+                        armourPerkText2.text = "    Max Health +" + armourMaxHealth;
                         armourHealthBonusText.text = "Armour Health Bonus: " + armourMaxHealth;
                         increaseSFX.play();
                     }
@@ -1608,7 +1612,7 @@ var shopState = {
     },
     enchanterImprove: function() {
        if (game.time.now > enchanterTimer && population >= 150) {
-         baseChance = Math.round(((popScore*0.22) + (enchanter*0.3) + (enchanterDropReward*0.48))/2);
+         baseChance = Math.round(((popScore*0.15) + (enchanter*0.25) + (enchanterDropReward*0.6))/2);
          //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          ringImage = game.add.sprite(108, 258, 'ringAnimation');
@@ -1807,7 +1811,7 @@ var shopState = {
     },
     trainerImprove: function() {
        if (game.time.now > trainerTimer && population >= 200) {
-         baseChance = Math.round(((popScore*0.22) + (trainer*0.3) + (trainerDropReward*0.48))/2);
+         baseChance = Math.round(((popScore*0.15) + (trainer*0.25) + (trainerDropReward*0.6))/2);
          //console.log("Base Chance: " + baseChance);
          game.add.sprite(100, 250, 'border');
          skillImage = game.add.sprite(108, 258, 'skillAnimation');

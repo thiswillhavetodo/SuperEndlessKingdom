@@ -9,14 +9,15 @@ var beamWeapon = false;
 var shotSpeed = 320;
 var manaCost = 5;
 var flameBullets;
-var flameBulletSpacing = 4000;
+var flameBulletSpacing = 4250;
 var iceBeams;
+var charges;
 var waterShots;
 var freezeTimer = 0;
 var invulnerableTimer = 0;
 var invulnerableSpacing = 800;
 var manaRegenTimer = 0;
-var manaRegenHolder = 500;
+var manaRegenHolder = 490;
 var manaRegenEndLevelAdjust = 0;
 var manaRegenInterval = manaRegenHolder;
 var manaRefillAvailable = false;
@@ -99,8 +100,8 @@ var nextLevelXp = 10;
 var nextLevelXpDisplay = 10;
 var health = 3;
 var maxHealth = 3;
-var mana = 70;
-var maxMana = 70;
+var mana = 75;
+var maxMana = 75;
 var starTotal = 6;
 var baddieTotal = 7;
 var baddieCount = 7;
@@ -129,14 +130,16 @@ var gameMusic;
 var advertImage;
 var adStopTime;
 var adTimeText;
+var beamSFX;
+var waterShotSFX;
+var flameShot;
 /* global game */
 /* global Phaser */
 var playState = {
 
     create: function() {
-        console.log('create');
         game.world.removeAll();
-        console.log('create again');
+        game.time.advancedTiming = true; //needed for fps display in debug
         //  enable the Arcade Physics system
         game.physics.startSystem(Phaser.Physics.ARCADE);
         if (Math.random()>0.66 || stage == 60) { 
@@ -219,18 +222,22 @@ var playState = {
         
         bullets = game.add.group();
         bullets.enableBody = true;
-        bullets.createMultiple(95, 'bullet');
+        bullets.createMultiple(90, 'bullet');
         //enemy projectiles
         flameBullets = game.add.group();
         flameBullets.enableBody = true;   
         iceBeams = game.add.group();
         iceBeams.enableBody = true;
-        iceBeams.createMultiple(120, 'iceBeamMini');
+        iceBeams.createMultiple(110, 'iceBeamMini');
+        charges = game.add.group();
+        charges.enableBody = true;
+        charges.createMultiple(2, 'blueCharge');
         waterShots = game.add.group();
         waterShots.enableBody = true; 
-        waterShots.createMultiple(5, 'waterShot');
+        waterShots.createMultiple(6, 'waterShot');
         miniZombieBirds = game.add.group();
         miniZombieBirds.enableBody = true;
+        miniZombieBirds.createMultiple(23, 'miniZombieBird');
         //enemies
         skeletons = game.add.group();
         skeletons.enableBody = true;
@@ -254,6 +261,9 @@ var playState = {
         treeBeasts.enableBody = true;
         evilRoots = game.add.group();
         evilRoots.enableBody = true;
+        /*if (stage>50) {
+            evilRoots.createMultiple(30, 'evilRoot');
+        }*/
         bossZombies = game.add.group();
         bossZombies.enableBody = true;
         bossZombieBirds = game.add.group();
@@ -273,6 +283,10 @@ var playState = {
         if (stage==50 && bossZombieKilled==false) {
             this.bossZombieCreate(760, 200, "green");
             baddieCreated = baddieTotal;
+            this.treeCreate(300, 0);
+            this.treeCreate(360, 770);
+            this.treeCreate(0, 384);
+            this.treeCreate(590, 448);
         }
         if (stage==60 && bossTreeBeastKilled==false) {
             this.treeBeastCreate(64, 64);
@@ -300,6 +314,7 @@ var playState = {
         }
         if (stage==70 && bossSkeletonKilled==false) {
             this.skeletonCreate(750, 200, "redBoss");
+            flameShot = game.add.audio('flameShot');
             baddieCreated = baddieTotal;
         }
         if (stage==80 && bossZombieBirdKilled==false) {
@@ -340,6 +355,7 @@ var playState = {
                 //console.log(i + ": evil wizard, " + baddieX + ", " + baddieY);
                 baddieCreated += 10;
                 evilwizardCount ++;
+                beamSFX = game.add.audio('shotSFX');
                 index = array.indexOf(i);
                 if (index > -1) {
                   array.splice(index, 1);
@@ -359,6 +375,7 @@ var playState = {
                 //console.log(i + ": swamp creature, " + baddieX + ", " + baddieY);
                 baddieCreated += 9;
                 swampCreatureCount ++;
+                waterShotSFX = game.add.audio('bubble');
                 index = array.indexOf(i);
                 if (index > -1) {
                   array.splice(index, 1);
@@ -388,6 +405,7 @@ var playState = {
                 //console.log(i + ": flame, " + baddieX + ", " + baddieY);
                 baddieCreated += 6;
                 flameCount += 1;
+                flameShot = game.add.audio('flameShot');
                 index = array.indexOf(i);
                 if (index > -1) {
                   array.splice(index, 1);
@@ -644,7 +662,9 @@ var playState = {
         game.physics.arcade.collide(baddies, flames);
         game.physics.arcade.collide(flames, flames);  
         game.physics.arcade.collide(skeletons, baddies); 
-        game.physics.arcade.collide(skeletons, flames);
+        if (stage!=70) {
+            game.physics.arcade.collide(skeletons, flames);
+        }
         game.physics.arcade.collide(skeletons, skeletons); 
         game.physics.arcade.collide(mummies, baddies); 
         game.physics.arcade.collide(mummies, flames);
@@ -703,6 +723,7 @@ var playState = {
             game.physics.arcade.overlap(player, evilRoots, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, vampires, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, decoys, this.badTouch, null, this);
+            game.physics.arcade.overlap(player, swampCreatures, this.badTouch, null, this);
         }
         else {
             player.alpha = 0.5;
@@ -792,7 +813,9 @@ var playState = {
         this.mummyUpdate();
         this.evilwizardUpdate();
         this.zombieBirdUpdate();
-        this.miniZombieBirdUpdate();
+        if (zombieBirdCount>0 || stage==80) {
+            this.miniZombieBirdUpdate();
+        }
         this.swampCreatureUpdate();
         this.treeBeastUpdate();
         this.evilRootUpdate();
@@ -807,12 +830,21 @@ var playState = {
         this.vampireUpdate();
         this.decoyUpdate();
         //this.coinUpdate();
-        hpCrop.x = (1-(health/maxHealth))*80;
-        hpBar.updateCrop();
-        manaCrop.x = (1-(mana/maxMana))*80;
-        manaBar.updateCrop();
-        xpCrop.x = (1-(xp/nextLevelXp))*80;
-        xpBar.updateCrop();
+        if (game.time.now%4) {
+            hpCrop.x = (1-(health/maxHealth))*80;
+            hpBar.updateCrop();
+        }
+        if (game.time.now%3) {
+            manaCrop.x = (1-(mana/maxMana))*80;
+            manaBar.updateCrop();
+        }
+        if (game.time.now%5) {
+            xpCrop.x = (1-(xp/nextLevelXp))*80;
+            xpBar.updateCrop();
+        }
+    },
+    render: function() {
+    	game.debug.text(game.time.fps, 800, 14, "#00ff00");
     },
     baddieCreate: function(x, y, colour) {
         if (colour=="green") {
@@ -858,22 +890,13 @@ var playState = {
             baddie.healthBar.moveTo(0, 0);
             baddie.healthBar.lineTo(20*(baddie.health/baddie.maxHealth), 0);
             
-            if (Math.random()<0.10) {
-                baddie.body.velocity.x += 20;
-                baddie.body.velocity.y += 20;
+            if (baddie.colour=="green") {
+                game.physics.arcade.moveToObject(baddie, player, 130);
             }
-            else if (Math.random()>0.9) {
-                baddie.body.velocity.x -= 20;
-                baddie.body.velocity.y -= 20;
+            else if (baddie.colour=="red") {
+                game.physics.arcade.moveToObject(baddie, player, 155);
             }
-            else {
-                if (baddie.colour=="green") {
-                    game.physics.arcade.moveToObject(baddie, player, 130);
-                }
-                else if (baddie.colour=="red") {
-                    game.physics.arcade.moveToObject(baddie, player, 155);
-                }
-            }
+            
             if (player.body.x < baddie.body.x) {
                 baddie.animations.play('baddieLeft');
             }
@@ -1072,7 +1095,7 @@ var playState = {
                     game.physics.arcade.moveToObject(swordZombie, player, 140);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 80);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, 640-player.y, 80);
                 }
                 if (player.body.x < swordZombie.body.x) {
                     swordZombie.animations.play('swordZombieLeft');
@@ -1086,7 +1109,7 @@ var playState = {
                     game.physics.arcade.moveToObject(swordZombie, player, 165);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, player.y, 90);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, 640-player.y, 90);
                 }
                 if (player.body.x < swordZombie.body.x) {
                     swordZombie.animations.play('swordZombieLeftRed');
@@ -1316,7 +1339,7 @@ var playState = {
         flame.body.collideWorldBounds = true;
         flame.body.immovable = true;
         flame.isAlive = true;
-        flame.timer = 0;
+        flame.timer = 10 + (Math.random()*1200);
         flame.animations.add('flicker', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
         
         flame.healthBarBack = flame.addChild(game.add.graphics(0, 0));
@@ -1337,11 +1360,10 @@ var playState = {
             if ((game.time.now > flame.timer) && flame.isAlive) {
                 var flameBullet = flameBullets.create(flame.x, flame.y, 'flame');
                 flameBullet.animations.add('fire', [0], true);
-                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 150);
-                flameBullet.lifespan = 7000;
+                game.physics.arcade.moveToXY(flameBullet, player.x, player.y, 160);
+                flameBullet.lifespan = 6900;
                 flameBullet.animations.play('fire');
                 flame.timer = game.time.now + flameBulletSpacing;
-                var flameShot = game.add.audio('flameShot');
                 flameShot.play();
             }
             flame.healthBar.clear();
@@ -1434,7 +1456,8 @@ var playState = {
         evilwizard.timer = game.time.now;
         evilwizard.chargeTimer = game.time.now + 1000;
         evilwizard.shotTimer = game.time.now + 3000;
-        evilwizard.stopTimer = game.time.now + 7500;
+        evilwizard.sfxTimer = evilwizard.shotTimer;
+        evilwizard.stopTimer = game.time.now + 7000;
         evilwizard.isAlive = true;
         
         evilwizard.healthBarBack = evilwizard.addChild(game.add.graphics(0, 0));
@@ -1466,7 +1489,6 @@ var playState = {
             
             var x = 0;
             var y = 0;
-            var beamSFX = game.add.audio('shotSFX');
             
             if (player.x < 400) {
                 x = player.x + 100;
@@ -1488,35 +1510,38 @@ var playState = {
                 evilwizard.timer = game.time.now + 10000;
             }
             if (game.time.now > evilwizard.chargeTimer && evilwizard.isAlive) {
-                var charge = game.add.sprite (evilwizard.x + 16, evilwizard.y + 24, 'blueCharge');
+                var charge = charges.getFirstExists(false);//game.add.sprite(evilwizard.x + 16, evilwizard.y + 24, 'blueCharge');
+                charge.reset(evilwizard.x + 16, evilwizard.y + 20);
                 charge.animations.add('chargeUp', [0, 1, 2, 3, 4, 4], 2, false);
                 charge.animations.play('chargeUp');
                 evilwizard.chargeTimer = game.time.now + 10000;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function() {  charge.destroy();
-                                                                            if (evilwizard.isAlive) {
-                                                                                beamSFX.play();
-                                                                            }
-                                                                        });
+                game.time.events.add(Phaser.Timer.SECOND * 2, function() {  charge.kill(); });
+            }
+            if (game.time.now > evilwizard.sfxTimer && evilwizard.isAlive) {
+                beamSFX.play();
+                evilwizard.sfxTimer = game.time.now + 10000;
             }
             if (game.time.now > evilwizard.shotTimer && evilwizard.isAlive) {
                 var iceBeam = iceBeams.getFirstExists(false);//iceBeams.create(evilwizard.x + 16, evilwizard.y + 24, 'iceBeamMini');
-                iceBeam.reset(evilwizard.x + 16, evilwizard.y + 24);
-                iceBeam.scale.x = 1.25;
-                iceBeam.animations.add('beam', [0], true);
-                game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
-                iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 625);
-                iceBeam.lifespan = 1700;
-                iceBeam.animations.play('beam');
-                evilwizard.shotTimer = game.time.now + 16;
-                game.time.events.add(Phaser.Timer.SECOND * 4.5, function() { 
+                iceBeam.reset(evilwizard.x + 16, evilwizard.y + 20);
+                iceBeam.scale.x = 1.4;
+                //iceBeam.animations.add('beam', [0], true);
+                game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
+                iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
+                iceBeam.lifespan = 1650;
+                iceBeam.frame = 0;
+                //iceBeam.animations.play('beam');
+                evilwizard.shotTimer = game.time.now + 20;
+                game.time.events.add(Phaser.Timer.SECOND * 4, function() { 
                                                                 iceBeams.forEach(function(iceBeam) { 
                                                                     iceBeam.kill(); 
-                                                                    beamSFX.stop();
                                                                 } 
                                                               );});
             }
             if (game.time.now > evilwizard.stopTimer) {
-                evilwizard.shotTimer = game.time.now + 5500;
+                evilwizard.shotTimer = game.time.now + 6000;
+                //beamSFX.destroy();
+                evilwizard.sfxTimer = evilwizard.shotTimer;
                 evilwizard.stopTimer = game.time.now + 10000;
             }
             if (player.body.x < evilwizard.body.x) {
@@ -1566,7 +1591,6 @@ var playState = {
             swampCreature.healthBar.lineStyle(3, 0xffd900, 1);
             swampCreature.healthBar.moveTo(0, 0);
             swampCreature.healthBar.lineTo(20*(swampCreature.health/swampCreature.maxHealth), 0);
-            
             if (game.time.now > swampCreature.crouchTimer && swampCreature.isAlive) {
                 //console.log('crouch');
                 swampCreature.body.velocity.x = 0;
@@ -1600,7 +1624,6 @@ var playState = {
                 waterShot.lifespan = 3500;
                 game.physics.arcade.moveToXY(waterShot, player.x+25, player.y+15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                var waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer1 = game.time.now + 10000;
             }
@@ -1613,7 +1636,6 @@ var playState = {
                 waterShot.lifespan = 3500;
                 game.physics.arcade.moveToXY(waterShot, player.x+15, player.y+25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer2 = game.time.now + 10000;
             }
@@ -1626,7 +1648,6 @@ var playState = {
                 waterShot.lifespan = 3500;
                 game.physics.arcade.moveToXY(waterShot, player.x+5, player.y-15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer3 = game.time.now + 10000;
             }
@@ -1639,7 +1660,6 @@ var playState = {
                 waterShot.lifespan = 3500;
                 game.physics.arcade.moveToXY(waterShot, player.x-15, player.y-25, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer4 = game.time.now + 10000;
             }
@@ -1652,7 +1672,6 @@ var playState = {
                 waterShot.lifespan = 3500;
                 game.physics.arcade.moveToXY(waterShot, player.x-25, player.y+15, 300);
                 waterShot.rotation = game.physics.arcade.moveToXY(waterShot, player.x, player.y, 300);
-                waterShotSFX = game.add.audio('bubble');
                 waterShotSFX.play();
                 swampCreature.shotTimer5 = game.time.now + 10000;
             }
@@ -1759,7 +1778,8 @@ var playState = {
         });
     }, 
     miniZombieBirdCreate: function(x, y) {
-        var miniZombieBird = miniZombieBirds.create(x, y, 'miniZombieBird');
+        var miniZombieBird = miniZombieBirds.getFirstExists(false);//create(x, y, 'miniZombieBird');
+        miniZombieBird.reset(x, y);
         miniZombieBird.health = 10;
         miniZombieBird.maxHealth = 10;
         //  enable physics
@@ -1785,11 +1805,12 @@ var playState = {
         miniZombieBirds.forEach(function(miniZombieBird) {
             miniZombieBird.body.velocity.x = 0;
             miniZombieBird.body.velocity.y = 0;
-            
-            miniZombieBird.healthBar.clear();
-            miniZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
-            miniZombieBird.healthBar.moveTo(0, 0);
-            miniZombieBird.healthBar.lineTo(20*(miniZombieBird.health/miniZombieBird.maxHealth), 0);
+            if (miniZombieBird.children.length>0) {
+                miniZombieBird.healthBar.clear();
+                miniZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+                miniZombieBird.healthBar.moveTo(0, 0);
+                miniZombieBird.healthBar.lineTo(20*(miniZombieBird.health/miniZombieBird.maxHealth), 0);
+            }
             
             game.physics.arcade.collide(miniZombieBird, platforms);
             game.physics.arcade.moveToObject(miniZombieBird, player, 201-miniZombieBird.health*2);
@@ -1862,12 +1883,12 @@ var playState = {
     },
     bossMummyCreate: function(x, y) {
         var bossMummy = bossMummies.create(x, y, 'mummy');
-        bossMummy.health = 875;
-        bossMummy.maxHealth = 875;
+        bossMummy.health = 750;
+        bossMummy.maxHealth = 750;
         bossMummy.scale.x = 2;
         bossMummy.scale.y = 2;
         bossMummy.damageTimer = 0;
-        bossMummy.summonTimer = game.time.now + 1500;
+        bossMummy.summonTimer = game.time.now + 1000;
         bossMummy.isAlive = true;
         //  enable physics
         game.physics.arcade.enable(bossMummy);
@@ -1901,7 +1922,7 @@ var playState = {
             bossMummy.healthBar.lineTo(20*(bossMummy.health/bossMummy.maxHealth), 0);
             
             game.physics.arcade.collide(bossMummy, platforms);
-            if (game.time.now>bossMummy.summonTimer && bossMummy.isAlive ) {
+            if (game.time.now>bossMummy.summonTimer && bossMummy.isAlive && player.isAlive) {
                 bossMummy.summon = true;
                 self.risenZombieCreate(0, 0);
                 self.risenZombieCreate(200, 0);
@@ -1913,7 +1934,7 @@ var playState = {
                 self.risenZombieCreate(400, 600);
                 self.risenZombieCreate(600, 600);
                 self.risenZombieCreate(800, 600);
-                bossMummy.summonTimer = game.time.now + 4000; 
+                bossMummy.summonTimer = game.time.now + 6500; 
                 game.time.events.add(Phaser.Timer.SECOND * 0.5, function () { bossMummy.summon = false; });
             }
             if (bossMummy.summon==false) {
@@ -2076,11 +2097,6 @@ var playState = {
         }
         //
     },
-    coinUpdate: function() {
-        stars.forEach(function(coin) {
-            //
-        });
-    },
     collectStar: function(player, star) {
         // Removes the item from the screen
         this.collectSFX();
@@ -2088,7 +2104,7 @@ var playState = {
         var chance = 1 + Math.random()*5;
         var coinAmount = Math.round(star.contents + (chance*star.contents));
         var coin = game.add.sprite(star.x, star.y, 'coin');
-        coin.animations.add('rotate', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+        coin.animations.add('rotate', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 12, true);
         coin.animations.play('rotate');
         var coinText = game.add.bitmapText(coin.x+6, coin.y+8, 'font', '', 12);
         coinText.text = coinAmount;
@@ -2096,7 +2112,8 @@ var playState = {
         game.time.events.add(Phaser.Timer.SECOND * 1, function () {
             coin.destroy();
             coinText.destroy();
-            if (chance<=1.06) {
+            if (chance>1.24) { }
+            else if (chance<=1.06) {
                var wand = game.add.sprite(coin.x, coin.y, 'wand');
                var wandText = game.add.bitmapText(wand.x+6, wand.y+12, 'font', '', 12);
                wandText.text = "Weaponsmith +";
@@ -2391,7 +2408,7 @@ var playState = {
         }
         bullet.kill();
         if (game.time.now>bossZombie.damageTimer) {
-            bossZombie.damageTimer = game.time.now>bossZombie+200;
+            bossZombie.damageTimer = game.time.now>bossZombie+400;
             if (bossZombie.health <= shotPower) {
                 this.coinCreate(bossZombie.x, bossZombie.y, "yellow");
                 this.coinCreate(bossZombie.x+15, bossZombie.y-2, "yellow");
@@ -2469,7 +2486,7 @@ var playState = {
         }
         bullet.kill();
         if (game.time.now>bossZombieBird.damageTimer) {
-            bossZombieBird.damageTimer = game.time.now>bossZombieBird+200;
+            bossZombieBird.damageTimer = game.time.now>bossZombieBird+400;
             if (bossZombieBird.health <= shotPower) {
                 this.coinCreate(bossZombieBird.x, bossZombieBird.y, "yellow");
                 this.coinCreate(bossZombieBird.x+15, bossZombieBird.y-2, "yellow");
@@ -2537,7 +2554,7 @@ var playState = {
         }
         bullet.kill();
         if (game.time.now>bossMummy.damageTimer) {
-            bossMummy.damageTimer = game.time.now>bossMummy+300;
+            bossMummy.damageTimer = game.time.now>bossMummy+400;
             if (bossMummy.health <= shotPower) {
                 this.coinCreate(bossMummy.x, bossMummy.y, "yellow");
                 this.coinCreate(bossMummy.x+15, bossMummy.y-2, "yellow");
@@ -2564,6 +2581,7 @@ var playState = {
                 }
                 bossMummy.destroy();
                 bossMummy.isAlive = false;
+                bossMummyKilled = true;
                 this.mummyDeathSFX();
                 var death = game.add.sprite(bossMummy.x, bossMummy.y, 'deathSheet');
                 xp += 650;
@@ -2692,7 +2710,7 @@ var playState = {
         bullet.kill();
         if (skeleton.colour!="redBoss" || game.time.now>skeleton.bossDamageTimer) {
             if (skeleton.colour=="redBoss") {
-                skeleton.bossDamageTimer = game.time.now+200;
+                skeleton.bossDamageTimer = game.time.now+400;
             }
             if (skeleton.health <= shotPower) {
                 this.coinCreate(skeleton.x, skeleton.y, "blue");
@@ -2868,8 +2886,6 @@ var playState = {
             zombieBird.destroy();
             var death = game.add.sprite(zombieBird.x, zombieBird.y, 'deathSheet');
             death.frame = 12;
-            death.scale.x = 0.4;
-            death.scale.y = 0.4;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.birdDeathSFX();
             xp += 8;
@@ -2908,7 +2924,9 @@ var playState = {
             else {
                this.coinCreate(miniZombieBird.x, miniZombieBird.y, "blue"); 
             }
-            miniZombieBird.destroy();
+            miniZombieBird.kill();
+            miniZombieBird.healthBar.destroy();
+            miniZombieBird.healthBarBack.destroy();
             var death = game.add.sprite(miniZombieBird.x, miniZombieBird.y, 'deathSheet');
             death.frame = 4;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
@@ -3090,6 +3108,7 @@ var playState = {
         if (timerBeam!=null && timerBeam.running) {
             timerBeam.stop();
         }
+        gameMusic.destroy();
         game.world.removeAll();
         game.state.start('city');
     },
@@ -3116,7 +3135,7 @@ var playState = {
         }
     },
     startNextLevel: function() {
-        gameMusic.stop();
+        gameMusic.destroy();
         stage ++;
         starTotal += 0.75;
         baddieTotal ++;
@@ -3136,18 +3155,12 @@ var playState = {
              102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
              118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130];
         sceneryCount = 0;
-        /*if (beamUnlockShown==true) {
-            beamWeapon = true;
-        }*/
-        if (manaRefillUnlockShown==true) {
-            manaRefillAvailable = true;
-        }
         this.create();
     },
     playerDeath: function() {
         // Removes the player from the screen
         player.kill();
-        gameMusic.stop();
+        gameMusic.destroy();
         this.maleDeathSFX();
         var death = game.add.sprite(player.x, player.y, 'deathSheet');
         death.frame = 0;
@@ -3237,11 +3250,11 @@ var playState = {
     beamWeaponActivate: function() {
         manaCost = 1;
         bulletSpacing = bulletSpacing/14;
-        shotPower += shotSpeed*0.005;
+        shotPower += shotSpeed*0.002
         beamWeapon = false;
         beamSprite.frame = 0;
         var self = this;
-        game.time.events.add(Phaser.Timer.SECOND * 4.5, function () {   manaCost = 5; bulletSpacing = bulletSpacing*14; shotPower -= shotSpeed*0.005; self.beamWeaponTimer(); });
+        game.time.events.add(Phaser.Timer.SECOND * 4.25, function () {   manaCost = 5; bulletSpacing = bulletSpacing*14; shotPower -= shotSpeed*0.002; self.beamWeaponTimer(); });
     },
     beamWeaponTimer: function() {
         timerBeam = game.time.create();
