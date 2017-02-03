@@ -6,10 +6,21 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
   </head>
 
   <body>
     <%= yield %>
+    <video width="832" height="624" controls poster="/assets/titlescreeenArtwork.png">
+      <source src="/assets/trailerTestOne.ogg" type="video/ogg">
+      <source src="/assets/trailerTestOne.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video> 
+    <script type="text/javascript">
+      $('video').on('ended', function(){
+        $('video').load()
+      });
+    </script>
     <p class="flash"><%= flash.notice %></p>
     <div class="blurb-holder">
       <p class="blurb">Can you save</p>

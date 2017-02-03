@@ -21,6 +21,7 @@ var enchanterAdTimerHolder;
 var trainerAdTimerHolder;
 var canvasElement;
 var menuBackground;
+var loggedIn = false;
 
 /*global game*/
 
@@ -41,9 +42,8 @@ var menuState = {
         game.physics.arcade.enable(titlePlayer);
         titlePlayer.animations.add('left', [9, 10, 11], 10, true);*/
         themeSound = game.add.audio('titleTheme');
-        var displayCSS = document.getElementById("canvasID").style.left;
-        console.log(displayCSS);
-        if (document.getElementById("canvasID").style.display=='block') {
+        console.log(loggedIn);
+        if (loggedIn) {
             themeSound.play();
         }
     }, 
