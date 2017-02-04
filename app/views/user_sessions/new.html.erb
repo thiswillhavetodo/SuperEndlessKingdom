@@ -1,14 +1,15 @@
 <% if logged_in? %>
 <% else %>
 <div id="login_form">
-  		<div id="login_heading"></div>
+  		<div id="login_heading">Login Details</div>
 		<%= form_tag user_sessions_path, method: :post do %>
 			<div class="field">
-				<div class='emailLabel'></div>
+				<div class='emailLabel'>email</div>
+				<!--<%= label_tag :email %>-->
 				<%= text_field_tag :email %>
 			</div>
 			<div class="field">
-				<div class='passwordLabel'></div>
+				<div class='passwordLabel'>password</div>
 				<%= password_field_tag :password %>
 			</div>
 			<div class="actions">

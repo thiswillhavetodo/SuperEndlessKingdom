@@ -63,30 +63,43 @@ video {
     border-radius: 10px;
     margin-left: 0px;
     cursor: pointer;
+    margin-top: 5px;
 }
 
 .emailLabel {
-    background-image: url(/assets/Email.png);
+    /*background-image: url(/assets/Email.png);
     width: 106px;
-    height: 23px;
-    margin: auto;
+    height: 23px;*/
+    margin: 5px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
 }
 
 .passwordLabel {
-    background-image: url(/assets/Password.png);
+    /*background-image: url(/assets/Password.png);
     width: 106px;
-    height: 23px;
-    margin: auto;
+    height: 23px;*/
+    margin: 5px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
 }
 
 #email {
     display: block;
     margin: auto;
+    padding-bottom: 5px;
 }
 
 #password {
     display: block;
     margin: auto;
+    padding-bottom: 5px;
 }
 
 #login_form {
@@ -108,9 +121,13 @@ video {
 #login_heading {
     width: 195px;
     height: 29px;
-    
-    background-image: url(/assets/Enter-Login-Details.png);
-    background-repeat: no-repeat;
+    font-family: 'Raleway', sans-serif;
+    font-size: 30px;
+    text-align: center;
+    color: white;
+    margin-bottom: 10px;
+    /*background-image: url(/assets/Enter-Login-Details.png);
+    background-repeat: no-repeat;*/
 }
 
 .socialMediaButtons {
