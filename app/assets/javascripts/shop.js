@@ -300,6 +300,7 @@ var slotMachineSFX;
 var shopState = {
     create: function() {
         advert = false;
+        wellfunded = false;
         //console.log("advertCreate = " + advert);
         game.world.removeAll();
         increaseSFX = game.add.audio('collect');
@@ -424,6 +425,12 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (commercialFunding>=happiness) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = true;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(commercial);
                 break;
@@ -437,6 +444,12 @@ var shopState = {
                 }
                 else {
                     maxFunding = true;
+                }
+                if (industrialFunding>=happiness) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
                 }
                 priorityService = true;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(industrial);
@@ -452,6 +465,12 @@ var shopState = {
                 else {
                     maxFunding = true;
                 }
+                if (educationFunding>=happiness) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
+                }
                 priorityService = true;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(education);
                 break;
@@ -465,6 +484,12 @@ var shopState = {
                 }
                 else {
                     maxFunding = true;
+                }
+                if (healthFunding>=happiness) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
                 }
                 priorityService = true;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(popHealth);
@@ -499,6 +524,12 @@ var shopState = {
                 }
                 else {
                     maxFunding = true;
+                }
+                if (defenceFunding>=happiness) {
+                    wellfunded = true;
+                }
+                else {
+                    wellfunded = false;
                 }
                 priorityService = true;
                 efffectivenessScoreText.text = "Department Effectiveness: " + Math.round(defence);
@@ -739,6 +770,7 @@ var shopState = {
         housingFunding += 1;
         housingLevelText.text = "   Homestead Fund: " + housingFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -751,6 +783,7 @@ var shopState = {
         housingFunding -= 1;
         housingLevelText.text = "   Homestead Fund: " + housingFunding;
         reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -763,6 +796,7 @@ var shopState = {
         commercialFunding += 1;
         commercialLevelText.text = "   City Market Fund: " + commercialFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -775,6 +809,7 @@ var shopState = {
         commercialFunding -= 1;
         commercialLevelText.text = "   City Market Fund: " + commercialFunding;
         reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -787,6 +822,7 @@ var shopState = {
         industrialFunding += 1;
         industrialLevelText.text = "    Farmland Fund: " + industrialFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -799,6 +835,7 @@ var shopState = {
         industrialFunding -= 1;
         industrialLevelText.text = "    Farmland Fund: " + industrialFunding;
         reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -811,6 +848,7 @@ var shopState = {
         educationFunding += 1;
         educationLevelText.text = "      School Fund: " + educationFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -823,6 +861,7 @@ var shopState = {
         educationFunding -= 1;
         educationLevelText.text = "      School Fund: " + educationFunding;
         reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -835,6 +874,7 @@ var shopState = {
         healthFunding += 1;
         healthLevelText.text = "     Hospital Fund: " + healthFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -847,6 +887,7 @@ var shopState = {
         healthFunding -= 1;
         reduceSFX.play();
         healthLevelText.text = "     Hospital Fund: " + healthFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -859,6 +900,7 @@ var shopState = {
         justiceFunding += 1;
         justiceLevelText.text = "       Police Fund: " + justiceFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -871,6 +913,7 @@ var shopState = {
         justiceFunding -= 1;
         reduceSFX.play();
         justiceLevelText.text = "       Police Fund: " + justiceFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -883,6 +926,7 @@ var shopState = {
         defenceFunding += 1;
         defenceLevelText.text = "     Defence Fund: " + defenceFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -895,6 +939,7 @@ var shopState = {
         defenceFunding -= 1;
         reduceSFX.play();
         defenceLevelText.text = "     Defence Fund: " + defenceFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -907,6 +952,7 @@ var shopState = {
         utilitiesFunding += 1;
         utilitiesLevelText.text = "      Sewers Fund: " + utilitiesFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -919,6 +965,7 @@ var shopState = {
         utilitiesFunding -= 1;
         reduceSFX.play();
         utilitiesLevelText.text = "      Sewers Fund: " + utilitiesFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -931,6 +978,7 @@ var shopState = {
         weaponsmithFunding += 1;
         weaponsmithLevelText.text = " Weaponsmith Fund: " + weaponsmithFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -943,6 +991,7 @@ var shopState = {
         weaponsmithFunding -= 1;
         reduceSFX.play();
         weaponsmithLevelText.text = " Weaponsmith Fund: " + weaponsmithFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -955,6 +1004,7 @@ var shopState = {
         armourerFunding += 1;
         armourerLevelText.text = "     Armourer Fund: " + armourerFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -967,6 +1017,7 @@ var shopState = {
         armourerFunding -= 1;
         armourerLevelText.text = "     Armourer Fund: " + armourerFunding;
         reduceSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -979,6 +1030,7 @@ var shopState = {
         enchanterFunding += 1;
         enchanterLevelText.text = "    Enchanter Fund: " + enchanterFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -991,6 +1043,7 @@ var shopState = {
         enchanterFunding -= 1;
         reduceSFX.play();
         enchanterLevelText.text = "    Enchanter Fund: " + enchanterFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -1003,6 +1056,7 @@ var shopState = {
         trainerFunding += 1;
         trainerLevelText.text = "     Trainer Fund: " + trainerFunding;
         increaseSFX.play();
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -1015,6 +1069,7 @@ var shopState = {
         trainerFunding -= 1;
         reduceSFX.play();
         trainerLevelText.text = "     Trainer Fund: " + trainerFunding;
+        this.create();
       }
       else {
           shopMessageBackground.x = 196;
@@ -2173,31 +2228,31 @@ var shopState = {
             switch(shop) {
                 case "weaponsmith":
                     //console.log(shop);
-                    addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
-                    addRejectButton = game.add.button(270, 150, 'blankButton', this.weaponsmithAdNo, this);
-                    addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
+                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
+                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
+                    addRejectButton = game.add.button(315, 115, 'blankButton', this.weaponsmithAdNo, this);
+                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
                     break;
                 case "armourer":
                     //console.log(shop);
-                    addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
-                    addRejectButton = game.add.button(270, 150, 'blankButton', this.armourerAdNo, this);
-                    addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
+                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
+                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
+                    addRejectButton = game.add.button(315, 115, 'blankButton', this.armourerAdNo, this);
+                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
                     break;
                 case "enchanter":
                     //console.log(shop);
-                    addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
-                    addRejectButton = game.add.button(270, 150, 'blankButton', this.enchanterAdNo, this);
-                    addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
+                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
+                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
+                    addRejectButton = game.add.button(315, 115, 'blankButton', this.enchanterAdNo, this);
+                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
                     break;
                 case "trainer":
                     //console.log(shop);
-                    addStartButton = game.add.button(30, 150, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(85, 180, 'font', 'Yes, watch ad', 16);
-                    addRejectButton = game.add.button(270, 150, 'blankButton', this.trainerAdNo, this);
-                    addRejectText = game.add.bitmapText(325, 180, 'font', 'No, not now', 16);
+                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
+                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
+                    addRejectButton = game.add.button(315, 115, 'blankButton', this.trainerAdNo, this);
+                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
                     break;
             }
         }

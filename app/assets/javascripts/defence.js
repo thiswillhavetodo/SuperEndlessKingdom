@@ -722,7 +722,9 @@ var defenceState = {
                 tutorialText4.text = "";
                 tutorialText5.text = "";
                 tutorialText6.text = "";
-                tutorialSprite.kill();
+                if (tutorialSprite!=null) {
+                    tutorialSprite.kill();
+                }
                 tutorialSpeechBubble.x = -200;
                 break;
         }
