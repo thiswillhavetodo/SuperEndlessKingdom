@@ -5,6 +5,7 @@ canvas  {
     left: -416px;
     border: solid 5px black;
     border-radius: 5px;
+    top: 10vh;
 }
 
 video {

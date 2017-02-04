@@ -806,6 +806,7 @@ var cityState = {
         switch(assistant) {
             case "first":
                 assistant = "second";
+                this.create();
                 this.assistantShow();
                 break;
             case "second":

@@ -177,35 +177,8 @@ var tutorialState = {
         for (var i=0; i<torchArray.length; i++) {
             this.torchCreate(torchArray[i]*32, 160, 'centre');
         }
-        game.add.sprite(775, 165, 'trainerSprite');
-        trainerSpeechBubble = game.add.sprite(-580, 35, 'speechBubble'); 
-        trainerText = game.add.bitmapText(630, 45, 'fontWhite', '', 15);
-        trainerText2 = game.add.bitmapText(600, 60, 'fontWhite', '', 15);
-        trainerText3 = game.add.bitmapText(588, 75, 'fontWhite', '', 15);
-        trainerText4 = game.add.bitmapText(588, 90, 'fontWhite', '', 15);
-        trainerText5 = game.add.bitmapText(600, 105, 'fontWhite', '', 15);
-        trainerText6 = game.add.bitmapText(620, 120, 'fontWhite', '', 15);
-        trainerText.tint = 000000;
-        trainerText2.tint = 000000;
-        trainerText3.tint = 000000;
-        trainerText4.tint = 000000;
-        trainerText5.tint = 000000;
-        trainerText6.tint = 000000;
-        
-        tutorialPracticeSpeechBubble = game.add.button(-200, 410, 'speechBubble', this.tutorialChange, this); 
-        tutorialPracticeText = game.add.bitmapText(450, 418, 'fontWhite', '', 15);
-        tutorialPracticeText2 = game.add.bitmapText(420, 435, 'fontWhite', '', 15);
-        tutorialPracticeText3 = game.add.bitmapText(408, 450, 'fontWhite', '', 15);
-        tutorialPracticeText4 = game.add.bitmapText(408, 465, 'fontWhite', '', 15);
-        tutorialPracticeText5 = game.add.bitmapText(420, 480, 'fontWhite', '', 15);
-        tutorialPracticeText6 = game.add.bitmapText(440, 495, 'fontWhite', '', 15);
-        tutorialPracticeText.tint = 000000;
-        tutorialPracticeText2.tint = 000000;
-        tutorialPracticeText3.tint = 000000;
-        tutorialPracticeText4.tint = 000000;
-        tutorialPracticeText5.tint = 000000;
-        tutorialPracticeText6.tint = 000000;
-        
+        this.trainerText();
+        this.tutorialPracticeText();
         this.torchCreate(-4, 288, 'left');
         this.torchCreate(-4, 544, 'left');
         this.torchCreate(799, 288, 'right');
@@ -273,7 +246,46 @@ var tutorialState = {
         this.torchUpdate();
         this.tutorialShow();
         this.trainerPlayerPositionCheck();
-        this.trainerUpdate();
+        //this.trainerUpdate();
+    },
+    trainerText: function() {
+        game.add.sprite(775, 165, 'trainerSprite');
+        trainerSpeechBubble = game.add.sprite(-580, 35, 'speechBubble'); 
+        trainerText = game.add.bitmapText(630, 45, 'fontWhite', '', 15);
+        trainerText2 = game.add.bitmapText(600, 60, 'fontWhite', '', 15);
+        trainerText3 = game.add.bitmapText(588, 75, 'fontWhite', '', 15);
+        trainerText4 = game.add.bitmapText(588, 90, 'fontWhite', '', 15);
+        trainerText5 = game.add.bitmapText(600, 105, 'fontWhite', '', 15);
+        trainerText6 = game.add.bitmapText(620, 120, 'fontWhite', '', 15);
+        trainerText.tint = 000000;
+        trainerText2.tint = 000000;
+        trainerText3.tint = 000000;
+        trainerText4.tint = 000000;
+        trainerText5.tint = 000000;
+        trainerText6.tint = 000000;
+    },
+    trainerTextDestroy: function() {
+        trainerText.destroy();//.text = '';//
+        trainerText2.destroy();
+        trainerText3.destroy();
+        trainerText4.destroy();
+        trainerText5.destroy();
+        trainerText6.destroy();
+    },
+    tutorialPracticeText: function() {    
+        tutorialPracticeSpeechBubble = game.add.button(-200, 410, 'speechBubble', this.tutorialChange, this); 
+        tutorialPracticeText = game.add.bitmapText(450, 418, 'fontWhite', '', 15);
+        tutorialPracticeText2 = game.add.bitmapText(420, 435, 'fontWhite', '', 15);
+        tutorialPracticeText3 = game.add.bitmapText(408, 450, 'fontWhite', '', 15);
+        tutorialPracticeText4 = game.add.bitmapText(408, 465, 'fontWhite', '', 15);
+        tutorialPracticeText5 = game.add.bitmapText(420, 480, 'fontWhite', '', 15);
+        tutorialPracticeText6 = game.add.bitmapText(440, 495, 'fontWhite', '', 15);
+        tutorialPracticeText.tint = 000000;
+        tutorialPracticeText2.tint = 000000;
+        tutorialPracticeText3.tint = 000000;
+        tutorialPracticeText4.tint = 000000;
+        tutorialPracticeText5.tint = 000000;
+        tutorialPracticeText6.tint = 000000;
     },
     bulletKill: function(bullet) {
         bullet.kill();
@@ -496,7 +508,7 @@ var tutorialState = {
     tutorialChange: function() {
         switch(tutorialPractice) {
             case "first":
-                tutorialPractice = "";
+                tutorialPractice = "trainer";
                 tutorialPracticeSprite.kill();
                 tutorialPracticeSpeechBubble.kill();
                 this.tutorialShow();
@@ -511,17 +523,29 @@ var tutorialState = {
         }
     },
     trainerPlayerPositionCheck: function() {
-        if (player.x>=288 && nextPractice=="right") {
+        if (tutorialPractice=="trainer") {
+            tutorialPractice = "";
+            this.trainerUpdate();
+        }
+        else if (player.x>=288 && nextPractice=="right") {
             nextPractice = "up";
+            this.trainerUpdate();
         }
         else if (nextPractice=="up" && player.y<=32) {
             nextPractice = "left";
+            this.trainerUpdate();
         }
         else if (nextPractice=="left" && player.x<=160) {
             nextPractice = "down";
+            this.trainerUpdate();
         }
         else if (nextPractice=="down" && player.y>=192) {
             nextPractice = "shoot";
+            this.trainerUpdate();
+        }
+        else if (nextPractice=="") {
+            this.trainerUpdate();
+            nextPractice = "done";
         }
     },
     triggerSound: function(player, soundTrigger) {
@@ -539,6 +563,8 @@ var tutorialState = {
             trainerText6.text = "      walk right.";
         }
         else if (nextPractice=="up") {
+            this.trainerTextDestroy();
+            this.trainerText();
             trainerText.text = "  Excellent!";
             trainerText2.text = "     Now use the 'W' ";
             trainerText3.text = "         key to walk up.";
@@ -552,6 +578,8 @@ var tutorialState = {
             trainerText6.text = " ";
         }
         else if (nextPractice=="down") {
+            this.trainerTextDestroy();
+            this.trainerText();
             trainerText.text = "  Jolly good!";
             trainerText2.text = "    Finally use the 'S'";
             trainerText3.text = "     key to walk down to";
@@ -560,6 +588,8 @@ var tutorialState = {
             trainerText6.text = "        practice.";
         }
         else if (nextPractice=="shoot" && tutorialPractice=="") {
+            this.trainerTextDestroy();
+            this.trainerText();
             trainerText.text = "  Wonderful!";
             trainerText2.text = "    Now use the four ";
             trainerText3.text = "   arrow keys to shoot in ";
@@ -568,6 +598,8 @@ var tutorialState = {
             trainerText6.text = "     of armour.";
         }
         else if (nextPractice=="") {
+            this.trainerTextDestroy();
+            this.trainerText();
             trainerText.text = " ";
             trainerText2.text = " ";
             trainerText3.text = "          My work here";

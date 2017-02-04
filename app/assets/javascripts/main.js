@@ -638,11 +638,13 @@ var playState = {
             beamSprite = game.add.sprite(223, 597, 'beamIcon');
             beamSprite.frame = 1;
             beamText = game.add.bitmapText(230, 608, 'font', 'SPACE', 16);
+            beamText.tint = 000000;
         }
         if (manaRefillUnlockShown==true) {
             bottleSprite = game.add.sprite(535, 597, 'bottle');
             bottleSprite.frame = 1;
             bottleText = game.add.bitmapText(536, 605, 'font', ' Q', 24);
+            bottleText.tint = 000000;
         }
         resultBackground = game.add.sprite(-1000, 150, 'scrollStrip');
         levelRecordBackground = game.add.sprite(-1000, 370, 'scrollStrip');
@@ -2115,33 +2117,33 @@ var playState = {
             if (chance>1.24) { }
             else if (chance<=1.06) {
                var wand = game.add.sprite(coin.x, coin.y, 'wand');
-               var wandText = game.add.bitmapText(wand.x+6, wand.y+12, 'font', '', 12);
+               var wandText = game.add.bitmapText(wand.x-4, wand.y+12, 'fontWhite', '', 12);
                wandText.text = "Weaponsmith +";
-               wandText.tint = 000000;
+               //wandText.tint = 000000;
                weaponsmithDropReward += weaponsmithDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.destroy(); wandText.text = ""; });
             }
             else if (chance<=1.12) {
                var armour = game.add.sprite(coin.x, coin.y, 'armour');
-               var armourText = game.add.bitmapText(armour.x+6, armour.y+12, 'font', '', 12);
+               var armourText = game.add.bitmapText(armour.x+6, armour.y+12, 'fontWhite', '', 12);
                armourText.text = "Armourer +";
-               armourText.tint = 000000;
+               //armourText.tint = 000000;
                armourerDropReward += armourerDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.destroy(); armourText.text = ""; });
             }
             else if (chance<=1.18) {
                var ring = game.add.sprite(coin.x, coin.y, 'ring');
-               var ringText = game.add.bitmapText(ring.x+6, ring.y+12, 'font', '', 12);
+               var ringText = game.add.bitmapText(ring.x, ring.y+12, 'fontWhite', '', 12);
                ringText.text = "Enchanter +";
-               ringText.tint = 000000;
+               //ringText.tint = 000000;
                enchanterDropReward += enchanterDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.destroy(); ringText.text = ""; });
             }
             else if (chance<=1.24) {
                var buff = game.add.sprite(coin.x, coin.y, 'buff');
-               var buffText = game.add.bitmapText(buff.x+6, buff.y+12, 'font', '', 12);
+               var buffText = game.add.bitmapText(buff.x+6, buff.y+12, 'fontWhite', '', 12);
                buffText.text = "Trainer +";
-               buffText.tint = 000000;
+               //buffText.tint = 000000;
                trainerDropReward += trainerDRBoost;
                game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.destroy(); buffText.text = ""; });
             }
