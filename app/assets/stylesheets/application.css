@@ -40,7 +40,7 @@ canvas {
 }
 
 video { 
-    display: inline !important;
+    display: block !important;
     position: relative;
     margin-left: 50%;
     left: -416px;
@@ -49,6 +49,8 @@ video {
     top: 10vh;
     background-image: url(/assets/titlescreeenArtwork.png);
     background-size: 100% 100%;
+    width: 84vh;
+    height: 63vh; 
 }
 
 .submit {
