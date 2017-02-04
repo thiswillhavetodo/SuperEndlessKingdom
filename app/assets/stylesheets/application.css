@@ -43,7 +43,7 @@ video {
     display: block !important;
     position: relative;
     margin-left: 50%;
-    left: -416px;
+    left: -42vh;
     border: solid 5px black;
     border-radius: 5px;
     top: 10vh;
