@@ -170,7 +170,7 @@ var preloadState = {
         game.load.spritesheet('vampire', '/assets/vampire.png', 32, 36); 
         game.load.spritesheet('smokeAnimation', '/assets/smokeAnimation.png', 32, 16); 
         game.load.bitmapFont('font', '/assets/font.png', '/assets/font.fnt');
-        game.load.bitmapFont('fontWhite', '/assets/fontWhite.png', '/assets/fontWhite.fnt');
+        game.load.bitmapFont('fontWhite', '/assets/fontWhiteBorder.png', '/assets/fontWhiteBorder.fnt');
     },
     create: function() {
         game.state.start('menu');

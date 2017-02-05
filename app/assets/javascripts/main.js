@@ -133,6 +133,9 @@ var adTimeText;
 var beamSFX;
 var waterShotSFX;
 var flameShot;
+
+var swordZombieTest = false;
+
 /* global game */
 /* global Phaser */
 var playState = {
@@ -279,6 +282,13 @@ var playState = {
         platforms = game.add.group();
         //  We will enable physics for any object that is created in this group
         platforms.enableBody = true;
+        
+        if (swordZombieTest) {
+            this.swordZombieCreate(400, 0, "green");
+            this.swordZombieCreate(770, 300, "green");
+            this.swordZombieCreate(600, 500, "red");
+            baddieCreated = baddieTotal;
+        }
         
         if (stage==50 && bossZombieKilled==false) {
             this.bossZombieCreate(760, 200, "green");
@@ -637,14 +647,18 @@ var playState = {
         if (beamUnlockShown==true) {
             beamSprite = game.add.sprite(223, 597, 'beamIcon');
             beamSprite.frame = 1;
-            beamText = game.add.bitmapText(230, 608, 'font', 'SPACE', 16);
-            beamText.tint = 000000;
+            var style = { font:'18px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+            beamText = game.add.text(230, 604, 'SPACE', style);
+            //beamText = game.add.bitmapText(230, 608, 'fontWhite', 'SPACE', 16);
+            //beamText.tint = 0xf99a08;
         }
         if (manaRefillUnlockShown==true) {
             bottleSprite = game.add.sprite(535, 597, 'bottle');
             bottleSprite.frame = 1;
-            bottleText = game.add.bitmapText(536, 605, 'font', ' Q', 24);
-            bottleText.tint = 000000;
+            var manaStyle = { font:'24px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+            bottleText = game.add.text(543, 601, 'Q', manaStyle);
+            //bottleText = game.add.bitmapText(536, 605, 'fontWhite', ' Q', 24);
+            //bottleText.tint = 0xff0000;
         }
         resultBackground = game.add.sprite(-1000, 150, 'scrollStrip');
         levelRecordBackground = game.add.sprite(-1000, 370, 'scrollStrip');
@@ -806,6 +820,8 @@ var playState = {
             this.fire();
             mana -= manaCost;
             manaText.text = "MP: " + mana + "/" + maxMana;
+            manaCrop.x = (1-(mana/maxMana))*80;
+            manaBar.updateCrop();
         }
         
         this.baddieUpdate();
@@ -825,25 +841,12 @@ var playState = {
         this.bossZombieBirdUpdate();
         this.bossMummyUpdate();
         this.manaRegen();
-        this.beamTimerUpdate();
-        this.manaRefillTimerUpdate();
         this.swordZombieUpdate();
         this.adTimeUpdate();
         this.vampireUpdate();
         this.decoyUpdate();
-        //this.coinUpdate();
-        if (game.time.now%4) {
-            hpCrop.x = (1-(health/maxHealth))*80;
-            hpBar.updateCrop();
-        }
-        if (game.time.now%3) {
-            manaCrop.x = (1-(mana/maxMana))*80;
-            manaBar.updateCrop();
-        }
-        if (game.time.now%5) {
-            xpCrop.x = (1-(xp/nextLevelXp))*80;
-            xpBar.updateCrop();
-        }
+        this.beamTimerUpdate();
+        this.manaRefillTimerUpdate();
     },
     render: function() {
     	game.debug.text(game.time.fps, 800, 14, "#00ff00");
@@ -886,11 +889,6 @@ var playState = {
             baddie.body.velocity.y = 0;
         
             game.physics.arcade.collide(baddie, platforms);
-            
-            baddie.healthBar.clear();
-            baddie.healthBar.lineStyle(3, 0xffd900, 1);
-            baddie.healthBar.moveTo(0, 0);
-            baddie.healthBar.lineTo(20*(baddie.health/baddie.maxHealth), 0);
             
             if (baddie.colour=="green") {
                 game.physics.arcade.moveToObject(baddie, player, 130);
@@ -946,11 +944,6 @@ var playState = {
         bossZombies.forEach(function(bossZombie) {
             bossZombie.body.velocity.x = 0;
             bossZombie.body.velocity.y = 0;
-            
-            bossZombie.healthBar.clear();
-            bossZombie.healthBar.lineStyle(3, 0xffd900, 1);
-            bossZombie.healthBar.moveTo(0, 0);
-            bossZombie.healthBar.lineTo(20*(bossZombie.health/bossZombie.maxHealth), 0);
     
             game.physics.arcade.collide(bossZombie, platforms);
             
@@ -1011,13 +1004,6 @@ var playState = {
         spiders.forEach(function(spider) {
             spider.body.velocity.x = 0;
             spider.body.velocity.y = 0;
-            
-            spider.healthBar.clear();
-            spider.healthBar.lineStyle(3, 0xffd900, 1);
-            spider.healthBar.moveTo(0, 0);
-            spider.healthBar.lineTo(20*(spider.health/spider.maxHealth), 0);
-            
-            //game.physics.arcade.collide(spider, platforms);
             
             if (spider.collide) {
                 game.physics.arcade.moveToObject(spider, player, 60-spider.health);
@@ -1087,17 +1073,12 @@ var playState = {
         
             game.physics.arcade.collide(swordZombie, platforms);
             
-            swordZombie.healthBar.clear();
-            swordZombie.healthBar.lineStyle(3, 0xffd900, 1);
-            swordZombie.healthBar.moveTo(0, 0);
-            swordZombie.healthBar.lineTo(20*(swordZombie.health/swordZombie.maxHealth), 0);
-            
             if (swordZombie.colour=="green") {
                 if (swordZombie.collide == false) {
                     game.physics.arcade.moveToObject(swordZombie, player, 140);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, 640-player.y, 80);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x+swordZombie.x, 640-player.y+swordZombie.y, 40);
                 }
                 if (player.body.x < swordZombie.body.x) {
                     swordZombie.animations.play('swordZombieLeft');
@@ -1111,7 +1092,7 @@ var playState = {
                     game.physics.arcade.moveToObject(swordZombie, player, 165);
                 }
                 else {
-                    game.physics.arcade.moveToXY(swordZombie, 832-player.x, 640-player.y, 90);
+                    game.physics.arcade.moveToXY(swordZombie, 832-player.x+swordZombie.x, 640-player.y+swordZombie.y, 40);
                 }
                 if (player.body.x < swordZombie.body.x) {
                     swordZombie.animations.play('swordZombieLeftRed');
@@ -1124,9 +1105,9 @@ var playState = {
     },
     swordZombieSteer: function(swordZombie, platforms) {
         if (swordZombie.collide == false && game.time.now>swordZombie.collideTimer) {
-            swordZombie.collideTimer = game.time.now + 1000;
+            swordZombie.collideTimer = game.time.now + 3000;
             swordZombie.collide = true;
-            game.time.events.add(Phaser.Timer.SECOND * 0.15, function () { swordZombie.collide = false; });
+            game.time.events.add(Phaser.Timer.SECOND * 0.65, function () { swordZombie.collide = false; });
         }
     },
     skeletonCreate: function(x, y, colour) {
@@ -1183,11 +1164,6 @@ var playState = {
             
             skeleton.body.velocity.x = 0;
             skeleton.body.velocity.y = 0;
-            
-            skeleton.healthBar.clear();
-            skeleton.healthBar.lineStyle(3, 0xffd900, 1);
-            skeleton.healthBar.moveTo(0, 0);
-            skeleton.healthBar.lineTo(20*(skeleton.health/skeleton.maxHealth), 0);
             
             game.physics.arcade.collide(skeleton, platforms);
             
@@ -1281,11 +1257,6 @@ var playState = {
         
             game.physics.arcade.collide(mummy, platforms);
             
-            mummy.healthBar.clear();
-            mummy.healthBar.lineStyle(3, 0xffd900, 1);
-            mummy.healthBar.moveTo(0, 0);
-            mummy.healthBar.lineTo(20*(mummy.health/mummy.maxHealth), 0);
-            
             if (mummy.collide) {
                 mummy.animations.stop();
                 if (backgroundScene=="wasteland") {
@@ -1368,10 +1339,6 @@ var playState = {
                 flame.timer = game.time.now + flameBulletSpacing;
                 flameShot.play();
             }
-            flame.healthBar.clear();
-            flame.healthBar.lineStyle(3, 0xffd900, 1);
-            flame.healthBar.moveTo(0, 0);
-            flame.healthBar.lineTo(20*(flame.health/flame.maxHealth), 0);
         });
     },
     treeBeastCreate: function(x, y) {
@@ -1425,10 +1392,6 @@ var playState = {
                 self.evilRootWarning(randomX, randomY);
                 treeBeast.rootTimer = game.time.now + (Math.random()*15000);
             }
-            treeBeast.healthBar.clear();
-            treeBeast.healthBar.lineStyle(3, 0xffd900, 1);
-            treeBeast.healthBar.moveTo(0, 0);
-            treeBeast.healthBar.lineTo(20*(treeBeast.health/treeBeast.maxHealth), 0);
         });
     },
     evilRootCreate: function(x, y) {
@@ -1483,11 +1446,6 @@ var playState = {
             evilwizard.body.velocity.y = 0;
         
             game.physics.arcade.collide(evilwizard, platforms);
-            
-            evilwizard.healthBar.clear();
-            evilwizard.healthBar.lineStyle(3, 0xffd900, 1);
-            evilwizard.healthBar.moveTo(0, 0);
-            evilwizard.healthBar.lineTo(20*(evilwizard.health/evilwizard.maxHealth), 0);
             
             var x = 0;
             var y = 0;
@@ -1589,10 +1547,7 @@ var playState = {
     swampCreatureUpdate: function() {
         swampCreatures.forEach(function(swampCreature) {
             //game.physics.arcade.collide(swampCreature, platforms);
-            swampCreature.healthBar.clear();
-            swampCreature.healthBar.lineStyle(3, 0xffd900, 1);
-            swampCreature.healthBar.moveTo(0, 0);
-            swampCreature.healthBar.lineTo(20*(swampCreature.health/swampCreature.maxHealth), 0);
+            
             if (game.time.now > swampCreature.crouchTimer && swampCreature.isAlive) {
                 //console.log('crouch');
                 swampCreature.body.velocity.x = 0;
@@ -1720,11 +1675,6 @@ var playState = {
             zombieBird.body.velocity.x = 0;
             zombieBird.body.velocity.y = 0;
             
-            zombieBird.healthBar.clear();
-            zombieBird.healthBar.lineStyle(3, 0xffd900, 1);
-            zombieBird.healthBar.moveTo(0, 0);
-            zombieBird.healthBar.lineTo(20*(zombieBird.health/zombieBird.maxHealth), 0);
-            
             game.physics.arcade.collide(zombieBird, platforms);
             if (game.time.now>zombieBird.moveRightTimer) {
                 zombieBird.moveRight = true;
@@ -1807,12 +1757,6 @@ var playState = {
         miniZombieBirds.forEach(function(miniZombieBird) {
             miniZombieBird.body.velocity.x = 0;
             miniZombieBird.body.velocity.y = 0;
-            if (miniZombieBird.children.length>0) {
-                miniZombieBird.healthBar.clear();
-                miniZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
-                miniZombieBird.healthBar.moveTo(0, 0);
-                miniZombieBird.healthBar.lineTo(20*(miniZombieBird.health/miniZombieBird.maxHealth), 0);
-            }
             
             game.physics.arcade.collide(miniZombieBird, platforms);
             game.physics.arcade.moveToObject(miniZombieBird, player, 201-miniZombieBird.health*2);
@@ -1855,11 +1799,6 @@ var playState = {
         bossZombieBirds.forEach(function(bossZombieBird) {
             bossZombieBird.body.velocity.x = 0;
             bossZombieBird.body.velocity.y = 0;
-            
-            bossZombieBird.healthBar.clear();
-            bossZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
-            bossZombieBird.healthBar.moveTo(0, 0);
-            bossZombieBird.healthBar.lineTo(20*(bossZombieBird.health/bossZombieBird.maxHealth), 0);
             
             game.physics.arcade.collide(bossZombieBird, platforms);
             game.physics.arcade.moveToObject(bossZombieBird, player, 150-bossZombieBird.health*0.1);
@@ -1917,11 +1856,6 @@ var playState = {
         bossMummies.forEach(function(bossMummy) {
             bossMummy.body.velocity.x = 0;
             bossMummy.body.velocity.y = 0;
-            
-            bossMummy.healthBar.clear();
-            bossMummy.healthBar.lineStyle(3, 0xffd900, 1);
-            bossMummy.healthBar.moveTo(0, 0);
-            bossMummy.healthBar.lineTo(20*(bossMummy.health/bossMummy.maxHealth), 0);
             
             game.physics.arcade.collide(bossMummy, platforms);
             if (game.time.now>bossMummy.summonTimer && bossMummy.isAlive && player.isAlive) {
@@ -1997,11 +1931,6 @@ var playState = {
             vampire.body.velocity.y = 0;
         
             game.physics.arcade.collide(vampire, platforms);
-            
-            vampire.healthBar.clear();
-            vampire.healthBar.lineStyle(3, 0xffd900, 1);
-            vampire.healthBar.moveTo(0, 0);
-            vampire.healthBar.lineTo(20*(vampire.health/vampire.maxHealth), 0);
             
             game.physics.arcade.moveToObject(vampire, player, 155);
                 
@@ -2117,7 +2046,7 @@ var playState = {
             if (chance>1.24) { }
             else if (chance<=1.06) {
                var wand = game.add.sprite(coin.x, coin.y, 'wand');
-               var wandText = game.add.bitmapText(wand.x-4, wand.y+12, 'fontWhite', '', 12);
+               var wandText = game.add.bitmapText(wand.x-6, wand.y+12, 'fontWhite', '', 13);
                wandText.text = "Weaponsmith +";
                //wandText.tint = 000000;
                weaponsmithDropReward += weaponsmithDRBoost;
@@ -2125,7 +2054,7 @@ var playState = {
             }
             else if (chance<=1.12) {
                var armour = game.add.sprite(coin.x, coin.y, 'armour');
-               var armourText = game.add.bitmapText(armour.x+6, armour.y+12, 'fontWhite', '', 12);
+               var armourText = game.add.bitmapText(armour.x, armour.y+12, 'fontWhite', '', 13);
                armourText.text = "Armourer +";
                //armourText.tint = 000000;
                armourerDropReward += armourerDRBoost;
@@ -2133,7 +2062,7 @@ var playState = {
             }
             else if (chance<=1.18) {
                var ring = game.add.sprite(coin.x, coin.y, 'ring');
-               var ringText = game.add.bitmapText(ring.x, ring.y+12, 'fontWhite', '', 12);
+               var ringText = game.add.bitmapText(ring.x-2, ring.y+12, 'fontWhite', '', 13);
                ringText.text = "Enchanter +";
                //ringText.tint = 000000;
                enchanterDropReward += enchanterDRBoost;
@@ -2141,7 +2070,7 @@ var playState = {
             }
             else if (chance<=1.24) {
                var buff = game.add.sprite(coin.x, coin.y, 'buff');
-               var buffText = game.add.bitmapText(buff.x+6, buff.y+12, 'fontWhite', '', 12);
+               var buffText = game.add.bitmapText(buff.x+4, buff.y+12, 'fontWhite', '', 13);
                buffText.text = "Trainer +";
                //buffText.tint = 000000;
                trainerDropReward += trainerDRBoost;
@@ -2157,6 +2086,8 @@ var playState = {
         }
         mana ++;
         manaText.text = "MP: " + mana + "/" + maxMana;
+        manaCrop.x = (1-(mana/maxMana))*80;
+        manaBar.updateCrop();
         star.destroy();
     },
     badTouch: function() {
@@ -2164,6 +2095,8 @@ var playState = {
         //console.log(damage);
         if (health>damage) {
             health -= damage;
+            hpCrop.x = (1-(health/maxHealth))*80;
+            hpBar.updateCrop();
             var grunt = game.add.audio('grunt');
             grunt.play();
             healthText.text = 'HP: ' + health + '/' + maxHealth;
@@ -2178,6 +2111,8 @@ var playState = {
         //console.log(damage);
         if (health>damage) {
             health -= damage;
+            hpCrop.x = (1-(health/maxHealth))*80;
+            hpBar.updateCrop();
             var grunt = game.add.audio('grunt');
             grunt.play();
             healthText.text = 'HP: ' + health + '/' + maxHealth;
@@ -2390,6 +2325,10 @@ var playState = {
             baddie.health -= shotPower;
             baddie.healthBarBack.visible = true;
             baddie.healthBar.visible = true;
+            baddie.healthBar.clear();
+            baddie.healthBar.lineStyle(3, 0xffd900, 1);
+            baddie.healthBar.moveTo(0, 0);
+            baddie.healthBar.lineTo(20*(baddie.health/baddie.maxHealth), 0);
         }
     },
     bossZombieKill: function(bullet, bossZombie) {
@@ -2467,6 +2406,10 @@ var playState = {
                 }
                 bossZombie.healthBarBack.visible = true;
                 bossZombie.healthBar.visible = true;
+                bossZombie.healthBar.clear();
+                bossZombie.healthBar.lineStyle(3, 0xffd900, 1);
+                bossZombie.healthBar.moveTo(0, 0);
+                bossZombie.healthBar.lineTo(20*(bossZombie.health/bossZombie.maxHealth), 0);
             }
         }
     },
@@ -2535,6 +2478,10 @@ var playState = {
                 bossZombieBird.health -= shotPower;
                 bossZombieBird.healthBarBack.visible = true;
                 bossZombieBird.healthBar.visible = true;
+                bossZombieBird.healthBar.clear();
+                bossZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+                bossZombieBird.healthBar.moveTo(0, 0);
+                bossZombieBird.healthBar.lineTo(20*(bossZombieBird.health/bossZombieBird.maxHealth), 0);
             }
         }
     },
@@ -2600,6 +2547,10 @@ var playState = {
                 bossMummy.health -= shotPower;
                 bossMummy.healthBarBack.visible = true;
                 bossMummy.healthBar.visible = true;
+                bossMummy.healthBar.clear();
+                bossMummy.healthBar.lineStyle(3, 0xffd900, 1);
+                bossMummy.healthBar.moveTo(0, 0);
+                bossMummy.healthBar.lineTo(20*(bossMummy.health/bossMummy.maxHealth), 0);
             }
         }
     },
@@ -2642,6 +2593,10 @@ var playState = {
             spider.health -= shotPower;
             spider.healthBarBack.visible = true;
             spider.healthBar.visible = true;
+            spider.healthBar.clear();
+            spider.healthBar.lineStyle(3, 0xffd900, 1);
+            spider.healthBar.moveTo(0, 0);
+            spider.healthBar.lineTo(20*(spider.health/spider.maxHealth), 0);
         }
     },
     swordZombieKill: function(bullet, swordZombie) {
@@ -2691,6 +2646,10 @@ var playState = {
             swordZombie.health -= shotPower;
             swordZombie.healthBarBack.visible = true;
             swordZombie.healthBar.visible = true;
+            swordZombie.healthBar.clear();
+            swordZombie.healthBar.lineStyle(3, 0xffd900, 1);
+            swordZombie.healthBar.moveTo(0, 0);
+            swordZombie.healthBar.lineTo(20*(swordZombie.health/swordZombie.maxHealth), 0);
         }
     },
     skeletonKill: function(bullet, skeleton) {
@@ -2774,6 +2733,10 @@ var playState = {
                 skeleton.health -= shotPower;
                 skeleton.healthBarBack.visible = true;
                 skeleton.healthBar.visible = true;
+                skeleton.healthBar.clear();
+                skeleton.healthBar.lineStyle(3, 0xffd900, 1);
+                skeleton.healthBar.moveTo(0, 0);
+                skeleton.healthBar.lineTo(20*(skeleton.health/skeleton.maxHealth), 0);
             }
         }
     },
@@ -2803,6 +2766,10 @@ var playState = {
             flame.health -= shotPower;
             flame.healthBarBack.visible = true;
             flame.healthBar.visible = true;
+            flame.healthBar.clear();
+            flame.healthBar.lineStyle(3, 0xffd900, 1);
+            flame.healthBar.moveTo(0, 0);
+            flame.healthBar.lineTo(20*(flame.health/flame.maxHealth), 0);
         }
         
     },
@@ -2851,6 +2818,10 @@ var playState = {
             mummy.health -= shotPower;
             mummy.healthBarBack.visible = true;
             mummy.healthBar.visible = true;
+            mummy.healthBar.clear();
+            mummy.healthBar.lineStyle(3, 0xffd900, 1);
+            mummy.healthBar.moveTo(0, 0);
+            mummy.healthBar.lineTo(20*(mummy.health/mummy.maxHealth), 0);
         }
     },
     zombieBirdKill: function(bullet, zombieBird) {
@@ -2900,6 +2871,10 @@ var playState = {
             zombieBird.health -= shotPower;
             zombieBird.healthBarBack.visible = true;
             zombieBird.healthBar.visible = true;
+            zombieBird.healthBar.clear();
+            zombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+            zombieBird.healthBar.moveTo(0, 0);
+            zombieBird.healthBar.lineTo(20*(zombieBird.health/zombieBird.maxHealth), 0);
         }
     },
     miniZombieBirdKill: function(bullet, miniZombieBird) {
@@ -2943,6 +2918,12 @@ var playState = {
             miniZombieBird.health -= shotPower;
             miniZombieBird.healthBarBack.visible = true;
             miniZombieBird.healthBar.visible = true;
+            if (miniZombieBird.children.length>0) {
+                miniZombieBird.healthBar.clear();
+                miniZombieBird.healthBar.lineStyle(3, 0xffd900, 1);
+                miniZombieBird.healthBar.moveTo(0, 0);
+                miniZombieBird.healthBar.lineTo(20*(miniZombieBird.health/miniZombieBird.maxHealth), 0);
+            }
         }
     },
     swampCreatureKill: function(bullet, swampCreature) {
@@ -2970,6 +2951,10 @@ var playState = {
             swampCreature.health -= shotPower;
             swampCreature.healthBarBack.visible = true;
             swampCreature.healthBar.visible = true;
+            swampCreature.healthBar.clear();
+            swampCreature.healthBar.lineStyle(3, 0xffd900, 1);
+            swampCreature.healthBar.moveTo(0, 0);
+            swampCreature.healthBar.lineTo(20*(swampCreature.health/swampCreature.maxHealth), 0);
         }
     },
     treeBeastKill: function(bullet, treeBeast) {
@@ -2998,6 +2983,10 @@ var playState = {
             treeBeast.health -= shotPower;
             treeBeast.healthBarBack.visible = true;
             treeBeast.healthBar.visible = true;
+            treeBeast.healthBar.clear();
+            treeBeast.healthBar.lineStyle(3, 0xffd900, 1);
+            treeBeast.healthBar.moveTo(0, 0);
+            treeBeast.healthBar.lineTo(20*(treeBeast.health/treeBeast.maxHealth), 0);
         }
     },
     evilwizardKill: function(bullet, evilwizard) {
@@ -3024,6 +3013,10 @@ var playState = {
             evilwizard.health -= shotPower;
             evilwizard.healthBarBack.visible = true;
             evilwizard.healthBar.visible = true;
+            evilwizard.healthBar.clear();
+            evilwizard.healthBar.lineStyle(3, 0xffd900, 1);
+            evilwizard.healthBar.moveTo(0, 0);
+            evilwizard.healthBar.lineTo(20*(evilwizard.health/evilwizard.maxHealth), 0);
         }
     },
     vampireKill: function(bullet, vampire) {
@@ -3053,6 +3046,10 @@ var playState = {
                 this.vampireEvade();
                 vampire.healthBarBack.visible = true;
                 vampire.healthBar.visible = true;
+                vampire.healthBar.clear();
+                vampire.healthBar.lineStyle(3, 0xffd900, 1);
+                vampire.healthBar.moveTo(0, 0);
+                vampire.healthBar.lineTo(20*(vampire.health/vampire.maxHealth), 0);
             }
         }
     },
@@ -3100,6 +3097,8 @@ var playState = {
             mana++;
             manaRegenTimer = game.time.now + manaRegenInterval;
             manaText.text = "MP: " + mana + "/" + maxMana;
+            manaCrop.x = (1-(mana/maxMana))*80;
+            manaBar.updateCrop();
         }
     },
     questComplete: function() {
@@ -3128,7 +3127,11 @@ var playState = {
             maxMana ++;
             shotPower += 0.035;
             health++;
+            hpCrop.x = (1-(health/maxHealth))*80;
+            hpBar.updateCrop();
             mana = maxMana;
+            manaCrop.x = (1-(mana/maxMana))*80;
+            manaBar.updateCrop();
             playerLevel ++;
             this.xpDisplayConvert();
             manaText.text = "MP: " + mana + "/" + maxMana;
@@ -3218,8 +3221,10 @@ var playState = {
     adWatch: function() {
         advertImage = game.add.sprite(185, 89, 'advertImage');
         adStopTime = game.time.now + 14000;
-        adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
-        adTimeText.tint = 000000;
+        var style = { font:'21px sans-serif bold' };
+        adTimeText = game.add.text(619, 92, '', style);
+        //adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
+        //adTimeText.tint = 000000;
         var self = this;
         game.time.events.add(Phaser.Timer.SECOND * 14, function () {   game.add.button(618, 89, 'closeButton', self.adClose, this) });
     },
@@ -3263,14 +3268,18 @@ var playState = {
         // Create a delayed event 5m from now
         timerBeamEvent = timerBeam.add(Phaser.Timer.MINUTE * 5, this.endBeamTimer, this);
         timerBeam.start();
+        timerBeam.updateTimer = 0;
     },
     beamTimerUpdate: function() {
-        if (timerBeam!=null && timerBeam.running) {
+        if (timerBeam!=null && timerBeam.running && game.time.now>timerBeam.updateTimer) {
             beamSprite.frame = 0;
-            beamText.fontSize = 19;
+            //beamText.fontSize = 16;
+            var style = {font:'21px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+            beamText.setStyle(style);
             beamText.x = 234;
-            beamText.y = 607;
+            beamText.y = 602;
             beamText.text = this.formatTime(Math.round((timerBeamEvent.delay - timerBeam.ms) *0.001));
+            timerBeam.updateTimer = game.time.now + 1000;
         }
     },
     endBeamTimer: function() {
@@ -3278,10 +3287,13 @@ var playState = {
         timerBeam.stop();
         beamWeapon = true;
         beamSprite.frame = 1;
-        beamText.fontSize = 16;
+        //beamText.fontSize = 16;
+        var style = {font:'18px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+        beamText.setStyle(style);
         beamText.x = 230;
-        beamText.y = 608;
+        beamText.y = 604;
         beamText.text = 'SPACE';
+        timerBeam.updateTimer = 0;
     },
     manaRefillActivate: function() {
         mana = maxMana;
@@ -3295,14 +3307,18 @@ var playState = {
         // Create a delayed event 5m from now
         timerManaEvent = timerMana.add(Phaser.Timer.MINUTE * 5, this.endManaRefillTimer, this);
         timerMana.start();
+        timerMana.updateTimer = 0;
     },
     manaRefillTimerUpdate: function() {
-        if (timerMana!=null && timerMana.running) {
+        if (timerMana!=null && timerMana.running && game.time.now>timerMana.updateTimer) {
             bottleSprite.frame = 0;
             bottleText.x = 532;
-            bottleText.y = 607;
-            bottleText.fontSize = 16;
+            bottleText.y = 603;
+            //bottleText.fontSize = 16;
+            var style = {font:'18px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+            bottleText.setStyle(style);
             bottleText.text = this.formatTime(Math.round((timerManaEvent.delay - timerMana.ms) *0.001));
+            timerMana.updateTimer = game.time.now + 1000;
         }
     },
     endManaRefillTimer: function() {
@@ -3310,10 +3326,13 @@ var playState = {
         timerMana.stop();
         manaRefillAvailable = true;
         bottleSprite.frame = 1;
-        bottleText.x = 536;
-        bottleText.y = 605;
-        bottleText.fontSize = 24;
+        bottleText.x = 543;
+        bottleText.y = 601;
+        //bottleText.fontSize = 24;
+        var style = {font:'24px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
+        bottleText.setStyle(style);
         bottleText.text = ' Q';
+        timerMana.updateTimer = 0;
     },
     formatTime: function(s) {
         // Convert seconds (s) to a nicely formatted and padded time string
@@ -3342,5 +3361,7 @@ var playState = {
             nextLevelXpDisplay = Math.round(nextLevelXp);
         }
         xpText.text = "XP: " + xpDisplay + '/' + nextLevelXpDisplay;
+        xpCrop.x = (1-(xp/nextLevelXp))*80;
+        xpBar.updateCrop();
     },
 };

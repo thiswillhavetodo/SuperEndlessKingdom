@@ -2225,36 +2225,32 @@ var shopState = {
             shopText4.text = "  " + shop + " in return for";
             shopText5.text = "     a few minutes of"; 
             shopText6.text = "       your time.";
+            addStartButton = game.add.button(80, 115, 'blankButton', this.adWatch, this);
+            addStartText = game.add.bitmapText(110, 135, 'font', 'Yes, watch ad', 16);
             switch(shop) {
                 case "weaponsmith":
                     //console.log(shop);
-                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(315, 115, 'blankButton', this.weaponsmithAdNo, this);
-                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
+                    addRejectText = game.add.bitmapText(350, 135, 'font', 'No, not now', 16);
                     break;
                 case "armourer":
                     //console.log(shop);
-                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(315, 115, 'blankButton', this.armourerAdNo, this);
-                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
+                    addRejectText = game.add.bitmapText(350, 135, 'font', 'No, not now', 16);
                     break;
                 case "enchanter":
                     //console.log(shop);
-                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(315, 115, 'blankButton', this.enchanterAdNo, this);
-                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
+                    addRejectText = game.add.bitmapText(350, 135, 'font', 'No, not now', 16);
                     break;
                 case "trainer":
                     //console.log(shop);
-                    addStartButton = game.add.button(20, 115, 'blankButton', this.adWatch, this);
-                    addStartText = game.add.bitmapText(75, 145, 'font', 'Yes, watch ad', 16);
                     addRejectButton = game.add.button(315, 115, 'blankButton', this.trainerAdNo, this);
-                    addRejectText = game.add.bitmapText(370, 145, 'font', 'No, not now', 16);
+                    addRejectText = game.add.bitmapText(350, 135, 'font', 'No, not now', 16);
                     break;
             }
+            addStartButton.scale.setTo(0.75, 0.75);
+            addRejectButton.scale.setTo(0.75, 0.75);
         }
     },
     nextYearEstimate: function() {
@@ -2409,8 +2405,10 @@ var shopState = {
         addRejectText.destroy();
         advertImage = game.add.sprite(185, 89, 'advertImage');
         adStopTime = game.time.now + 14000;
-        adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
-        adTimeText.tint = 000000;
+        //adTimeText = game.add.bitmapText(618, 93, 'fontWhite', '', 21);
+        var style = { font:'21px sans-serif bold' };
+        adTimeText = game.add.text(619, 92, '', style);
+        //adTimeText.tint = 000000;
         var self = this;
         if (shop=="weaponsmith") {
             game.time.events.add(Phaser.Timer.SECOND * 14, function () {   adCloseButton = game.add.button(618, 89, 'closeButton', self.weaponsmithAd, this) });

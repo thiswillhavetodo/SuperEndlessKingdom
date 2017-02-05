@@ -130,6 +130,16 @@ video {
     background-repeat: no-repeat;*/
 }
 
+.studioLogo {
+    width: 185px;
+    height: 89px;
+    position: absolute;
+    top: 40vh;
+    right: 5px;
+    background-image: url(/assets/rubbleLogo.png);
+    background-size: 100% 100%;
+}
+
 .socialMediaButtons {
     width: 136px;
     height: 136px;
@@ -155,6 +165,7 @@ video {
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0em;
 }
+
 .contactUs {
     font-family: 'Raleway', sans-serif;
     position: absolute;
@@ -174,8 +185,8 @@ video {
 .email-hover {
 	background-image: url('/assets/email-sprite.png');
 }
-.studio-hover {
-	background-image: url('/assets/thistledoSmall.jpg');
+.reddit-hover {
+	background-image: url('/assets/reddit-hover.png');
 }
 
 .copyright {
