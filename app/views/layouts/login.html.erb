@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-6981272641518693",
+        enable_page_level_ads: true
+      });
+    </script>
     <title>Super Endless Kingdom</title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway" />
+    <link href="//cdn-images.mailchimp.com/embedcode/classic-10_7.css" rel="stylesheet" type="text/css">
   </head>
-
+  
   <body>
-    <%= yield %>
     <video controls poster="/assets/titlescreeenArtwork.png">
       <source src="/assets/trailerTestOne.ogg" type="video/ogg">
       <source src="/assets/trailerTestOne.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video> 
+    <%= yield %>
     <script type="text/javascript">
       $('video').on('ended', function(){
         $('video').load()
       });
+      
+      $('#signupButton').on('click', function() {
+        $('#mc_embed_signup').fadeToggle(400, "linear");
+      });
+      
     </script>
     <p class="flash"><%= flash.notice %></p>
     <div class="blurb-holder">
