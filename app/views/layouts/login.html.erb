@@ -36,12 +36,14 @@
     </video> 
     
     <script type="text/javascript">
-      $('video').on('ended', function(){
-        $('video').load()
-      });
-      
-      $('#signupButton').on('click', function() {
-        $('#mc_embed_signup').fadeToggle(400, "linear");
+      $(document).ready(function() {
+        $('video').on('ended', function(){
+          $('video').load()
+        });
+        $('#signupButton').on('click', function() {
+          $('#mc_embed_signup').fadeToggle(400, "linear");
+          console.log('clicked');
+        });
       });
     </script>
     <p class="flash"><%= flash.notice %></p>
