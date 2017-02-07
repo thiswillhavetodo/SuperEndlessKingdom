@@ -18,12 +18,23 @@
   </head>
   
   <body>
+  <div class="left-container">
+    <div class="blurb-holder">
+      <p class="blurb">Can you save</p>
+      <p class="blurb">your kingdom</p>
+      <p class="blurb">from the horrors </p>
+      <p class="blurb">in this fast&#8209;paced</p>
+      <p class="blurb">retro arcade shooter?</p>
+    </div>
+  </div>
+  
+  <div class="mid-container">
     <video controls poster="/assets/titlescreeenArtwork.png">
       <source src="/assets/trailerTestOne.ogg" type="video/ogg">
       <source src="/assets/trailerTestOne.mp4" type="video/mp4">
       Your browser does not support the video tag.
     </video> 
-    <%= yield %>
+    
     <script type="text/javascript">
       $('video').on('ended', function(){
         $('video').load()
@@ -32,16 +43,9 @@
       $('#signupButton').on('click', function() {
         $('#mc_embed_signup').fadeToggle(400, "linear");
       });
-      
     </script>
     <p class="flash"><%= flash.notice %></p>
-    <div class="blurb-holder">
-      <p class="blurb">Can you save</p>
-      <p class="blurb">your kingdom</p>
-      <p class="blurb">from the horrors </p>
-      <p class="blurb">in this fast&#8209;paced</p>
-      <p class="blurb">retro arcade shooter?</p>
-    </div>
+    
     <h5 class="loginInfo">
       <% if logged_in? %>
         <%= "Logged in as #{current_user.username}" %>
@@ -50,17 +54,22 @@
         <!--<%= link_to "(login)", login_path %>-->
       <% end %>
     </h5>
+  </div>  
+  <div class="right-container">
+    <%= yield %>
     <div class="studioLogo"></div>
     <div class="contactUs">
       <p>contact us |</p>
     </div>
     <div class="socialMediaButtons">
-      <div class="twitter-hover social-slide"></div>
-      <div class="facebook-hover social-slide"></div>
-      <a href="mailto:rubble.game.studio@gmail.com" class="email-hover social-slide"></a><!--<div class="email-hover social-slide"></div>-->
-      <div class="reddit-hover social-slide"></div>
+      <div class="smbHolder">
+        <div class="twitter-hover social-slide"></div>
+        <div class="facebook-hover social-slide"></div>
+        <a href="mailto:rubble.game.studio@gmail.com" class="email-hover social-slide"></a><!--<div class="email-hover social-slide"></div>-->
+        <div class="reddit-hover social-slide"></div>
+      </div>
       <p class="copyright">&copy Paul McGarry 2017</p>
     </div>
-     
+  </div>
   </body>
 </html>

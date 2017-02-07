@@ -15,26 +15,93 @@
  */
  
 html {
-    margin-left: 185px;
-    margin-right: 185px;
+   /* margin-left: 185px;*/
+    
     background-color: #ffffff;
     /*background: -moz-linear-gradient(top, #00b0ff,  #e0edff);*/
-    height: 100%; 
+    height: 100vh; 
+    overflow-y: scroll;
 }
 
 body {
+    margin: 0 !important;
+}
+
+.mid-container {
     background-image: url(/assets/SUPERlarge.png), -moz-linear-gradient(top, #e0edff, #00b0ff);
     background-image: url(/assets/SUPERlarge.png), -webkit-linear-gradient(top, #e0edff, #00b0ff);
     background-repeat: no-repeat;
     /*background-position: -5vw 6vh;*/
     background-size: 100% 100%;
-    height: 100%; 
+    height: 100vh; 
     margin-top: 0px !important;
     margin-bottom: 0px !important;
     border: solid #787878;
-    border-width: 0 4px 0 4px;
+    border-width: 0 0.21vw;
+    float: left;
 }
- 
+
+.right-container {
+    height: 100vh;
+    float: left;
+}
+
+.left-container {
+    height: 100vh;
+    float: left;
+}
+
+@media (min-width: 1450px) {
+    .mid-container {
+        width: 78.68vw;
+    }
+    .right-container {
+        width: 10vw;
+    }
+    
+    .left-container {
+        width: 10vw;
+    }
+    #login_heading {
+        font-size: 24px;
+    }
+    .socialMediaButtons {
+        width: 10.5vw;
+        max-width: 210px;
+    }
+    .social-slide:hover {
+    	background-position: 0px 48px/*2.52vw*/;
+    }
+    .copyright {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 1449px) {
+    .mid-container {
+        width: 74.6vw;
+    }
+    .right-container {
+        width: 12.04vw;
+    }
+    
+    .left-container {
+        width: 12.04vw;
+    }
+    #login_heading {
+        font-size: 20.5px;
+    }
+    .socialMediaButtons {
+        width: 12vw;
+    }
+    .social-slide:hover {
+    	background-position: 0px 3.3vw/*2.52vw*/;
+    }
+    .copyright {
+        font-size: 9px;
+    }
+}
+
 canvas {
     display: none !important;
 }
@@ -50,14 +117,14 @@ video {
     background-image: url(/assets/titlescreeenArtwork.png);
     background-size: 100% 100%;
     width: 84vh;
-    height: 63vh; 
+    height: 63vh;
 }
 
 .submit {
     background-color: red;
     background-image: url(/assets/LoginButton.png);
     background-size: 100% 100%;
-    width: 195px;
+    width: 100%;
     height: 61px;
     border: solid black 3px;
     border-radius: 10px;
@@ -70,7 +137,7 @@ video {
     /*background-image: url(/assets/Email.png);
     width: 106px;
     height: 23px;*/
-    margin: 5px;
+    margin: 0.26vw;
     font-family: 'Raleway', sans-serif;
     font-size: 16px;
     text-align: center;
@@ -82,7 +149,7 @@ video {
     /*background-image: url(/assets/Password.png);
     width: 106px;
     height: 23px;*/
-    margin: 5px;
+    margin: 0.26vw;
     font-family: 'Raleway', sans-serif;
     font-size: 16px;
     text-align: center;
@@ -94,18 +161,22 @@ video {
     display: block;
     margin: auto;
     padding-bottom: 5px;
+    max-width: 10vw;
+    border: none;
 }
 
 #password {
     display: block;
     margin: auto;
     padding-bottom: 5px;
+    max-width: 10vw;
+    border: none;
 }
 
 #login_form {
-    width: 195px;
+    width: 100%;
     background-color: #787878;
-    position: absolute;
+    position: relative;
     right: 0px;
     top: 0px;
 }
@@ -119,10 +190,9 @@ video {
 }
 
 #login_heading {
-    width: 195px;
+    width: 100%;
     height: 29px;
     font-family: 'Raleway', sans-serif;
-    font-size: 30px;
     text-align: center;
     color: white;
     margin-bottom: 10px;
@@ -130,27 +200,42 @@ video {
     background-repeat: no-repeat;*/
 }
 
+@media (min-width: 1800px) {
+    #login_heading {
+        font-size: 30px;
+    }
+}
+
 .studioLogo {
-    width: 185px;
-    height: 89px;
-    position: absolute;
-    top: 40vh;
-    right: 5px;
+    width: 10vw;
+    height: 4.7vw;
+    position: relative;
+    top: 10vh;
+    right: 0;
     background-image: url(/assets/rubbleLogo.png);
     background-size: 100% 100%;
 }
 
 .socialMediaButtons {
-    width: 136px;
-    height: 136px;
+    height: 10vw/*136px*/;
     position: absolute;
-    bottom: 30px;
-    right: 25px;
+    bottom: 0px/*30px*/;
+    right: 0px/*25px*/;
+}
+
+.smbHolder {
+    height: 88%;
+    width: 82.2%;
+    margin: auto;
+    padding-left: 1vh;
+    padding-top: 1vh;
 }
 .social-slide {
-	height: 48px;
-	width: 48px;
-	margin: 10px;
+	max-height: 48px;
+	max-width: 48px/*2.52vw*/;
+	height: 3.3vw;
+	width: 3.3vw;
+	margin: 0.5vw/*10px*/;
 	float: left;
 	-webkit-transition: all ease 0.3s;
 	-moz-transition: all ease 0.3s;
@@ -160,7 +245,7 @@ video {
 }
 .loginInfo {
     margin: 0px !important;
-    padding-left: 5px;
+    padding-left: 0.26vw;
     font-family: 'Raleway', sans-serif;
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0em;
@@ -169,46 +254,63 @@ video {
 .contactUs {
     font-family: 'Raleway', sans-serif;
     position: absolute;
-    bottom: 160px;
-    right: 50px;
+    bottom: 8.41vw/*160px*/;
+    right: 2.63vw/*50px*/;
 }
 .social-slide:hover {
-	background-position: 0px -48px;
 	box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.8);
 }
 .twitter-hover {
 	background-image: url('/assets/twitter-hover.png');
+	background-size: 100% 200%;
 }
 .facebook-hover {
 	background-image: url('/assets/facebook-hover.png');
+	background-size: 100% 200%;
 }
 .email-hover {
 	background-image: url('/assets/email-sprite.png');
+	background-size: 100% 200%;
 }
 .reddit-hover {
 	background-image: url('/assets/reddit-hover.png');
+	background-size: 100% 200%;
 }
 
 .copyright {
     font-family: 'Raleway', sans-serif;
-    font-size: 13px;
     position: absolute;
-    bottom: -33px;
-    right: 10px;
+    bottom: 0.1vh;
+    right: 10px/*0.525vw*/;
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
 }
 
 .blurb-holder {
-    position: absolute;
+    position: relative;
     top: 30vh;
-    left: 0px;
-    width: 185px;
+    width: 100%;
 }
 
 .blurb {
     font-family: 'Raleway', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
     color: #787878;
+    padding-right: 2px;
+}
+
+@media (min-width: 1600px) {
+    .blurb {
+        font-size: 16px;
+    }
+    #login_heading {
+        font-size: 26px;
+    }
+    .smbHolder {
+        padding-left: 2.5vh;
+        padding-top: 2.5vh;
+    }
 }
 
 #mc_embed_signup {

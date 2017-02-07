@@ -1,6 +1,6 @@
 canvas  { 
-    display: inline !important;
-    position: relative;
+    display: block !important;
+    position: absolute;
     margin-left: 50%;
     left: -416px;
     border: solid 5px black;
@@ -10,4 +10,8 @@ canvas  {
 
 video {
     display: none !important;
+}
+
+.studioLogo {
+    top: 40vh;
 }
