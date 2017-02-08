@@ -120,6 +120,15 @@ video {
     height: 63vh;
 }
 
+@media (orientation:portrait) {
+    video {
+        width: 84vw;
+        height: 63vw;
+        left: -42vw;
+        top: 25vh;
+    }
+}
+
 .submit {
     background-color: red;
     background-image: url(/assets/LoginButton.png);
@@ -225,7 +234,7 @@ video {
 
 .smbHolder {
     height: 88%;
-    width: 82.2%;
+    width: 81%;
     margin: auto;
     padding-left: 1vh;
     padding-top: 1vh;
@@ -281,7 +290,7 @@ video {
     font-family: 'Raleway', sans-serif;
     position: absolute;
     bottom: 0.1vh;
-    right: 10px/*0.525vw*/;
+    right: 13px/*0.525vw*/;
     -webkit-margin-before: 0em;
     -webkit-margin-after: 0em;
 }
@@ -308,7 +317,7 @@ video {
         font-size: 26px;
     }
     .smbHolder {
-        padding-left: 2.5vh;
+        padding-left: 3.95vh;
         padding-top: 2.5vh;
     }
 }
