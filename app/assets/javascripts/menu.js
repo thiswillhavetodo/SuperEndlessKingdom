@@ -217,6 +217,20 @@ var menuState = {
         armourerAdTimer = armourerAdTimerHolder - previousTime;
         enchanterAdTimer = enchanterAdTimerHolder - previousTime;
         trainerAdTimer = trainerAdTimerHolder - previousTime;
+        if (saveObject.baddieAdjuster!=null) {
+            baddieAdjuster = saveObject.baddieAdjuster;
+            baddieDamageAdjuster = saveObject.baddieDamageAdjuster;
+            baddieHpAdjuster = saveObject.baddieHpAdjuster;
+            baddieXpAdjuster = saveObject.baddieXpAdjuster;
+            baddieSpeedAdjuster = saveObject.baddieSpeedAdjuster;
+        }
+        else {
+            baddieAdjuster = 0;
+            baddieDamageAdjuster = 1;
+            baddieHpAdjuster = 1;
+            baddieXpAdjuster = 1;
+            baddieSpeedAdjuster = 1;
+        }
         game.world.removeAll();
         game.state.start('city');
         themeSound.stop();

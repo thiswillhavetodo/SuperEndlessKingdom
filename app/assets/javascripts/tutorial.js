@@ -251,12 +251,12 @@ var tutorialState = {
     trainerText: function() {
         game.add.sprite(775, 165, 'trainerSprite');
         trainerSpeechBubble = game.add.sprite(-580, 35, 'speechBubble'); 
-        trainerText = game.add.bitmapText(630, 45, 'fontWhite', '', 15);
-        trainerText2 = game.add.bitmapText(600, 60, 'fontWhite', '', 15);
-        trainerText3 = game.add.bitmapText(588, 75, 'fontWhite', '', 15);
-        trainerText4 = game.add.bitmapText(588, 90, 'fontWhite', '', 15);
-        trainerText5 = game.add.bitmapText(600, 105, 'fontWhite', '', 15);
-        trainerText6 = game.add.bitmapText(620, 120, 'fontWhite', '', 15);
+        trainerText = game.add.bitmapText(630, 45, 'fontBorder', '', 15);
+        trainerText2 = game.add.bitmapText(600, 60, 'fontBorder', '', 15);
+        trainerText3 = game.add.bitmapText(588, 75, 'fontBorder', '', 15);
+        trainerText4 = game.add.bitmapText(588, 90, 'fontBorder', '', 15);
+        trainerText5 = game.add.bitmapText(600, 105, 'fontBorder', '', 15);
+        trainerText6 = game.add.bitmapText(620, 120, 'fontBorder', '', 15);
         trainerText.tint = 000000;
         trainerText2.tint = 000000;
         trainerText3.tint = 000000;
@@ -274,12 +274,12 @@ var tutorialState = {
     },
     tutorialPracticeText: function() {    
         tutorialPracticeSpeechBubble = game.add.button(-200, 410, 'speechBubble', this.tutorialChange, this); 
-        tutorialPracticeText = game.add.bitmapText(450, 418, 'fontWhite', '', 15);
-        tutorialPracticeText2 = game.add.bitmapText(420, 435, 'fontWhite', '', 15);
-        tutorialPracticeText3 = game.add.bitmapText(408, 450, 'fontWhite', '', 15);
-        tutorialPracticeText4 = game.add.bitmapText(408, 465, 'fontWhite', '', 15);
-        tutorialPracticeText5 = game.add.bitmapText(420, 480, 'fontWhite', '', 15);
-        tutorialPracticeText6 = game.add.bitmapText(440, 495, 'fontWhite', '', 15);
+        tutorialPracticeText = game.add.bitmapText(450, 418, 'fontBorder', '', 15);
+        tutorialPracticeText2 = game.add.bitmapText(420, 435, 'fontBorder', '', 15);
+        tutorialPracticeText3 = game.add.bitmapText(408, 450, 'fontBorder', '', 15);
+        tutorialPracticeText4 = game.add.bitmapText(408, 465, 'fontBorder', '', 15);
+        tutorialPracticeText5 = game.add.bitmapText(420, 480, 'fontBorder', '', 15);
+        tutorialPracticeText6 = game.add.bitmapText(440, 495, 'fontBorder', '', 15);
         tutorialPracticeText.tint = 000000;
         tutorialPracticeText2.tint = 000000;
         tutorialPracticeText3.tint = 000000;
@@ -356,7 +356,7 @@ var tutorialState = {
             game.physics.arcade.enable(door);
             door.body.immovable = true;
             //game.add.button(303, 282, 'blankButton', this.endTutorial, this);
-            //game.add.bitmapText(370, 312, 'fontWhite', 'Continue', 18);
+            //game.add.bitmapText(370, 312, 'fontBorder', 'Continue', 18);
         }
     },
     endTutorial: function() {

@@ -320,12 +320,12 @@ var shopState = {
         game.add.button(0, 250, 'leftArrow', this.shopLeft, this);
         game.add.button(755, 250, 'rightArrow', this.shopRight, this);
         shopSpeechBubble = game.add.sprite(180, 35, 'speechBubble'); 
-        shopText = game.add.bitmapText(230, 45, 'font', '', 15);
-        shopText2 = game.add.bitmapText(200, 60, 'font', '', 15);
-        shopText3 = game.add.bitmapText(188, 75, 'font', '', 15);
-        shopText4 = game.add.bitmapText(188, 90, 'font', '', 15);
-        shopText5 = game.add.bitmapText(200, 105, 'font', '', 15);
-        shopText6 = game.add.bitmapText(220, 120, 'font', '', 15);
+        shopText = game.add.bitmapText(230, 45, 'fontBorder', '', 15);
+        shopText2 = game.add.bitmapText(200, 60, 'fontBorder', '', 15);
+        shopText3 = game.add.bitmapText(188, 75, 'fontBorder', '', 15);
+        shopText4 = game.add.bitmapText(188, 90, 'fontBorder', '', 15);
+        shopText5 = game.add.bitmapText(200, 105, 'fontBorder', '', 15);
+        shopText6 = game.add.bitmapText(220, 120, 'fontBorder', '', 15);
         shopText.tint = 000000;
         shopText2.tint = 000000;
         shopText3.tint = 000000;
@@ -1737,7 +1737,7 @@ var shopState = {
                         ringImage.animations.stop();
                         ringImage.frame = 2;
                         ringPerkText.text = "  Upgrade:";
-                        ringPerkText2.text = "   Max Mana +" + ringMaxMana;
+                        ringPerkText2.text = "     Max Mana +" + ringMaxMana;
                         ringManaText.text = "Ring Mana Bonus: " + ringMaxMana;
                         increaseSFX.play();
                     }
@@ -2510,22 +2510,22 @@ var shopState = {
         var bonusUnlockSpeechBubble = game.add.button(150, 469, 'speechBubble', this.create, this); 
         switch(bonusType) {
             case "beam":
-                var bonusUnlockText = game.add.bitmapText(200, 477, 'font', 'Great news!', 15);
-                var bonusUnlockText2 = game.add.bitmapText(170, 494, 'font', '  Your artisans have ', 15);
-                var bonusUnlockText3 = game.add.bitmapText(158, 509, 'font', 'worked together to unlock ', 15);
-                var bonusUnlockText4 = game.add.bitmapText(158, 524, 'font', 'the power of beam magic. ', 15);
-                var bonusUnlockText5 = game.add.bitmapText(170, 539, 'font', '  Press SPACE to use ', 15);
-                var bonusUnlockText6 = game.add.bitmapText(190, 554, 'font', ' while questing!', 15);
+                var bonusUnlockText = game.add.bitmapText(200, 477, 'fontBorder', 'Great news!', 15);
+                var bonusUnlockText2 = game.add.bitmapText(170, 494, 'fontBorder', '  Your artisans have ', 15);
+                var bonusUnlockText3 = game.add.bitmapText(158, 509, 'fontBorder', 'worked together to unlock ', 15);
+                var bonusUnlockText4 = game.add.bitmapText(158, 524, 'fontBorder', 'the power of beam magic. ', 15);
+                var bonusUnlockText5 = game.add.bitmapText(170, 539, 'fontBorder', '  Press SPACE to use ', 15);
+                var bonusUnlockText6 = game.add.bitmapText(190, 554, 'fontBorder', ' while questing!', 15);
                 beamUnlockShown = true;
                 beamWeapon = true;
                 break;
             case "manaRefill":
-                bonusUnlockText = game.add.bitmapText(200, 477, 'font', 'Great news!', 15);
-                bonusUnlockText2 = game.add.bitmapText(170, 494, 'font', '  Your artisans have ', 15);
-                bonusUnlockText3 = game.add.bitmapText(158, 509, 'font', '  worked together to unlock ', 15);
-                bonusUnlockText4 = game.add.bitmapText(158, 524, 'font', '  the power of mana refills. ', 15);
-                bonusUnlockText5 = game.add.bitmapText(170, 539, 'font', ' Press Q during a quest ', 15);
-                bonusUnlockText6 = game.add.bitmapText(190, 554, 'font', 'to refill your mana.', 15);
+                bonusUnlockText = game.add.bitmapText(200, 477, 'fontBorder', 'Great news!', 15);
+                bonusUnlockText2 = game.add.bitmapText(170, 494, 'fontBorder', '  Your artisans have ', 15);
+                bonusUnlockText3 = game.add.bitmapText(158, 509, 'fontBorder', '  worked together to unlock ', 15);
+                bonusUnlockText4 = game.add.bitmapText(158, 524, 'fontBorder', '  the power of mana refills. ', 15);
+                bonusUnlockText5 = game.add.bitmapText(170, 539, 'fontBorder', ' Press Q during a quest ', 15);
+                bonusUnlockText6 = game.add.bitmapText(190, 554, 'fontBorder', 'to refill your mana.', 15);
                 manaRefillUnlockShown = true;
                 manaRefillAvailable = true;
                 break;

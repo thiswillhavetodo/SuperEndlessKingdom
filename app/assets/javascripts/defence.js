@@ -231,12 +231,12 @@ var defenceState = {
     },
     tutorialText: function() {
         tutorialSpeechBubble.x = -200;
-        tutorialText = game.add.bitmapText(200, 477, 'font', '', 15);
-        tutorialText2 = game.add.bitmapText(170, 494, 'font', '', 15);
-        tutorialText3 = game.add.bitmapText(158, 509, 'font', '', 15);
-        tutorialText4 = game.add.bitmapText(158, 524, 'font', '', 15);
-        tutorialText5 = game.add.bitmapText(170, 539, 'font', '', 15);
-        tutorialText6 = game.add.bitmapText(190, 554, 'font', '', 15);
+        tutorialText = game.add.bitmapText(200, 477, 'fontBorder', '', 15);
+        tutorialText2 = game.add.bitmapText(170, 494, 'fontBorder', '', 15);
+        tutorialText3 = game.add.bitmapText(158, 509, 'fontBorder', '', 15);
+        tutorialText4 = game.add.bitmapText(158, 524, 'fontBorder', '', 15);
+        tutorialText5 = game.add.bitmapText(170, 539, 'fontBorder', '', 15);
+        tutorialText6 = game.add.bitmapText(190, 554, 'fontBorder', '', 15);
         tutorialText.tint = 000000;
         tutorialText2.tint = 000000;
         tutorialText3.tint = 000000;

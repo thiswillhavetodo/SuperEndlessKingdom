@@ -47,7 +47,6 @@ var previousExpenditure = 0;
 var previousNetIncome = 0;
 var previousCoins = 0;
 
-var messageText;
 var residentialButton;
 var industrialButton;
 var commerceButton;
@@ -240,12 +239,12 @@ var cityState = {
         game.physics.arcade.enable(warriorWoman1);
         warriorWoman1.animations.add('right', [3, 4, 5], 10, true);
         warriorWoman1.speechBubble = warriorWoman1.addChild(game.add.sprite(-195, -113, 'speechBubble'));
-        warriorWoman1.speech1 = warriorWoman1.addChild(game.add.bitmapText(-145, -106, 'fontWhite', '    Testing...', 15));
-        warriorWoman1.speech2 = warriorWoman1.addChild(game.add.bitmapText(-175, -89, 'fontWhite', '           One...', 15));
-        warriorWoman1.speech3 = warriorWoman1.addChild(game.add.bitmapText(-187, -72, 'fontWhite', '              Two...', 15));
-        warriorWoman1.speech4 = warriorWoman1.addChild(game.add.bitmapText(-187, -55, 'fontWhite', '              Three...', 15));
-        warriorWoman1.speech5 = warriorWoman1.addChild(game.add.bitmapText(-175, -38, 'fontWhite', '           Err...', 15));
-        warriorWoman1.speech6 = warriorWoman1.addChild(game.add.bitmapText(-145, -21, 'fontWhite', '    Hello?', 15));
+        warriorWoman1.speech1 = warriorWoman1.addChild(game.add.bitmapText(-145, -106, 'fontBorder', '    Testing...', 15));
+        warriorWoman1.speech2 = warriorWoman1.addChild(game.add.bitmapText(-175, -89, 'fontBorder', '           One...', 15));
+        warriorWoman1.speech3 = warriorWoman1.addChild(game.add.bitmapText(-187, -72, 'fontBorder', '              Two...', 15));
+        warriorWoman1.speech4 = warriorWoman1.addChild(game.add.bitmapText(-187, -55, 'fontBorder', '              Three...', 15));
+        warriorWoman1.speech5 = warriorWoman1.addChild(game.add.bitmapText(-175, -38, 'fontBorder', '           Err...', 15));
+        warriorWoman1.speech6 = warriorWoman1.addChild(game.add.bitmapText(-145, -21, 'fontBorder', '    Hello?', 15));
         warriorWoman1.speech1.tint = 000000;
         warriorWoman1.speech2.tint = 000000;
         warriorWoman1.speech3.tint = 000000;
@@ -284,15 +283,14 @@ var cityState = {
         happinessDisplay = game.add.sprite(510, 8, 'smileyFace');
         cityHappinessText = game.add.bitmapText(550, 10, 'font', happiness, 26);
         cityYearText = game.add.bitmapText(700, 10, 'font', 'Year: ' + year, 26);
-        messageText = game.add.bitmapText(250, 370, 'font', '', 26);
         
         assistantSpeechBubble = game.add.button(-200, 469, 'speechBubble', this.assistantChange, this); 
-        assistantText = game.add.bitmapText(200, 477, 'fontWhite', '', 15);
-        assistantText2 = game.add.bitmapText(170, 494, 'fontWhite', '', 15);
-        assistantText3 = game.add.bitmapText(158, 509, 'fontWhite', '', 15);
-        assistantText4 = game.add.bitmapText(158, 524, 'fontWhite', '', 15);
-        assistantText5 = game.add.bitmapText(170, 539, 'fontWhite', '', 15);
-        assistantText6 = game.add.bitmapText(190, 554, 'fontWhite', '', 15);
+        assistantText = game.add.bitmapText(200, 477, 'fontBorder', '', 15);
+        assistantText2 = game.add.bitmapText(170, 494, 'fontBorder', '', 15);
+        assistantText3 = game.add.bitmapText(158, 509, 'fontBorder', '', 15);
+        assistantText4 = game.add.bitmapText(158, 524, 'fontBorder', '', 15);
+        assistantText5 = game.add.bitmapText(170, 539, 'fontBorder', '', 15);
+        assistantText6 = game.add.bitmapText(190, 554, 'fontBorder', '', 15);
         assistantText.tint = 000000;
         assistantText2.tint = 000000;
         assistantText3.tint = 000000;
@@ -669,8 +667,8 @@ var cityState = {
         if (stage<1) {
             stage = 1;
         }
-        baddieTotal = stage + (0+6);
-        baddieCount = stage + (0+6);
+        baddieTotal = stage + (0+6) - baddieAdjuster;
+        baddieCount = stage + (0+6) - baddieAdjuster;
         baddieCreated = 0;
         chestCreated = 0;
         flameCount = 0;
@@ -1039,6 +1037,11 @@ var cityState = {
         saveObject.armourerAdTimer = armourerAdTimer;
         saveObject.enchanterAdTimer = enchanterAdTimer;
         saveObject.trainerAdTimer = trainerAdTimer;
+        saveObject.baddieAdjuster = baddieAdjuster;
+        saveObject.baddieDamageAdjuster = baddieDamageAdjuster;
+        saveObject.baddieHpAdjuster = baddieHpAdjuster;
+        saveObject.baddieXpAdjuster = baddieXpAdjuster;
+        saveObject.baddieSpeedAdjuster = baddieSpeedAdjuster;
         localStorage.setItem("save", JSON.stringify(saveObject));
     },
     restart: function() {
@@ -1048,7 +1051,8 @@ var cityState = {
         bossSkeletonKilled = false;
         bossZombieBirdKilled = false;
         coins = 1500 + startingGoldIncrease;
-        stage = Math.floor(bestStage/4);
+        var stageMilestone = (Math.floor(bestStage/100)*100);
+        stage = stageMilestone + Math.floor(bestStage-stageMilestone/4);
         bestStage = 0;
         year = 0;
         population = 100 + startingPopIncrease;

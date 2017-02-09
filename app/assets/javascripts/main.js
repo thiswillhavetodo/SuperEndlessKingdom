@@ -105,6 +105,11 @@ var maxMana = 75;
 var starTotal = 6;
 var baddieTotal = 7;
 var baddieCount = 7;
+var baddieAdjuster = 0;
+var baddieDamageAdjuster = 1;
+var baddieHpAdjuster = 1;
+var baddieXpAdjuster = 1;
+var baddieSpeedAdjuster = 1;
 var baddieCreated = 0;
 var chestCreated = 0;
 var flameCount = 0;
@@ -133,7 +138,10 @@ var adTimeText;
 var beamSFX;
 var waterShotSFX;
 var flameShot;
-
+var zombieDeathSFX;
+var shortExplodeSFX;
+var collectSFX;
+var pewSound;
 var swordZombieTest = false;
 
 /* global game */
@@ -226,6 +234,8 @@ var playState = {
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.createMultiple(90, 'bullet');
+        pewSound = game.add.audio('pew');
+        shortExplodeSFX = game.add.audio('shortExplode');
         //enemy projectiles
         flameBullets = game.add.group();
         flameBullets.enableBody = true;   
@@ -248,6 +258,7 @@ var playState = {
         mummies.enableBody = true;
         baddies = game.add.group();
         baddies.enableBody = true;
+        zombieDeathSFX = game.add.audio('zombieDeath');
         swordZombies = game.add.group();
         swordZombies.enableBody = true;
         flames = game.add.group();
@@ -290,15 +301,20 @@ var playState = {
             baddieCreated = baddieTotal;
         }
         
-        if (stage==50 && bossZombieKilled==false) {
-            this.bossZombieCreate(760, 200, "green");
+        if (stage-(Math.floor(stage/100)*100)==50 && bossZombieKilled==false) {
+            if (stage>=150) {
+                this.bossZombieCreate(760, 200, "red");
+            }
+            else {
+                this.bossZombieCreate(760, 200, "green");
+            }
             baddieCreated = baddieTotal;
             this.treeCreate(300, 0);
             this.treeCreate(360, 770);
             this.treeCreate(0, 384);
             this.treeCreate(590, 448);
         }
-        if (stage==60 && bossTreeBeastKilled==false) {
+        if (stage-(Math.floor(stage/100)*100)==60 && bossTreeBeastKilled==false) {
             this.treeBeastCreate(64, 64);
             this.treeBeastCreate(448, 54);
             this.treeBeastCreate(704, 74);
@@ -322,16 +338,16 @@ var playState = {
             this.treeCreate(448, 512);
             sceneryCount = 28;
         }
-        if (stage==70 && bossSkeletonKilled==false) {
+        if (stage-(Math.floor(stage/100)*100)==70 && bossSkeletonKilled==false) {
             this.skeletonCreate(750, 200, "redBoss");
             flameShot = game.add.audio('flameShot');
             baddieCreated = baddieTotal;
         }
-        if (stage==80 && bossZombieBirdKilled==false) {
+        if (stage-(Math.floor(stage/100)*100)==80 && bossZombieBirdKilled==false) {
             this.bossZombieBirdCreate(750, 200);
             baddieCreated = baddieTotal;
         }
-        if (stage==90 && bossMummyKilled==false) {
+        if (stage-(Math.floor(stage/100)*100)==90 && bossMummyKilled==false) {
             this.bossMummyCreate(750, 200);
             baddieCreated = baddieTotal;
         }
@@ -477,6 +493,7 @@ var playState = {
         }
         stars = game.add.group();
         stars.enableBody = true;
+        collectSFX = game.add.audio('collect');
         
         while (chestCreated+1 < starTotal) {
             var starX = Math.random(0.05, 1) * 780;
@@ -854,14 +871,14 @@ var playState = {
     baddieCreate: function(x, y, colour) {
         if (colour=="green") {
             var baddie = baddies.create(x, y, 'baddie');
-            baddie.health = 4;
-            baddie.maxHealth = 4;
+            baddie.health = baddieHpAdjuster * 4;
+            baddie.maxHealth = baddieHpAdjuster * 4;
             baddie.colour = "green";
         }
         else if (colour=="red") {
             var baddie = baddies.create(x, y, 'zombieRed');
-            baddie.health = 6;
-            baddie.maxHealth = 6;
+            baddie.health = baddieHpAdjuster * 6;
+            baddie.maxHealth = baddieHpAdjuster * 6;
             baddie.colour = "red";
         }
         //  enable physics on the baddie
@@ -891,10 +908,10 @@ var playState = {
             game.physics.arcade.collide(baddie, platforms);
             
             if (baddie.colour=="green") {
-                game.physics.arcade.moveToObject(baddie, player, 130);
+                game.physics.arcade.moveToObject(baddie, player, baddieSpeedAdjuster*130);
             }
             else if (baddie.colour=="red") {
-                game.physics.arcade.moveToObject(baddie, player, 155);
+                game.physics.arcade.moveToObject(baddie, player, baddieSpeedAdjuster*155);
             }
             
             if (player.body.x < baddie.body.x) {
@@ -908,14 +925,14 @@ var playState = {
     bossZombieCreate: function(x, y, colour) {
         if (colour=="green") {
             var bossZombie = bossZombies.create(x, y, 'bossZombie');
-            bossZombie.health = 300;
-            bossZombie.maxHealth = 300;
+            bossZombie.health = baddieHpAdjuster * 300;
+            bossZombie.maxHealth = baddieHpAdjuster * 300;
             bossZombie.colour = "green";
         }
         else if (colour=="red") {
             bossZombie = bossZombies.create(x, y, 'zombieRed');
-            bossZombie.health = 400;
-            bossZombie.maxHealth = 400;
+            bossZombie.health = baddieHpAdjuster * 400;
+            bossZombie.maxHealth = baddieHpAdjuster * 400;
             bossZombie.colour = "red";
         }
         //  enable physics on the bossZombie
@@ -948,10 +965,10 @@ var playState = {
             game.physics.arcade.collide(bossZombie, platforms);
             
             if (bossZombie.colour=="green") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 160-(bossZombie.health*0.1));
+                    game.physics.arcade.moveToObject(bossZombie, player, baddieSpeedAdjuster*160-((bossZombie.health/baddieHpAdjuster)*0.1));
             }
             else if (bossZombie.colour=="red") {
-                    game.physics.arcade.moveToObject(bossZombie, player, 200-(bossZombie.health*0.1));
+                    game.physics.arcade.moveToObject(bossZombie, player, baddieSpeedAdjuster*200-((bossZombie.health/baddieHpAdjuster)*0.1));
             }
             if (player.body.x < bossZombie.body.x) {
                 bossZombie.animations.play('bossZombieLeft');
@@ -976,8 +993,8 @@ var playState = {
     },
     spiderCreate: function(x, y) {
         var spider = spiders.create(x, y, 'spider');
-        spider.health = 11;
-        spider.maxHealth = 11;
+        spider.health = baddieHpAdjuster * 11;
+        spider.maxHealth = baddieHpAdjuster * 11;
         //  enable physics on the spider
         game.physics.arcade.enable(spider);
         spider.body.collideWorldBounds = true;
@@ -1006,7 +1023,7 @@ var playState = {
             spider.body.velocity.y = 0;
             
             if (spider.collide) {
-                game.physics.arcade.moveToObject(spider, player, 60-spider.health);
+                game.physics.arcade.moveToObject(spider, player, baddieSpeedAdjuster*60-(spider.health/baddieHpAdjuster));
                 if (player.y>spider.y) {
                     spider.animations.play('climbDown');
                 }
@@ -1015,7 +1032,7 @@ var playState = {
                 }
             }
             else {
-                game.physics.arcade.moveToObject(spider, player, 146-spider.health*2);
+                game.physics.arcade.moveToObject(spider, player, baddieSpeedAdjuster*146-(spider.health*2/baddieHpAdjuster));
                 if (player.body.x < spider.body.x) {
                     spider.animations.play('spiderLeft');
                 }
@@ -1032,14 +1049,14 @@ var playState = {
     swordZombieCreate: function(x, y, colour) {
         if (colour=="green") {
             var swordZombie = swordZombies.create(x, y, 'swordZombie');
-            swordZombie.health = 14;
-            swordZombie.maxHealth = 14;
+            swordZombie.health = baddieHpAdjuster * 14;
+            swordZombie.maxHealth = baddieHpAdjuster * 14;
             swordZombie.colour = "green";
         }
         else if (colour=="red") {
             swordZombie = swordZombies.create(x, y, 'swordZombie');
-            swordZombie.health = 23;
-            swordZombie.maxHealth = 23;
+            swordZombie.health = baddieHpAdjuster * 23;
+            swordZombie.maxHealth = baddieHpAdjuster * 23;
             swordZombie.colour = "red";
         }
         //  enable physics on the swordZombie
@@ -1075,7 +1092,7 @@ var playState = {
             
             if (swordZombie.colour=="green") {
                 if (swordZombie.collide == false) {
-                    game.physics.arcade.moveToObject(swordZombie, player, 140);
+                    game.physics.arcade.moveToObject(swordZombie, player, baddieSpeedAdjuster*140);
                 }
                 else {
                     game.physics.arcade.moveToXY(swordZombie, 832-player.x+swordZombie.x, 640-player.y+swordZombie.y, 40);
@@ -1089,7 +1106,7 @@ var playState = {
             }
             else if (swordZombie.colour=="red") {
                 if (swordZombie.collide == false) {
-                    game.physics.arcade.moveToObject(swordZombie, player, 165);
+                    game.physics.arcade.moveToObject(swordZombie, player, baddieSpeedAdjuster*165);
                 }
                 else {
                     game.physics.arcade.moveToXY(swordZombie, 832-player.x+swordZombie.x, 640-player.y+swordZombie.y, 40);
@@ -1113,21 +1130,21 @@ var playState = {
     skeletonCreate: function(x, y, colour) {
         if (colour=="grey") {
             var skeleton = skeletons.create(x, y, 'skeleton');
-            skeleton.health = 18;
-            skeleton.maxHealth = 18;
+            skeleton.health = baddieHpAdjuster * 18;
+            skeleton.maxHealth = baddieHpAdjuster * 18;
             skeleton.colour = "grey";
         }
         else if (colour=="red") {
             skeleton = skeletons.create(x, y, 'skeleton');
-            skeleton.health = 28;
-            skeleton.maxHealth = 28;
+            skeleton.health = baddieHpAdjuster * 28;
+            skeleton.maxHealth = baddieHpAdjuster * 28;
             skeleton.colour = "red";
             skeleton.tint = 0xba3500;
         }
         else if (colour=="redBoss") {
             skeleton = skeletons.create(x, y, 'skeleton');
-            skeleton.health = 325;
-            skeleton.maxHealth = 325;
+            skeleton.health = baddieHpAdjuster * 325;
+            skeleton.maxHealth = baddieHpAdjuster * 325;
             skeleton.colour = "redBoss";
             skeleton.tint = 0xba3500;
             skeleton.scale.x = 2.5;
@@ -1173,13 +1190,13 @@ var playState = {
             }
             else if ((Math.abs(player.x - skeleton.x)) + (Math.abs(player.y - skeleton.y)) < 275 || skeleton.colour=="redBoss") {
                 if (skeleton.colour=="grey") {
-                    game.physics.arcade.moveToObject(skeleton, player, 178-skeleton.health*2);
+                    game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*178-(skeleton.health*2/baddieHpAdjuster));
                 }
                 else if (skeleton.colour=="red") {
-                    game.physics.arcade.moveToObject(skeleton, player, 232-skeleton.health*2);
+                    game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*232-(skeleton.health*2/baddieHpAdjuster));
                 }
                 else if (skeleton.colour=="redBoss") {
-                    game.physics.arcade.moveToObject(skeleton, player, 190-skeleton.health*0.1);
+                    game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*190-(skeleton.health*0.1/baddieHpAdjuster));
                 }
                 if (player.body.x < skeleton.body.x) {
                     skeleton.animations.play('skeletonLeft');
@@ -1190,10 +1207,10 @@ var playState = {
             }
             else if ((skeleton.colour=="grey" && skeleton.health<18)||(skeleton.colour=="red" && skeleton.health<28)) {
                 if (skeleton.colour=="grey") {
-                    game.physics.arcade.moveToObject(skeleton, player, 175-skeleton.health*2);
+                    game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*175-(skeleton.health*2/baddieHpAdjuster));
                 }
                 else if (skeleton.colour=="red") {
-                    game.physics.arcade.moveToObject(skeleton, player, 223-skeleton.health*2);
+                    game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*223-(skeleton.health*2/baddieHpAdjuster));
                 }
                 if (player.body.x < skeleton.body.x) {
                     skeleton.animations.play('skeletonLeft');
@@ -1231,8 +1248,8 @@ var playState = {
             mummy.animations.add('smashLeft', [10, 12], 4, true);
             mummy.animations.add('smashRight', [7, 13], 4, true);
         }
-        mummy.health = 35;
-        mummy.maxHealth = 35;
+        mummy.health = baddieHpAdjuster * 35;
+        mummy.maxHealth = baddieHpAdjuster * 35;
         //  enable physics on the mummy
         game.physics.arcade.enable(mummy);
         mummy.body.collideWorldBounds = true;
@@ -1271,7 +1288,7 @@ var playState = {
             }
             else {
                 if ((baddieCount/baddieTotal)<0.75 || (Math.abs(player.x - mummy.x)) + (Math.abs(player.y - mummy.y)) < 150) {
-                    game.physics.arcade.moveToObject(mummy, player, 210-mummy.health*4);
+                    game.physics.arcade.moveToObject(mummy, player, baddieSpeedAdjuster*210-(mummy.health*4/baddieHpAdjuster));
                 }
                 else {
                     if (player.y<320) {
@@ -1306,8 +1323,8 @@ var playState = {
     },
     flameCreate: function(x, y) {
         var flame = flames.create(x, y, 'flame');
-        flame.health = 15;
-        flame.maxHealth = 15;
+        flame.health = baddieHpAdjuster * 15;
+        flame.maxHealth = baddieHpAdjuster * 15;
         game.physics.arcade.enable(flame);
         flame.body.collideWorldBounds = true;
         flame.body.immovable = true;
@@ -1343,8 +1360,8 @@ var playState = {
     },
     treeBeastCreate: function(x, y) {
         var treeBeast = treeBeasts.create(x, y, 'treeBeast');
-        treeBeast.health = 44;
-        treeBeast.maxHealth = 44;
+        treeBeast.health = baddieHpAdjuster * 44;
+        treeBeast.maxHealth = baddieHpAdjuster * 44;
         treeBeast.frame = 0;
         treeBeast.shadow = treeBeast.addChild(game.add.sprite(17, 11, 'treeShadow'));
         treeBeast.shadow.alpha = 0.35,
@@ -1413,8 +1430,8 @@ var playState = {
     },
     evilwizardCreate: function(x, y) {
         var evilwizard = evilwizards.create(x, y, 'evilWizard');
-        evilwizard.health = 37;
-        evilwizard.maxHealth = 37;
+        evilwizard.health = baddieHpAdjuster * 37;
+        evilwizard.maxHealth = baddieHpAdjuster * 37;
         //  We need to enable physics on the evilwizard
         game.physics.arcade.enable(evilwizard);
         evilwizard.body.collideWorldBounds = true;
@@ -1514,8 +1531,8 @@ var playState = {
     },
     swampCreatureCreate: function(x, y) {
         var swampCreature = swampCreatures.create(x, y, 'swampCreature');
-        swampCreature.health = 35;
-        swampCreature.maxHealth = 35;
+        swampCreature.health = baddieHpAdjuster * 35;
+        swampCreature.maxHealth = baddieHpAdjuster * 35;
         //  We need to enable physics on the swampCreature
         game.physics.arcade.enable(swampCreature);
         swampCreature.body.collideWorldBounds = true;
@@ -1636,8 +1653,8 @@ var playState = {
     },
     zombieBirdCreate: function(x, y) {
         var zombieBird = zombieBirds.create(x, y, 'zombieBird');
-        zombieBird.health = 13;
-        zombieBird.maxHealth = 13;
+        zombieBird.health = baddieHpAdjuster * 13;
+        zombieBird.maxHealth = baddieHpAdjuster * 13;
         zombieBird.scale.x = 0.4;
         zombieBird.scale.y = 0.4;
         //  enable physics on the zombieBird
@@ -1693,7 +1710,7 @@ var playState = {
                 zombieBird.moveDownTimer = game.time.now + 6000;
             }
             if ((Math.abs(player.x - zombieBird.x)) + (Math.abs(player.y - zombieBird.y)) < 250) {
-                game.physics.arcade.moveToObject(zombieBird, player, 146-zombieBird.health*2);
+                game.physics.arcade.moveToObject(zombieBird, player, baddieSpeedAdjuster*146-(zombieBird.health*2/baddieHpAdjuster));
                 if (player.body.x < zombieBird.body.x) {
                     zombieBird.animations.play('zombieBirdLeft');
                 }
@@ -1732,8 +1749,8 @@ var playState = {
     miniZombieBirdCreate: function(x, y) {
         var miniZombieBird = miniZombieBirds.getFirstExists(false);//create(x, y, 'miniZombieBird');
         miniZombieBird.reset(x, y);
-        miniZombieBird.health = 10;
-        miniZombieBird.maxHealth = 10;
+        miniZombieBird.health = baddieHpAdjuster * 10;
+        miniZombieBird.maxHealth = baddieHpAdjuster * 10;
         //  enable physics
         game.physics.arcade.enable(miniZombieBird);
         miniZombieBird.body.collideWorldBounds = true;
@@ -1759,7 +1776,7 @@ var playState = {
             miniZombieBird.body.velocity.y = 0;
             
             game.physics.arcade.collide(miniZombieBird, platforms);
-            game.physics.arcade.moveToObject(miniZombieBird, player, 201-miniZombieBird.health*2);
+            game.physics.arcade.moveToObject(miniZombieBird, player, baddieSpeedAdjuster*201-(miniZombieBird.health*2/baddieHpAdjuster));
             if (player.body.x < miniZombieBird.body.x) {
                     miniZombieBird.animations.play('miniZombieBirdLeft');
             }
@@ -1770,8 +1787,8 @@ var playState = {
     }, 
     bossZombieBirdCreate: function(x, y) {
         var bossZombieBird = bossZombieBirds.create(x, y, 'zombieBird');
-        bossZombieBird.health = 400;
-        bossZombieBird.maxHealth = 400;
+        bossZombieBird.health = baddieHpAdjuster * 400;
+        bossZombieBird.maxHealth = baddieHpAdjuster * 400;
         bossZombieBird.damageTimer = 0;
         bossZombieBird.createMiniTimer = 0;
         bossZombieBird.isAlive = true;
@@ -1801,7 +1818,7 @@ var playState = {
             bossZombieBird.body.velocity.y = 0;
             
             game.physics.arcade.collide(bossZombieBird, platforms);
-            game.physics.arcade.moveToObject(bossZombieBird, player, 150-bossZombieBird.health*0.1);
+            game.physics.arcade.moveToObject(bossZombieBird, player, baddieSpeedAdjuster*150-(bossZombieBird.health*0.1/baddieHpAdjuster));
             if (player.body.x < bossZombieBird.body.x) {
                     bossZombieBird.animations.play('bossZombieBirdLeft');
             }
@@ -1824,8 +1841,8 @@ var playState = {
     },
     bossMummyCreate: function(x, y) {
         var bossMummy = bossMummies.create(x, y, 'mummy');
-        bossMummy.health = 750;
-        bossMummy.maxHealth = 750;
+        bossMummy.health = baddieHpAdjuster * 750;
+        bossMummy.maxHealth = baddieHpAdjuster * 750;
         bossMummy.scale.x = 2;
         bossMummy.scale.y = 2;
         bossMummy.damageTimer = 0;
@@ -1874,7 +1891,7 @@ var playState = {
                 game.time.events.add(Phaser.Timer.SECOND * 0.5, function () { bossMummy.summon = false; });
             }
             if (bossMummy.summon==false) {
-                game.physics.arcade.moveToObject(bossMummy, player, 185-bossMummy.health*0.1);
+                game.physics.arcade.moveToObject(bossMummy, player, baddieSpeedAdjuster*185-(bossMummy.health*0.1/baddieHpAdjuster));
                 if (player.body.x < bossMummy.body.x) {
                     bossMummy.animations.play('bossMummyLeft');
                 }
@@ -1903,8 +1920,8 @@ var playState = {
     },
     vampireCreate: function(x, y) {
         var vampire = vampires.create(x, y, 'vampire');
-        vampire.health = 44;
-        vampire.maxHealth = 44;
+        vampire.health = baddieHpAdjuster * 44;
+        vampire.maxHealth = baddieHpAdjuster * 44;
         
         //  enable physics on the vampire
         game.physics.arcade.enable(vampire);
@@ -1932,7 +1949,7 @@ var playState = {
         
             game.physics.arcade.collide(vampire, platforms);
             
-            game.physics.arcade.moveToObject(vampire, player, 155);
+            game.physics.arcade.moveToObject(vampire, player, baddieSpeedAdjuster*155);
                 
             if (player.body.x < vampire.body.x) {
                 vampire.animations.play('vampireLeft');
@@ -1998,7 +2015,7 @@ var playState = {
         
             game.physics.arcade.collide(decoy, platforms);
             
-            game.physics.arcade.moveToObject(decoy, player, 155);
+            game.physics.arcade.moveToObject(decoy, player, baddieSpeedAdjuster*155);
                 
             if (player.body.x < decoy.body.x) {
                 decoy.animations.play('decoyLeft');
@@ -2030,7 +2047,7 @@ var playState = {
     },
     collectStar: function(player, star) {
         // Removes the item from the screen
-        this.collectSFX();
+        collectSFX.play();
         //  Add and update the items
         var chance = 1 + Math.random()*5;
         var coinAmount = Math.round(star.contents + (chance*star.contents));
@@ -2046,7 +2063,7 @@ var playState = {
             if (chance>1.24) { }
             else if (chance<=1.06) {
                var wand = game.add.sprite(coin.x, coin.y, 'wand');
-               var wandText = game.add.bitmapText(wand.x-6, wand.y+12, 'fontWhite', '', 13);
+               var wandText = game.add.bitmapText(wand.x-6, wand.y+12, 'fontBorder', '', 13);
                wandText.text = "Weaponsmith +";
                //wandText.tint = 000000;
                weaponsmithDropReward += weaponsmithDRBoost;
@@ -2054,7 +2071,7 @@ var playState = {
             }
             else if (chance<=1.12) {
                var armour = game.add.sprite(coin.x, coin.y, 'armour');
-               var armourText = game.add.bitmapText(armour.x, armour.y+12, 'fontWhite', '', 13);
+               var armourText = game.add.bitmapText(armour.x, armour.y+12, 'fontBorder', '', 13);
                armourText.text = "Armourer +";
                //armourText.tint = 000000;
                armourerDropReward += armourerDRBoost;
@@ -2062,7 +2079,7 @@ var playState = {
             }
             else if (chance<=1.18) {
                var ring = game.add.sprite(coin.x, coin.y, 'ring');
-               var ringText = game.add.bitmapText(ring.x-2, ring.y+12, 'fontWhite', '', 13);
+               var ringText = game.add.bitmapText(ring.x-2, ring.y+12, 'fontBorder', '', 13);
                ringText.text = "Enchanter +";
                //ringText.tint = 000000;
                enchanterDropReward += enchanterDRBoost;
@@ -2070,7 +2087,7 @@ var playState = {
             }
             else if (chance<=1.24) {
                var buff = game.add.sprite(coin.x, coin.y, 'buff');
-               var buffText = game.add.bitmapText(buff.x+4, buff.y+12, 'fontWhite', '', 13);
+               var buffText = game.add.bitmapText(buff.x+4, buff.y+12, 'fontBorder', '', 13);
                buffText.text = "Trainer +";
                //buffText.tint = 000000;
                trainerDropReward += trainerDRBoost;
@@ -2091,7 +2108,7 @@ var playState = {
         star.destroy();
     },
     badTouch: function() {
-        var damage = Math.floor(1 + stage/32);
+        var damage = Math.floor((1 + stage/32)*baddieDamageAdjuster);
         //console.log(damage);
         if (health>damage) {
             health -= damage;
@@ -2107,7 +2124,7 @@ var playState = {
         }
     },
     badTouchTwo: function() {
-        var damage = Math.floor(2 + stage*0.04);
+        var damage = Math.floor((2 + stage*0.04)*baddieDamageAdjuster);
         //console.log(damage);
         if (health>damage) {
             health -= damage;
@@ -2205,25 +2222,9 @@ var playState = {
             emitter.x = -8;
             emitter.y = 14;
         }
-        this.pew();
+        pewSound.play();
         bulletTimer = game.time.now + bulletSpacing;
     },
-    pew: function() {
-        var pewSound = game.add.audio('pew');
-        pewSound.play();
-    },
-    collectSFX: function() {
-        var itemCollect = game.add.audio('collect');
-        itemCollect.play();
-    },
-    shortExplodeSFX: function() {
-        var shortExplodeSound = game.add.audio('shortExplode');
-        shortExplodeSound.play();
-    },
-    /*flameShotSFX: function() {
-        var flameShot = game.add.audio('flameShot');
-        flameShot.play();
-    },*/
     sizzleSFX: function() {
         var sizzle = game.add.audio('sizzle');
         sizzle.play();
@@ -2239,10 +2240,6 @@ var playState = {
     mummyDeathSFX: function() {
         var mummyDeath = game.add.audio('mummyDeath');
         mummyDeath.play();
-    },
-    zombieDeathSFX: function() {
-        var zombieDeath = game.add.audio('zombieDeath');
-        zombieDeath.play();
     },
     zombieRisingSFX: function() {
         var zombieRising = game.add.audio('zombieRising');
@@ -2264,7 +2261,7 @@ var playState = {
         var explode = game.add.sprite(x, y, 'explosionMini');
         explode.animations.add('explosion', [0, 1, 2, 3], 30, false);
         explode.animations.play('explosion');
-        this.shortExplodeSFX();
+        shortExplodeSFX.play();
         game.time.events.add(Phaser.Timer.SECOND * 0.2, function () {   explode.destroy();  });
     },
     bulletKill: function(bullet) {
@@ -2305,14 +2302,14 @@ var playState = {
                 game.time.events.add(Phaser.Timer.SECOND *1, function () { risenZombie.destroy(); self.zombieRisingSFX(); self.baddieCreate(baddie.x, baddie.y, "green"); baddieCount ++; });
             }
             baddie.destroy();
-            this.zombieDeathSFX();
+            zombieDeathSFX.play();
             var death = game.add.sprite(baddie.x, baddie.y, 'deathSheet');
             if (baddie.colour=="red") {
-                xp += 4;
+                xp += Math.floor(baddieXpAdjuster*4);
                 death.frame = 11;
             }
             else {
-                xp += 3;
+                xp += Math.floor(baddieXpAdjuster*3);
                 death.frame = 10;
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
@@ -2380,14 +2377,14 @@ var playState = {
                 }
                 bossZombie.destroy();
                 bossZombieKilled = true;
-                this.zombieDeathSFX();
+                zombieDeathSFX.play();
                 var death = game.add.sprite(bossZombie.x, bossZombie.y, 'deathSheet');
                 if (bossZombie.colour=="red") {
-                    xp += 330;
+                    xp += Math.floor(baddieXpAdjuster*330);
                     death.frame = 11;
                 }
                 else {
-                    xp += 220;
+                    xp += Math.floor(baddieXpAdjuster*220);
                     death.frame = 10;
                 }
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
@@ -2458,7 +2455,7 @@ var playState = {
                 bossZombieBird.isAlive = false;
                 this.birdDeathSFX();
                 var death = game.add.sprite(bossZombieBird.x, bossZombieBird.y, 'deathSheet');
-                xp += 450;
+                xp += Math.floor(baddieXpAdjuster*450);
                 death.frame = 12;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.xpDisplayConvert();
@@ -2533,7 +2530,7 @@ var playState = {
                 bossMummyKilled = true;
                 this.mummyDeathSFX();
                 var death = game.add.sprite(bossMummy.x, bossMummy.y, 'deathSheet');
-                xp += 650;
+                xp += Math.floor(baddieXpAdjuster*650);
                 death.frame = 5;
                 death.scale.x = 2;
                 death.scale.y = 2;
@@ -2583,7 +2580,7 @@ var playState = {
             death.frame = 7;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.spiderDeathSFX();
-            xp += 5;
+            xp += Math.floor(baddieXpAdjuster*5);
             this.xpDisplayConvert();
             baddieCount -= 3;
             this.checkLevelUp();
@@ -2629,14 +2626,14 @@ var playState = {
             
             if (swordZombie.colour=="red") {
                death.frame = 16;
-               xp += 9;
+               xp += Math.floor(baddieXpAdjuster*9);
             }
             else {
                death.frame = 14;
-               xp += 6; 
+               xp += Math.floor(baddieXpAdjuster*6); 
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
-            this.zombieDeathSFX();
+            zombieDeathSFX.play();
             this.xpDisplayConvert();
             baddieCount -= 4;
             this.checkLevelUp();
@@ -2705,19 +2702,19 @@ var playState = {
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.skeletonDeathSFX();
                 if (skeleton.colour=="red") {
-                    xp += 8;
+                    xp += Math.floor(baddieXpAdjuster*8);
                     death.tint = 0xba3500;
                 }
                 else if (skeleton.colour=="redBoss") {
                     skeleton.isAlive = false;
-                    xp += 325;
+                    xp += Math.floor(baddieXpAdjuster*325);
                     death.tint = 0xba3500;
                     death.scale.x = 2.5;
                     death.scale.y = 2.5;
                     bossSkeletonKilled = true;
                 }
                 else {
-                    xp += 6;
+                    xp += Math.floor(baddieXpAdjuster*6);
                 }
                 this.xpDisplayConvert();
                 if (skeleton.colour=="redBoss") {
@@ -2753,7 +2750,7 @@ var playState = {
             flame.destroy();
             flame.isAlive = false;
             this.sizzleSFX();
-            xp += 8;
+            xp += Math.floor(baddieXpAdjuster*8);
             this.xpDisplayConvert();
             baddieCount -= 6;
             this.checkLevelUp();
@@ -2808,7 +2805,7 @@ var playState = {
             }
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.mummyDeathSFX();
-            xp += 9;
+            xp += Math.floor(baddieXpAdjuster*9);
             this.xpDisplayConvert();
             baddieCount -= 7;
             this.checkLevelUp();
@@ -2861,7 +2858,7 @@ var playState = {
             death.frame = 12;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.birdDeathSFX();
-            xp += 8;
+            xp += Math.floor(baddieXpAdjuster*8);
             this.xpDisplayConvert();
             baddieCount -=2;
             this.checkLevelUp();
@@ -2908,7 +2905,7 @@ var playState = {
             death.frame = 4;
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.birdDeathSFX();
-            xp += 6;
+            xp += Math.floor(baddieXpAdjuster*6);
             this.xpDisplayConvert();
             baddieCount -= 2;
             this.checkLevelUp();
@@ -2941,7 +2938,7 @@ var playState = {
             var swampCreatureDeathSFX = game.add.audio('swampCreatureDeath');
             swampCreatureDeathSFX.play();
             swampCreature.isAlive = false;
-            xp += 14;
+            xp += Math.floor(baddieXpAdjuster*14);
             this.xpDisplayConvert();
             baddieCount -= 9;
             this.checkLevelUp();
@@ -2968,7 +2965,7 @@ var playState = {
             treeBeast.destroy();
             treeBeast.isAlive = false;
             this.woodSmashSFX();
-            xp += 14;
+            xp += Math.floor(baddieXpAdjuster*14);
             this.xpDisplayConvert();
             if (stage==60 && bossTreeBeastKilled==false) {
                 baddieCount -= 4.8;
@@ -3003,7 +3000,7 @@ var playState = {
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
             this.maleDeathSFX();
             evilwizard.isAlive = false;
-            xp += 19;
+            xp += Math.floor(baddieXpAdjuster*19);
             this.xpDisplayConvert();
             baddieCount -= 10;
             this.checkLevelUp();
@@ -3035,7 +3032,7 @@ var playState = {
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.maleDeathSFX();
                 vampire.isAlive = false;
-                xp += 25;
+                xp += Math.floor(baddieXpAdjuster*25);
                 this.xpDisplayConvert();
                 baddieCount -= 11;
                 this.checkLevelUp();
@@ -3141,6 +3138,19 @@ var playState = {
     },
     startNextLevel: function() {
         gameMusic.destroy();
+        if (stage%100==0) {
+            baddieAdjuster += 90;
+            baddieTotal -= baddieAdjuster;
+            baddieDamageAdjuster++;
+            baddieHpAdjuster++;
+            baddieXpAdjuster += 0.5;
+            baddieSpeedAdjuster += 0.1;
+            bossZombieKilled = false;
+            bossTreeBeastKilled = false;
+            bossSkeletonKilled = false;
+            bossZombieBirdKilled = false;
+            bossMummyKilled = false;
+        }
         stage ++;
         starTotal += 0.75;
         baddieTotal ++;
@@ -3331,7 +3341,7 @@ var playState = {
         //bottleText.fontSize = 24;
         var style = {font:'24px courier bolder', fill: '#f99a08', stroke: 'black', strokeThickness: 1.5};
         bottleText.setStyle(style);
-        bottleText.text = ' Q';
+        bottleText.text = 'Q';
         timerMana.updateTimer = 0;
     },
     formatTime: function(s) {
