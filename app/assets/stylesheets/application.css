@@ -79,14 +79,14 @@ body {
 
 @media (max-width: 1449px) {
     .mid-container {
-        width: 74.6vw;
+        width: 73.8vw;
     }
     .right-container {
-        width: 12.04vw;
+        width: 12vw;
     }
     
     .left-container {
-        width: 12.04vw;
+        width: 12vw;
     }
     #login_heading {
         font-size: 20.5px;
@@ -289,10 +289,12 @@ video {
 .copyright {
     font-family: 'Raleway', sans-serif;
     position: absolute;
-    bottom: 0.1vh;
+    bottom: 0px;
     right: 13px/*0.525vw*/;
-    -webkit-margin-before: 0em;
-    -webkit-margin-after: 0em;
+    -webkit-margin-before: 0px;
+    -webkit-margin-after: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 .blurb-holder {

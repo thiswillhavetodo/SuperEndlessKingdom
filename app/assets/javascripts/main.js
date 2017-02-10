@@ -50,6 +50,7 @@ var bossTreeBeastKilled = false;
 var bossSkeletonKilled = false;
 var bossZombieBirdKilled = false;
 var bossMummyKilled = false;
+var bossFinalKilled = false;
 
 var cursors;
 var fireButton;
@@ -259,6 +260,7 @@ var playState = {
         baddies = game.add.group();
         baddies.enableBody = true;
         zombieDeathSFX = game.add.audio('zombieDeath');
+        zombieDeathSFX.allowMultiple = true;
         swordZombies = game.add.group();
         swordZombies.enableBody = true;
         flames = game.add.group();
@@ -925,8 +927,8 @@ var playState = {
     bossZombieCreate: function(x, y, colour) {
         if (colour=="green") {
             var bossZombie = bossZombies.create(x, y, 'bossZombie');
-            bossZombie.health = baddieHpAdjuster * 300;
-            bossZombie.maxHealth = baddieHpAdjuster * 300;
+            bossZombie.health = baddieHpAdjuster * 325;
+            bossZombie.maxHealth = baddieHpAdjuster * 325;
             bossZombie.colour = "green";
         }
         else if (colour=="red") {
@@ -2025,6 +2027,12 @@ var playState = {
             }
         });
     },
+    bossFinalCreate: function() {
+        
+    },
+    bossFinalUpdate: function() {
+        
+    },
     coinCreate: function(x, y, colour) {
         var star;
         if (colour=="red") {
@@ -2387,6 +2395,8 @@ var playState = {
                     xp += Math.floor(baddieXpAdjuster*220);
                     death.frame = 10;
                 }
+                death.scale.x = 2.5;
+                death.scale.y = 2.5;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.xpDisplayConvert();
                 baddieCount -= 57;
@@ -3054,8 +3064,11 @@ var playState = {
         decoy.destroy();
     },
     checkStageComplete: function() {
-        if (baddieCount <= 0 && doorAvailable==false) {
-            if (player.x < 75 && player.y < 145) {
+        if (stage%100==0 && bossFinalKilled==false) {
+            this.bossFinalCreate(832-player.x, 640-player.y);
+        }
+        else if (baddieCount <= 0 && doorAvailable==false) {
+            if (player.x < 150 && player.y < 250) {
                 game.add.sprite(750, 70, 'doorway');
                 door = game.add.sprite(750, 70, 'animateddoor');
             }
@@ -3150,6 +3163,7 @@ var playState = {
             bossSkeletonKilled = false;
             bossZombieBirdKilled = false;
             bossMummyKilled = false;
+            bossFinalKilled = false;
         }
         stage ++;
         starTotal += 0.75;
@@ -3266,12 +3280,12 @@ var playState = {
     },
     beamWeaponActivate: function() {
         manaCost = 1;
-        bulletSpacing = bulletSpacing/14;
+        bulletSpacing = bulletSpacing/13.5;
         shotPower += shotSpeed*0.002
         beamWeapon = false;
         beamSprite.frame = 0;
         var self = this;
-        game.time.events.add(Phaser.Timer.SECOND * 4.25, function () {   manaCost = 5; bulletSpacing = bulletSpacing*14; shotPower -= shotSpeed*0.002; self.beamWeaponTimer(); });
+        game.time.events.add(Phaser.Timer.SECOND * 4, function () {   manaCost = 5; bulletSpacing = bulletSpacing*13.5; shotPower -= shotSpeed*0.002; self.beamWeaponTimer(); });
     },
     beamWeaponTimer: function() {
         timerBeam = game.time.create();
