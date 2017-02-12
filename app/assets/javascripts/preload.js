@@ -47,7 +47,7 @@ var preloadState = {
         game.load.image('ChestBlue', '/assets/ChestBlue.png');
         game.load.image('ChestYellow', '/assets/ChestYellow.png');
         game.load.image('ChestGreen', '/assets/ChestGreen.png');
-        game.load.image('iceBeamMini', '/assets/iceBeamMini.png');
+        game.load.spritesheet('iceBeamMini', '/assets/lightning.png', 64, 32);//iceBeamMini.png');
         game.load.image('doorway', '/assets/doorway.png');
         game.load.image('stonepaving', '/assets/stonepaving.png');
         game.load.image('HousingDpt', '/assets/HousingDpt.png');

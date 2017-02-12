@@ -45,6 +45,7 @@ var decoys;
 var bossZombies;
 var bossZombieBirds;
 var bossMummies;
+var bossFinals;
 var bossZombieKilled = false;
 var bossTreeBeastKilled = false;
 var bossSkeletonKilled = false;
@@ -66,7 +67,6 @@ var doorAvailable = false;
 var levelUpImage;
 var coins = 1500;
 var stage = 1;
-var bestStage = 0;
 var reward = 0;
 
 var hudDisplay;
@@ -245,7 +245,7 @@ var playState = {
         iceBeams.createMultiple(110, 'iceBeamMini');
         charges = game.add.group();
         charges.enableBody = true;
-        charges.createMultiple(2, 'blueCharge');
+        //charges.createMultiple(3, 'blueCharge');
         waterShots = game.add.group();
         waterShots.enableBody = true; 
         waterShots.createMultiple(6, 'waterShot');
@@ -286,6 +286,8 @@ var playState = {
         bossZombieBirds.enableBody = true;
         bossMummies = game.add.group();
         bossMummies.enableBody = true;
+        bossFinals = game.add.group();
+        bossFinals.enableBody = true;
         vampires = game.add.group();
         vampires.enableBody = true;
         decoys = game.add.group();
@@ -297,9 +299,11 @@ var playState = {
         platforms.enableBody = true;
         
         if (swordZombieTest) {
-            this.swordZombieCreate(400, 0, "green");
-            this.swordZombieCreate(770, 300, "green");
-            this.swordZombieCreate(600, 500, "red");
+            //this.evilwizardCreate(600, 300);
+            this.bossFinalCreate(600, 300);
+            beamSFX = game.add.audio('shotSFX');
+            //this.swordZombieCreate(770, 300, "green");
+            //this.swordZombieCreate(600, 500, "red");
             baddieCreated = baddieTotal;
         }
         
@@ -332,6 +336,7 @@ var playState = {
             this.treeBeastCreate(320, 448);
             this.treeBeastCreate(650, 512);
             baddieCreated=baddieTotal;
+            baddieCount -= (stageMilestone*0.1);
             this.treeCreate(256, 64);
             this.treeCreate(576, 256);
             this.treeCreate(64, 384);
@@ -744,6 +749,7 @@ var playState = {
             game.physics.arcade.overlap(player, bossZombies, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, bossZombieBirds, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, bossMummies, this.badTouchTwo, null, this);
+            game.physics.arcade.overlap(player, bossFinals, this.badTouchTwo, null, this);
             game.physics.arcade.overlap(player, flames, this.badTouch, null, this);
             game.physics.arcade.overlap(player, flameBullets, this.badTouch, null, this);
             game.physics.arcade.overlap(player, skeletons, this.badTouchTwo, null, this);
@@ -767,6 +773,7 @@ var playState = {
         game.physics.arcade.collide(bullets, bossZombies, this.bossZombieKill, null, this);
         game.physics.arcade.collide(bullets, bossZombieBirds, this.bossZombieBirdKill, null, this);
         game.physics.arcade.collide(bullets, bossMummies, this.bossMummyKill, null, this);
+        game.physics.arcade.collide(bullets, bossFinals, this.bossFinalKill, null, this);
         game.physics.arcade.collide(bullets, flames, this.flameKill, null, this);
         game.physics.arcade.collide(bullets, skeletons, this.skeletonKill, null, this);
         game.physics.arcade.collide(bullets, mummies, this.mummyKill, null, this);
@@ -850,7 +857,7 @@ var playState = {
         this.mummyUpdate();
         this.evilwizardUpdate();
         this.zombieBirdUpdate();
-        if (zombieBirdCount>0 || stage==80) {
+        if (zombieBirdCount>0 || stage-(Math.floor(stage/100)*100)==80) {
             this.miniZombieBirdUpdate();
         }
         this.swampCreatureUpdate();
@@ -859,6 +866,7 @@ var playState = {
         this.bossZombieUpdate();
         this.bossZombieBirdUpdate();
         this.bossMummyUpdate();
+        this.bossFinalUpdate();
         this.manaRegen();
         this.swordZombieUpdate();
         this.adTimeUpdate();
@@ -1207,7 +1215,7 @@ var playState = {
                     skeleton.animations.play('skeletonRight');
                 }
             }
-            else if ((skeleton.colour=="grey" && skeleton.health<18)||(skeleton.colour=="red" && skeleton.health<28)) {
+            else if (skeleton.health<skeleton.maxHealth) {
                 if (skeleton.colour=="grey") {
                     game.physics.arcade.moveToObject(skeleton, player, baddieSpeedAdjuster*175-(skeleton.health*2/baddieHpAdjuster));
                 }
@@ -1489,12 +1497,18 @@ var playState = {
                 evilwizard.timer = game.time.now + 10000;
             }
             if (game.time.now > evilwizard.chargeTimer && evilwizard.isAlive) {
-                var charge = charges.getFirstExists(false);//game.add.sprite(evilwizard.x + 16, evilwizard.y + 24, 'blueCharge');
-                charge.reset(evilwizard.x + 16, evilwizard.y + 20);
+                if (evilwizard.frame==4) {
+                    var charge = game.add.sprite(16, 18, 'blueCharge');//charges.getFirstExists(false);
+                }
+                else {
+                    charge = game.add.sprite(0, 18, 'blueCharge');
+                }
+                //charge.reset(16, 20);
                 charge.animations.add('chargeUp', [0, 1, 2, 3, 4, 4], 2, false);
                 charge.animations.play('chargeUp');
+                evilwizard.addChild(charge);
                 evilwizard.chargeTimer = game.time.now + 10000;
-                game.time.events.add(Phaser.Timer.SECOND * 2, function() {  charge.kill(); });
+                game.time.events.add(Phaser.Timer.SECOND * 3, function() {  evilwizard.removeChild(charge); charge.destroy(); });
             }
             if (game.time.now > evilwizard.sfxTimer && evilwizard.isAlive) {
                 beamSFX.play();
@@ -1502,15 +1516,21 @@ var playState = {
             }
             if (game.time.now > evilwizard.shotTimer && evilwizard.isAlive) {
                 var iceBeam = iceBeams.getFirstExists(false);//iceBeams.create(evilwizard.x + 16, evilwizard.y + 24, 'iceBeamMini');
-                iceBeam.reset(evilwizard.x + 16, evilwizard.y + 20);
-                iceBeam.scale.x = 1.4;
-                //iceBeam.animations.add('beam', [0], true);
+                if (evilwizard.frame==12 || evilwizard.frame==4) {
+                    iceBeam.reset(evilwizard.x + 12, evilwizard.y + 12);
+                }
+                else {
+                    iceBeam.reset(evilwizard.x + 22, evilwizard.y + 28);
+                }
+                iceBeam.pivot.setTo(0.25, 0.5);
+                //iceBeam.scale.x = 1.4;
+                iceBeam.animations.add('beam', [0, 1, 2, 3], 4, false);
                 game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
                 iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
                 iceBeam.lifespan = 1650;
-                iceBeam.frame = 0;
-                //iceBeam.animations.play('beam');
-                evilwizard.shotTimer = game.time.now + 20;
+                //iceBeam.frame = 0;
+                iceBeam.animations.play('beam');
+                evilwizard.shotTimer = game.time.now + 120;
                 game.time.events.add(Phaser.Timer.SECOND * 4, function() { 
                                                                 iceBeams.forEach(function(iceBeam) { 
                                                                     iceBeam.kill(); 
@@ -1524,10 +1544,20 @@ var playState = {
                 evilwizard.stopTimer = game.time.now + 10000;
             }
             if (player.body.x < evilwizard.body.x) {
-                evilwizard.frame = 10;
+                if (evilwizard.shotTimer<game.time.now + 121) {
+                    evilwizard.frame = 17;
+                }
+                else {
+                    evilwizard.frame = 10;
+                }
             }
             else {
-                evilwizard.frame = 4;
+                if (evilwizard.shotTimer<game.time.now + 121) {
+                    evilwizard.frame = 12;
+                }
+                else {
+                    evilwizard.frame = 4;
+                }
             }
         });
     },
@@ -1889,7 +1919,7 @@ var playState = {
                 self.risenZombieCreate(400, 600);
                 self.risenZombieCreate(600, 600);
                 self.risenZombieCreate(800, 600);
-                bossMummy.summonTimer = game.time.now + 6500; 
+                bossMummy.summonTimer = game.time.now + 7500; 
                 game.time.events.add(Phaser.Timer.SECOND * 0.5, function () { bossMummy.summon = false; });
             }
             if (bossMummy.summon==false) {
@@ -2027,11 +2057,168 @@ var playState = {
             }
         });
     },
-    bossFinalCreate: function() {
+    bossFinalCreate: function(x, y) {
+        var bossFinal = bossFinals.create(x, y, 'evilWizard');
+        bossFinal.health = baddieHpAdjuster * 999;
+        bossFinal.maxHealth = baddieHpAdjuster * 999;
+        //  We need to enable physics on the Final Boss
+        game.physics.arcade.enable(bossFinal);
+        bossFinal.body.collideWorldBounds = true;
+        bossFinal.timer = game.time.now;
+        bossFinal.chargeTimer = game.time.now + 1000;
+        bossFinal.shotTimer = game.time.now + 3000;
+        bossFinal.sfxTimer = bossFinal.shotTimer;
+        bossFinal.stopTimer = game.time.now + 7000;
+        bossFinal.summonTimer = game.time.now + 8000;
+        bossFinal.damageTimer = 0;
+        bossFinal.summoned = false;
+        bossFinal.isAlive = true;
         
+        bossFinal.scale.x = 2;
+        bossFinal.scale.y = 2;
+        
+        bossFinal.healthBarBack = bossFinal.addChild(game.add.graphics(0, 0));
+        bossFinal.healthBarBack.lineStyle(3, 0xba3500, 1);
+        bossFinal.healthBarBack.moveTo(0, 0);
+        bossFinal.healthBarBack.lineTo(20, 0);
+        bossFinal.healthBar = bossFinal.addChild(game.add.graphics(0, 0));
+        bossFinal.healthBar.lineStyle(3, 0xffd900, 1);
+        bossFinal.healthBar.moveTo(0, 0);
+        bossFinal.healthBar.lineTo(20*(bossFinal.health/bossFinal.maxHealth), 0);
+        
+        bossFinal.healthBarBack.visible = false;
+        bossFinal.healthBar.visible = false;
+        //  Our animations.
+        bossFinal.animations.add('bossFinalLeft', [3, 4, 5], 10, true);
+        bossFinal.animations.add('bossFinalRight', [6, 7, 8], 10, true);
+        bossFinal.animations.add('bossFinalSummonLeft', [17, 16, 18, 19], 16, false);
+        bossFinal.animations.add('bossFinalSummonRight', [12, 13, 14, 15], 16, false);
     },
     bossFinalUpdate: function() {
+        var self = this;
+        bossFinals.forEach(function(bossFinal) {
+            bossFinal.body.velocity.x = 0;
+            bossFinal.body.velocity.y = 0;
         
+            game.physics.arcade.collide(bossFinal, platforms);
+            
+            var x = 0;
+            var y = 0;
+            
+            if (player.x < 400) {
+                x = player.x + 100;
+            }
+            else {
+                x = player.x - 100;
+            }
+            if (player.y < 300) {
+                y = player.y + 100;
+            }
+            else {
+                y = player.y - 100;
+            }
+            if (game.time.now > bossFinal.timer && bossFinal.isAlive) {
+                var teleport = game.add.audio('teleport');
+                teleport.play();
+                bossFinal.x = x;
+                bossFinal.y = y;
+                bossFinal.timer = game.time.now + 10000;
+            }
+            if (game.time.now > bossFinal.chargeTimer && bossFinal.isAlive) {
+                if (bossFinal.frame==4) {
+                    var charge = game.add.sprite(16, 18, 'blueCharge');//charges.getFirstExists(false);
+                }
+                else {
+                    charge = game.add.sprite(0, 18, 'blueCharge');
+                }
+                //charge.reset(16, 20);
+                charge.animations.add('chargeUp', [0, 1, 2, 3, 4, 4], 2, false);
+                charge.animations.play('chargeUp');
+                bossFinal.addChild(charge);
+                bossFinal.chargeTimer = game.time.now + 10000;
+                game.time.events.add(Phaser.Timer.SECOND * 3, function() {  bossFinal.removeChild(charge); charge.destroy(); });
+            }
+            if (game.time.now > bossFinal.sfxTimer && bossFinal.isAlive) {
+                beamSFX.play();
+                bossFinal.sfxTimer = game.time.now + 10000;
+            }
+            if (game.time.now > bossFinal.shotTimer && bossFinal.isAlive) {
+                var iceBeam = iceBeams.getFirstExists(false);//iceBeams.create(bossFinal.x + 16, bossFinal.y + 24, 'iceBeamMini');
+                if (bossFinal.frame==12 || bossFinal.frame==4) { //face right
+                    iceBeam.reset(bossFinal.x + 42, bossFinal.y + 36);
+                }
+                else {
+                    iceBeam.reset(bossFinal.x + 10, bossFinal.y + 56);
+                }
+                iceBeam.pivot.setTo(0.25, 0.5);
+                //iceBeam.scale.x = 1.4;
+                iceBeam.animations.add('beam', [0, 1, 2, 3], 4, false);
+                game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
+                iceBeam.rotation = game.physics.arcade.moveToXY(iceBeam, player.x, player.y, 600);
+                iceBeam.lifespan = 1650;
+                //iceBeam.frame = 0;
+                iceBeam.animations.play('beam');
+                bossFinal.shotTimer = game.time.now + 120;
+                game.time.events.add(Phaser.Timer.SECOND * 4, function() { 
+                                                                iceBeams.forEach(function(iceBeam) { 
+                                                                    iceBeam.kill(); 
+                                                                } 
+                                                              );});
+            }
+            if (game.time.now > bossFinal.summonTimer && bossFinal.isAlive) {
+                if (bossFinal.summoned==false) {
+                    if (player.body.x < bossFinal.body.x) {
+                        bossFinal.animations.play('bossFinalSummonLeft');
+                    }
+                    else {
+                        bossFinal.animations.play('bossFinalSummonRight');
+                    }
+                    bossFinal.summoned = true;
+                    game.time.events.add(Phaser.Timer.SECOND * 0.25, function() { self.bossFinalSummon(); bossFinal.summonTimer = game.time.now+9750; bossFinal.summoned = false;});
+                }
+            }
+            if (game.time.now > bossFinal.stopTimer) {
+                bossFinal.shotTimer = game.time.now + 6000;
+                //beamSFX.destroy();
+                bossFinal.sfxTimer = bossFinal.shotTimer;
+                bossFinal.stopTimer = game.time.now + 10000;
+            }
+            if (player.body.x < bossFinal.body.x && bossFinal.summoned==false) {
+                if (bossFinal.shotTimer<game.time.now + 121) {
+                    bossFinal.frame = 17;
+                }
+                else {
+                    bossFinal.frame = 10;
+                }
+            }
+            else if (player.body.x > bossFinal.body.x && bossFinal.summoned==false) {
+                if (bossFinal.shotTimer<game.time.now + 121) {
+                    bossFinal.frame = 12;
+                }
+                else {
+                    bossFinal.frame = 4;
+                }
+            }
+        });
+    },
+    bossFinalSummon: function() {
+        if (Math.random()>0.66) {
+            this.mummyCreate(400, 0);
+            this.skeletonCreate(400, 580, 'grey');
+            this.swordZombieCreate(780, 300, 'green');
+            baddieCount += 16;
+        }
+        else if (Math.random()>0.33) {
+            this.baddieCreate(400, 0, 'red');
+            this.skeletonCreate(400, 580, 'red');
+            this.swordZombieCreate(780, 300, 'red');
+            baddieCount += 10;
+        }
+        else {
+            this.mummyCreate(400, 0); 
+            this.mummyCreate(400, 580); 
+            baddieCount += 14;
+        }
     },
     coinCreate: function(x, y, colour) {
         var star;
@@ -2064,7 +2251,7 @@ var playState = {
         coin.animations.play('rotate');
         var coinText = game.add.bitmapText(coin.x+6, coin.y+8, 'font', '', 12);
         coinText.text = coinAmount;
-        coinText.tint = 000000;
+        coinText.tint = 'black';
         game.time.events.add(Phaser.Timer.SECOND * 1, function () {
             coin.destroy();
             coinText.destroy();
@@ -2399,7 +2586,7 @@ var playState = {
                 death.scale.y = 2.5;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.xpDisplayConvert();
-                baddieCount -= 57;
+                baddieCount -= (stageMilestone*0.1) + 57;
                 this.checkLevelUp();
                 this.checkStageComplete();
             }
@@ -2469,7 +2656,7 @@ var playState = {
                 death.frame = 12;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.xpDisplayConvert();
-                baddieCount -= 45;
+                baddieCount -= (stageMilestone*0.1) + 45;
                 this.checkLevelUp();
                 this.zombieBirdCreate(bossZombieBird.x, bossZombieBird.y);
                 this.zombieBirdCreate(bossZombieBird.x+30, bossZombieBird.y);
@@ -2546,7 +2733,7 @@ var playState = {
                 death.scale.y = 2;
                 game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
                 this.xpDisplayConvert();
-                baddieCount -= 97;
+                baddieCount -= (stageMilestone*0.1) + 97;
                 this.checkLevelUp();
                 this.checkStageComplete();
             }
@@ -2558,6 +2745,78 @@ var playState = {
                 bossMummy.healthBar.lineStyle(3, 0xffd900, 1);
                 bossMummy.healthBar.moveTo(0, 0);
                 bossMummy.healthBar.lineTo(20*(bossMummy.health/bossMummy.maxHealth), 0);
+            }
+        }
+    },
+    bossFinalKill: function(bullet, bossFinal) {
+        this.smallExplosion(bullet.x, bullet.y);
+        if (Math.random()>0.66) {
+            if (bullet.travel == 'left') {
+                bossFinal.x -= knockback*0.1;
+            }
+            else if (bullet.travel == 'right') {
+                bossFinal.x += knockback*0.1;
+            }
+            else if (bullet.travel == 'up') {
+                bossFinal.y -= knockback*0.1;
+            }
+            else if (bullet.travel == 'down') {
+                bossFinal.y += knockback*0.1;
+            }
+        }
+        bullet.kill();
+        if (game.time.now>bossFinal.damageTimer) {
+            bossFinal.damageTimer = game.time.now>bossFinal+400;
+            if (bossFinal.health <= shotPower) {
+                this.coinCreate(bossFinal.x, bossFinal.y, "yellow");
+                this.coinCreate(bossFinal.x+15, bossFinal.y-2, "yellow");
+                this.coinCreate(bossFinal.x-15, bossFinal.y+2, "yellow");
+                this.coinCreate(bossFinal.x+5, bossFinal.y+5, "yellow"); 
+                this.coinCreate(bossFinal.x-5, bossFinal.y-5, "yellow"); 
+                this.coinCreate(bossFinal.x-5, bossFinal.y, "yellow"); 
+                this.coinCreate(bossFinal.x-15, bossFinal.y-15, "yellow"); 
+                this.coinCreate(bossFinal.x-5, bossFinal.y-15, "yellow"); 
+                var wand = game.add.sprite(bossFinal.x-10, bossFinal.y+10, 'wand');
+                weaponsmithDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { wand.destroy(); });
+                var armour = game.add.sprite(bossFinal.x+10, bossFinal.y+10, 'armour');
+                armourerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { armour.destroy(); });
+                var ring = game.add.sprite(bossFinal.x+10, bossFinal.y-10, 'ring');
+                enchanterDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { ring.destroy(); });
+                var buff = game.add.sprite(bossFinal.x-10, bossFinal.y-10, 'buff');
+                trainerDropReward ++;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () { buff.destroy(); });
+                if (Math.random()>0.5) {
+                   this.coinCreate(bossFinal.x+15, bossFinal.y+5, "yellow"); 
+                   this.coinCreate(bossFinal.x-5, bossFinal.y-15, "yellow"); 
+                   this.coinCreate(bossFinal.x-15, bossFinal.y-15, "yellow"); 
+                   this.coinCreate(bossFinal.x-5, bossFinal.y+10, "yellow"); 
+                }
+                bossFinal.destroy();
+                bossFinal.isAlive = false;
+                bossFinalKilled = true;
+                this.maleDeathSFX();
+                var death = game.add.sprite(bossFinal.x, bossFinal.y, 'deathSheet');
+                xp += Math.floor(baddieXpAdjuster*900);
+                death.frame = 3;
+                death.scale.x = 2;
+                death.scale.y = 2;
+                game.time.events.add(Phaser.Timer.SECOND * 1, function () {  death.destroy(); });
+                this.xpDisplayConvert();
+                baddieCount -= 100;
+                this.checkLevelUp();
+                this.checkStageComplete();
+            }
+            else {
+                bossFinal.health -= shotPower;
+                bossFinal.healthBarBack.visible = true;
+                bossFinal.healthBar.visible = true;
+                bossFinal.healthBar.clear();
+                bossFinal.healthBar.lineStyle(3, 0xffd900, 1);
+                bossFinal.healthBar.moveTo(0, 0);
+                bossFinal.healthBar.lineTo(20*(bossFinal.health/bossFinal.maxHealth), 0);
             }
         }
     },
@@ -2728,7 +2987,7 @@ var playState = {
                 }
                 this.xpDisplayConvert();
                 if (skeleton.colour=="redBoss") {
-                    baddieCount -= 77;
+                    baddieCount -= (stageMilestone*0.1) + 77;
                 }
                 else {
                     baddieCount -= 5;
@@ -3064,8 +3323,10 @@ var playState = {
         decoy.destroy();
     },
     checkStageComplete: function() {
-        if (stage%100==0 && bossFinalKilled==false) {
-            this.bossFinalCreate(832-player.x, 640-player.y);
+        var finalBossShown = false;
+        if (baddieCount <= 0 && stage%100==0 && bossFinalKilled==false && finalBossShown==false) {
+            this.finalBossIntro();
+            finalBossShown = true;
         }
         else if (baddieCount <= 0 && doorAvailable==false) {
             if (player.x < 150 && player.y < 250) {
@@ -3082,13 +3343,47 @@ var playState = {
             door.animations.add('openDoor', [0, 1, 2, 3], 4, false);
             game.physics.arcade.enable(door);
             door.body.immovable = true;
-            if (stage==60) {
+            if (stage-(Math.floor(stage/100)*100)==60) {
                 bossTreeBeastKilled = true;
             }
-            if (stage==80) {
+            if (stage-(Math.floor(stage/100)*100)==80) {
                 bossZombieBirdKilled = true;
             }
+            if (stage%100==0) {
+                finalBossShown = false;
+            }
         }
+    },
+    finalBossIntro: function() {
+        beamSFX = game.add.audio('shotSFX');
+        var fakeDoor = game.add.sprite(750, 70, 'animateddoor');
+        flameShot = game.add.audio('flameShot');
+        var doorFire;
+        var doorFire2;
+        game.time.events.add(Phaser.Timer.SECOND * 1, function () {   
+            doorFire = game.add.sprite(750, 115, 'flame');
+            doorFire.scale.x = 2;
+            doorFire.scale.y = 1.5;
+            doorFire.animations.add('flicker', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+            doorFire.animations.play('flicker');
+            doorFire2 = game.add.sprite(785, 115, 'flame');
+            doorFire2.scale.x = 2;
+            doorFire2.scale.y = 1.5;
+            doorFire2.animations.add('flicker', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+            doorFire2.animations.play('flicker');
+            flameShot.play();
+        });
+        game.time.events.add(Phaser.Timer.SECOND * 3, function () {   
+            fakeDoor.kill();
+        });
+        var self = this;
+        game.time.events.add(Phaser.Timer.SECOND * 4, function () {   
+            doorFire.kill();
+            doorFire2.kill();
+            self.bossFinalCreate(832-player.x, 640-player.y);
+            baddieCount += 100;
+        });
+        
     },
     doorOpen: function() {
         door.animations.play('openDoor');
@@ -3132,10 +3427,10 @@ var playState = {
             levelUpSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {   levelUpImage.destroy();  });
             xp -= nextLevelXp;
-            nextLevelXp += Math.round(9 + playerLevel*0.65);
+            nextLevelXp += Math.round(9 + playerLevel*0.7);
             maxHealth ++;
             maxMana ++;
-            shotPower += 0.035;
+            shotPower += 0.03;
             health++;
             hpCrop.x = (1-(health/maxHealth))*80;
             hpBar.updateCrop();
@@ -3208,17 +3503,20 @@ var playState = {
                 bestStage++;
                 reward += bestStage;
             }
-            if (stage>30) {
+            if (stage<50) {
                 reward = reward*1.1;
+            }
+            else {
+                reward = reward*(0.15+((500-stage)/500));
             }
             levelRecordBackground.x = 96;
             levelRecord.text = "Congratulations!";
             levelRecord2.text = "New Highest Stage Record!";
-            levelRecord3.text = "        You receive " + Math.round(reward*10) + " XP and " + Math.round(reward*20) + " Coins!";
-            xp += Math.round(reward*10);
+            levelRecord3.text = "        You receive " + Math.floor(reward*10) + " XP and " + Math.floor(reward*15) + " Coins!";
+            xp += Math.round(floor*10);
             this.xpDisplayConvert();
             this.checkLevelUp();
-            coins += Math.round(reward*20);
+            coins += Math.round(floor*15);
             if (coins>=1000000) {
                 coinsText.text = (Math.round(coins/1000))/1000 + "M";;
             }

@@ -136,6 +136,8 @@ var pauseUpdate = false;
 
 var cityMusic;
 var cityMusicPlaying = false;
+var bestStage = 0;
+var stageMilestone = ((Math.floor(bestStage/100))*100);
 
 var cityState = {
     create: function() {
@@ -472,7 +474,7 @@ var cityState = {
                          + justiceFunding + defenceFunding + utilitiesFunding + weaponsmithFunding + armourerFunding
                           + enchanterFunding + trainerFunding;
           previousExpenditure = expenditure;
-          expenditure = totalFunding*(4.45 + year/22) + (population*(totalFunding/20));
+          expenditure = totalFunding*(4.45 + year/22) + (population*(totalFunding/19));
           //console.log("Expenditure: " + expenditure);
           previousNetIncome = netIncome;
           netIncome = income - expenditure;
@@ -664,11 +666,11 @@ var cityState = {
         cityMusic.destroy();
         cityMusicPlaying = false;
         stage = Math.floor(stage/5)*5;
-        if (stage<1) {
-            stage = 1;
+        if (stage<stageMilestone+1) {
+            stage = stageMilestone + 1;
         }
         baddieTotal = stage + (0+6) - baddieAdjuster;
-        baddieCount = stage + (0+6) - baddieAdjuster;
+        baddieCount = baddieTotal;
         baddieCreated = 0;
         chestCreated = 0;
         flameCount = 0;
@@ -921,8 +923,10 @@ var cityState = {
         saveObject.bossSkeletonKilled = bossSkeletonKilled;
         saveObject.bossZombieBirdKilled = bossZombieBirdKilled;
         saveObject.bossMummyKilled = bossMummyKilled;
+        saveObject.bossFinalKilled = bossFinalKilled;
         saveObject.coins = coins;
         saveObject.stage = stage;
+        saveObject.stageMilestone = stageMilestone;
         saveObject.bestStage = bestStage;
         saveObject.xp = xp;
         saveObject.nextLevelXp = nextLevelXp;
@@ -1050,9 +1054,11 @@ var cityState = {
         bossTreeBeastKilled = false;
         bossSkeletonKilled = false;
         bossZombieBirdKilled = false;
+        bossMummyKilled = false;
+        bossFinalKilled = false;
         coins = 1500 + startingGoldIncrease;
-        var stageMilestone = (Math.floor(bestStage/100)*100);
-        stage = stageMilestone + Math.floor(bestStage-stageMilestone/4);
+        stageMilestone = ((Math.floor(bestStage/100))*100);
+        stage = stageMilestone + Math.floor((bestStage-stageMilestone)/4);
         bestStage = 0;
         year = 0;
         population = 100 + startingPopIncrease;
@@ -1146,7 +1152,7 @@ var cityState = {
         game.add.bitmapText(100, 180, 'font', place1, 14);
         var princess1 = game.add.sprite(125, 200, 'princesses');
         princess1.frame = Math.floor(Math.random()*23.99);
-        xpReduction1 = Math.round(Math.random()*40)+10;
+        xpReduction1 = Math.round(Math.random()*20)+20;
         startingPopIncrease1 = Math.floor(Math.random()*6)-3;
         startingGoldIncrease1 = Math.round(Math.random()*150)-50;
         artisanIncrease1 = Math.floor(Math.random()*3)-1;
@@ -1177,7 +1183,7 @@ var cityState = {
         game.add.bitmapText(351, 180, 'font', place2, 14);
         var princess2 = game.add.sprite(386, 200, 'princesses');
         princess2.frame = Math.floor(Math.random()*23.99);
-        xpReduction2 = Math.round(Math.random()*40)+10;
+        xpReduction2 = Math.round(Math.random()*20)+20;
         startingPopIncrease2 = Math.floor(Math.random()*6)-3;
         startingGoldIncrease2 = Math.round(Math.random()*300)-100;
         artisanIncrease2 = Math.floor(Math.random()*3)-1;
@@ -1208,7 +1214,7 @@ var cityState = {
         game.add.bitmapText(612, 180, 'font', place3, 14);
         var princess3 = game.add.sprite(647, 200, 'princesses');
         princess3.frame = Math.floor(Math.random()*23.99);
-        xpReduction3 = Math.round(Math.random()*40)+10;
+        xpReduction3 = Math.round(Math.random()*20)+20;
         startingPopIncrease3 = Math.floor(Math.random()*9)-4;
         startingGoldIncrease3 = Math.round(Math.random()*350)-150;
         artisanIncrease3 = Math.floor(Math.random()*3)-1;

@@ -1168,7 +1168,7 @@ var shopState = {
                 else {
                     wandBulletSpacingUpgrade = Math.round(baseChance + wandPerkChance);
                     if (wandBulletSpacingUpgrade>wandBulletSpacing) {
-                        bulletSpacing -= (wandBulletSpacingUpgrade - wandBulletSpacing)/2;
+                        bulletSpacing -= (wandBulletSpacingUpgrade - wandBulletSpacing)/2.5;
                         wandBulletSpacing = wandBulletSpacingUpgrade;
                         wandImage.animations.stop();
                         wandImage.frame = 4;
@@ -1841,7 +1841,7 @@ var shopState = {
               else {
                   amuletBulletSpacingUpgrade = Math.round(baseChance + amuletPerkChance);
                   if (amuletBulletSpacingUpgrade>amuletBulletSpacing) {
-                      bulletSpacing -= (amuletBulletSpacingUpgrade - amuletBulletSpacing)/2;
+                      bulletSpacing -= (amuletBulletSpacingUpgrade - amuletBulletSpacing)/2.5;
                       amuletBulletSpacing = amuletBulletSpacingUpgrade;
                       amuletImage.animations.stop();
                       amuletImage.frame = 4;
@@ -2040,7 +2040,7 @@ var shopState = {
                 else {
                     enduranceBulletSpacingUpgrade = Math.round(baseChance + endurancePerkChance);
                     if (enduranceBulletSpacingUpgrade>enduranceBulletSpacing) {
-                        bulletSpacing -= (enduranceBulletSpacingUpgrade - enduranceBulletSpacing)/2;
+                        bulletSpacing -= (enduranceBulletSpacingUpgrade - enduranceBulletSpacing)/2.5;
                         enduranceBulletSpacing = enduranceBulletSpacingUpgrade;
                         enduranceImage.animations.stop();
                         enduranceImage.frame = 4;
@@ -2309,7 +2309,7 @@ var shopState = {
       nextEconomyMod -= ((tax-30)/3000);
       nextIncome = income;
       nextIncome = nextPopulation*nextEconomyMod*(1.17*tax);
-      nextExpenditure = totalFunding*(4.45 + (year+1)/22) + (nextPopulation*(totalFunding/20));
+      nextExpenditure = totalFunding*(4.45 + (year+1)/22) + (nextPopulation*(totalFunding/19));
       nextNetIncome = netIncome;
       nextNetIncome = nextIncome - nextExpenditure;
       nextCoins = coins;

@@ -535,10 +535,10 @@ var defenceState = {
             levelUpSFX.play();
             game.time.events.add(Phaser.Timer.SECOND * 1, function () {   levelUpImage.kill();  });
             xp -= nextLevelXp;
-            nextLevelXp += Math.round(9 + playerLevel*0.6);
+            nextLevelXp += Math.round(9 + playerLevel*0.7);
             maxHealth ++;
             maxMana ++;
-            shotPower += 0.035;
+            shotPower += 0.03;
             health = maxHealth;
             mana = maxMana;
             playerLevel ++;

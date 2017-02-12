@@ -231,6 +231,14 @@ var menuState = {
             baddieXpAdjuster = 1;
             baddieSpeedAdjuster = 1;
         }
+        if (saveObject.stageMilestone!=null) {
+            stageMilestone = saveObject.stageMilestone;
+            bossFinalKilled = saveObject.bossFinalKilled;
+        }
+        else {
+            stageMilestone = ((Math.floor(bestStage/100))*100);
+            bossFinalKilled = false;
+        }
         game.world.removeAll();
         game.state.start('city');
         themeSound.stop();
