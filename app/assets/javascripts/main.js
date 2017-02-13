@@ -65,7 +65,7 @@ var stars;
 var door;
 var doorAvailable = false;
 var levelUpImage;
-var coins = 1500;
+var coins = 1750;
 var stage = 1;
 var reward = 0;
 

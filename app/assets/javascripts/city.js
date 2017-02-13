@@ -82,7 +82,7 @@ var boyActive= false;
 
 var spaceBar;
 var assistantChangeTimer = 0;
-var assistant = "first";
+var assistant = "intro";
 var assistantSprite;
 var assistantSpeechBubble;
 var assistantText = "";
@@ -270,7 +270,7 @@ var cityState = {
         else {
             defendButton = game.add.button(0, 540, 'defendButton', this.defend, this);
         }
-        if (assistant!="first" && (educationFunding<=40||healthFunding<=40)) {
+        if ((assistant!="intro" && assistant!="first") && (educationFunding<=40||healthFunding<=40)) {
             this.highlight();
         }
         popDisplay = game.add.sprite(10, 6, 'townWoman');
@@ -392,7 +392,13 @@ var cityState = {
             questStartTime = 0;
             questEndTime = 0;
         }
-        while (game.time.now > currentTime+30000 || questYears>0) {
+        if (year<=3) {
+           var yearLength = 60000; 
+        }
+        else {
+           yearLength = 30000; 
+        }
+        while (game.time.now > currentTime+yearLength || questYears>0) {
             year++;
           //console.log("Year: " + year);
           housing += (housingFunding-housing)/12;
@@ -521,6 +527,7 @@ var cityState = {
                 utilitiesFunding--;
             }
             coins -= Math.round(coins*0.05);
+            this.create();
         }
         this.save();
     },
@@ -539,12 +546,14 @@ var cityState = {
     castleOptions: function() {
         game.world.removeAll();
         shop = "castle";
+        this.assistantChange();
         game.state.start('shop');
     },
     resOptions: function() {
         if (coins>=0) {
             game.world.removeAll();
             shop = "housing";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -565,6 +574,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "industrial";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -575,6 +585,7 @@ var cityState = {
         if (coins>=0 || educationFunding<=40) {
             game.world.removeAll();
             shop = "education";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -585,6 +596,7 @@ var cityState = {
         if (coins>=0 || healthFunding<=40) {
             game.world.removeAll();
             shop = "health";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -595,6 +607,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "justice";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -605,6 +618,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "defence";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -615,6 +629,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "utilities";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -625,6 +640,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "weaponsmith";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -635,6 +651,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "armourer";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -645,6 +662,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "enchanter";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -655,6 +673,7 @@ var cityState = {
         if (coins>=0) {
             game.world.removeAll();
             shop = "trainer";
+            this.assistantChange();
             game.state.start('shop');
         }
         else {
@@ -727,15 +746,25 @@ var cityState = {
     },
     assistantShow: function() {
         switch(assistant) {
-            case "first":
+            case "intro":
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
                 assistantText.text = "Your Majesty!";
-                assistantText2.text = "   This year's census is ";
-                assistantText3.text = "very worrying. Your people's";
-                assistantText4.text = "   health and education is";
-                assistantText5.text = " in decline. <Click> or";
-                assistantText6.text = "   press SPACE.";
+                assistantText2.text = " I, your humble servant,";
+                assistantText3.text = "will offer advice from time to";
+                assistantText4.text = " time. When you have read";
+                assistantText5.text = " my advice, click here";
+                assistantText6.text = " or press SPACE.";
+                break;
+            case "first":
+                assistantSprite = game.add.sprite(350, 469, 'assistant');
+                assistantSpeechBubble.x = 150;
+                assistantText.text = " Your Majesty!";
+                assistantText2.text = "    This year's census ";
+                assistantText3.text = "     is very worrying. Your ";
+                assistantText4.text = "      people's health and ";
+                assistantText5.text = "       education is in ";
+                assistantText6.text = "        decline.";
                 break;
             case "second":
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
@@ -746,6 +775,18 @@ var cityState = {
                 assistantText4.text = "     of the Departments  ";
                 assistantText5.text = "       of Health and ";
                 assistantText6.text = "     Education.";
+                break;
+            case "third":
+                if (educationFunding>40 && healthFunding>40) {
+                    assistantSprite = game.add.sprite(350, 469, 'assistant');
+                    assistantSpeechBubble.x = 150;
+                    assistantText.text = "  That should";
+                    assistantText2.text = "   suffice for now. You";
+                    assistantText3.text = "   can view yearly budget";
+                    assistantText4.text = "   forecasts at the castle.";
+                    assistantText5.text = "  You must spend your";
+                    assistantText6.text = "  gold carefully.";
+                }
                 break;
             case "defend":
                 if (educationFunding>40 && healthFunding>40) {
@@ -804,23 +845,44 @@ var cityState = {
     },
     assistantChange: function() {
         switch(assistant) {
+            case "intro":
+                assistant = "first";
+                this.create();
+                this.assistantShow();
+                break;
             case "first":
                 assistant = "second";
                 this.create();
                 this.assistantShow();
                 break;
             case "second":
-                assistant = "defend";
-                assistantSprite.kill();
-                assistantSpeechBubble.kill();
-                assistantText.text = "";
-                assistantText2.text = "";
-                assistantText3.text = "";
-                assistantText4.text = "";
-                assistantText5.text = "";
-                assistantText6.text = "";
-                this.highlight();
-                this.assistantShow();
+                //if (educationFunding>40 && healthFunding>40) {
+                    assistant = "third";
+                    assistantSprite.kill();
+                    assistantSpeechBubble.kill();
+                    assistantText.text = "";
+                    assistantText2.text = "";
+                    assistantText3.text = "";
+                    assistantText4.text = "";
+                    assistantText5.text = "";
+                    assistantText6.text = "";
+                    this.highlight();
+                    this.assistantShow();
+                //}
+                break;
+            case "third":
+                if (educationFunding>40 && healthFunding>40) {
+                    assistant = "defend";
+                    assistantSprite.kill();
+                    assistantSpeechBubble.kill();
+                    assistantText.text = "";
+                    assistantText2.text = "";
+                    assistantText3.text = "";
+                    assistantText4.text = "";
+                    assistantText5.text = "";
+                    assistantText6.text = "";
+                    this.create();
+                }
                 break;
             case "defend":
                 assistant = "";
@@ -1056,7 +1118,7 @@ var cityState = {
         bossZombieBirdKilled = false;
         bossMummyKilled = false;
         bossFinalKilled = false;
-        coins = 1500 + startingGoldIncrease;
+        coins = 1750 + startingGoldIncrease;
         stageMilestone = ((Math.floor(bestStage/100))*100);
         stage = stageMilestone + Math.floor((bestStage-stageMilestone)/4);
         bestStage = 0;
@@ -1116,6 +1178,7 @@ var cityState = {
         assistant = "marriage";
         marriageOptionsPromptButton = game.add.button(10, 50, 'blankButton', this.marriageOptionsChoose, this);
         marriageOptionsPromptText = game.add.bitmapText(50, 75, 'font', 'View Alliance Offers', 16);
+        this.create();
     },
     marriageOptionsChoose: function() {
         marriageOptionsBackground = game.add.sprite(96, 150, 'scrollStrip');
