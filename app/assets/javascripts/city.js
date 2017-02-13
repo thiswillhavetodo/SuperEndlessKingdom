@@ -867,6 +867,7 @@ var cityState = {
                     assistantText5.text = "";
                     assistantText6.text = "";
                     this.highlight();
+                    this.create();
                     this.assistantShow();
                 //}
                 break;
