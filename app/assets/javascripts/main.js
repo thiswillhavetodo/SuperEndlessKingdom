@@ -3513,10 +3513,10 @@ var playState = {
             levelRecord.text = "Congratulations!";
             levelRecord2.text = "New Highest Stage Record!";
             levelRecord3.text = "        You receive " + Math.floor(reward*10) + " XP and " + Math.floor(reward*15) + " Coins!";
-            xp += Math.round(floor*10);
+            xp += Math.floor(reward*10);
             this.xpDisplayConvert();
             this.checkLevelUp();
-            coins += Math.round(floor*15);
+            coins += Math.floor(reward*15);
             if (coins>=1000000) {
                 coinsText.text = (Math.round(coins/1000))/1000 + "M";;
             }
