@@ -747,6 +747,7 @@ var cityState = {
     assistantShow: function() {
         switch(assistant) {
             case "intro":
+                console.log(assistant);
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
                 assistantText.text = "Your Majesty!";
@@ -757,6 +758,7 @@ var cityState = {
                 assistantText6.text = " or press SPACE.";
                 break;
             case "first":
+                console.log(assistant);
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
                 assistantText.text = " Your Majesty!";
@@ -767,6 +769,7 @@ var cityState = {
                 assistantText6.text = "        decline.";
                 break;
             case "second":
+                console.log(assistant);
                 assistantSprite = game.add.sprite(350, 469, 'assistant');
                 assistantSpeechBubble.x = 150;
                 assistantText.text = "  We must do";
@@ -777,6 +780,7 @@ var cityState = {
                 assistantText6.text = "     Education.";
                 break;
             case "third":
+                console.log(assistant);
                 if (educationFunding>40 && healthFunding>40) {
                     assistantSprite = game.add.sprite(350, 469, 'assistant');
                     assistantSpeechBubble.x = 150;
@@ -789,6 +793,7 @@ var cityState = {
                 }
                 break;
             case "defend":
+                console.log(assistant);
                 if (educationFunding>40 && healthFunding>40) {
                     assistantSprite = game.add.sprite(350, 469, 'assistant');
                     assistantSpeechBubble.x = 150;
